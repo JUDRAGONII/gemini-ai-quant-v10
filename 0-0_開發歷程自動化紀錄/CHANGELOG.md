@@ -20,3 +20,8 @@
 - 補齊缺失的 Python 依賴 `schedule`。
 - 解決 `google-generativeai` 模型不匹配問題。
 
+### CI/CD
+- **GitHub Actions**: 新增 `ci_test.yml` 自動化流程。
+- **Automated Testing**: 整合 `pytest` 運行單元測試與 `pytest-cov` 生成代碼覆蓋率報告 (HTML/XML)。
+- **Artifacts**: 覆蓋率報告可直接從 GitHub Actions Summary 下載。
+
