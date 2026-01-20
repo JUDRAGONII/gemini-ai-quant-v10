@@ -124,313 +124,33 @@ AI 投資分析儀 V10.0 的核心願景是「讓每一位投資人都能擁有�
 ## 第三章：軟體架構規格
 
 ### 3.1 系統架構總覽
+系統採用 **Self-Hosted Supabase** 架構，在 QNAP NAS 上部署一套完整的開源 Backend-as-a-Service (BaaS) 平台。這將原有的分散式微服務整合為統一的生態系統，大幅降低維運複雜度並提升開發效率。
 
-AI 投資分析儀 V10.0 採用現代化的微服務架構設計，所有服務元件以 Docker 容器形式部署於 NAS 設備之上。整體架構分為五個層次：資料層、服務層、API 層、應用層與展示層，各層次之間透過標準化的介面進行通信，實現高內聚、低耦合的設計目標。
+在容器編排方面，系統使用 Docker Compose 部署標準的 Supabase 服務群組，包含核心資料庫 (Postgres)、認證服務 (GoTrue)、即時推送服務 (Realtime)、儲存服務 (Storage) 與 API 閘道器 (Kong)。
 
-在容器編排方面，系統採用 Docker Compose 進行容器編排管理。對於兩位用戶的使用規模，Docker Compose 提供了足夠的编排能力與管理便利性，同時保持了架構的簡潔性。與 Kubernetes 等重量級編排工具相比，Docker Compose 更適合資源受限的 NAS 部署環境，且學習曲線較為平緩。
-
-在服務發現方面，系統內部服務透過 Docker Compose 定義的網路（app-network）進行通信，服務名稱即為 DNS 名稱，實現自動的服務發現功能。外部 API 請求透過 Nginx 反向代理分發至後端服務，Nginx 同時承擔負載均衡、SSL 終止、與靜態資源服務的功能。
-
-在配置管理方面，所有環境變數與設定集中於 Docker Compose 配置文件（docker-compose.yml）與環境變數文件（.env）中管理。敏感資訊（如 API 金鑰、資料庫密碼）透過環境變數注入，避免硬編碼於程式碼中。設定檔版本化管理，確保部署的可重現性。
+在服務發現方面，所有外部請求統一由 Kong 閘道器處理（監聽 8000/8443），並根據路徑分發至內部組件。Nginx 作為最外層的反向代理，負責 SSL 終止與靜態資源快取。
 
 ### 3.2 容器服務組態
+系統由以下核心 Supabase 容器服務組成：
 
-系統由以下核心 Docker 容器服務組成，各服務設計為可獨立擴展與維護。
+1.  **PostgreSQL (db)**: 系統核心，擴充了 `pgvector` (向量運算), `pg_graphql`, `pg_net` 等插件。負責儲存業務數據、向量索引與用戶資訊。
+2.  **GoTrue (auth)**: 處理用戶註冊、登入與 JWT 憑證簽發。整合 RLS (Row Level Security) 確保數據存取安全。
+3.  **PostgREST (rest)**: 自動將 PostgreSQL Schema 轉換為 RESTful API，提供即時的 CRUD 能力。
+4.  **Realtime (realtime)**: 監聽資料庫變更 (WAL)，透過 WebSocket 向前端推送即時行情與通知。
+5.  **Storage (storage-api)**: 管理檔案上傳與下載（如使用者頭像、AI 報告 PDF），支援 S3 兼容協議。
+6.  **Studio (studio)**: 提供圖形化資料庫管理介面，方便開發者進行 Schema 設計與數據檢視。
+7.  **Kong (kong)**: API 閘道器，統一管理認證、速率限制與 CORS 政策。
+8.  **AI Worker (custom)**: 保留 Python (Flask/Prefect) 容器，專責處理複雜的 AI 推理、量化因子計算與外部數據 ETL，透過 Supabase Python SDK 與核心互動。
 
-在 API 服務方面，Flask REST API 容器提供系統的核心 API 功能，包括行情數據查詢、宏觀指標獲取、AI 建議生成等。容器基於 Python 3.11-slim 映像檔構建，配置 2 個 CPU 核心與 2GB 記憶體限制。服務監聽 5000 端口，透過 Nginx 反向代理對外提供服務。健康檢查配置為每 30 秒檢測一次 /health 端點，連續失敗 3 次則自動重啟容器。
-
-在資料庫服務方面，PostgreSQL 容器作為系統的主要關聯式資料庫，儲存行情數據、宏觀指標、用戶設定等結構化數據。容器基於 postgres:15 映像檔構建，配置 4 個 CPU 核心與 8GB 記憶體限制。數據儲存於 NVMe SSD 層的 Volume 中，確保高效能的數據存取。PostgreSQL 配置採用優化的記憶體管理與查詢優化器設定，支援全文檢索（pg_trgm）與向量相似度搜尋（pgvector）擴展。
-
-在快取服務方面，Redis 容器作為系統的分散式快取與會話儲存。容器基於 redis:7-alpine 映像檔構建，配置 1 個 CPU 核心與 1GB 記憶體限制。Redis 採用 AOF（Append-Only File）持久化模式，確保快取數據在重啟後可恢復。配置 maxmemory 為 800MB，並採用 allkeys-lru 淘汰策略，當記憶體不足時優先移除最少存取的鍵值。
-
-在向量資料庫服務方面，Milvus 容器提供 AI 語義搜尋所需的向量資料庫功能。容器基於 milvusdb/milvus:2.3 映像檔構建，配置 2 個 CPU 核心與 4GB 記憶體限制。Milvus 儲存於 SATA SSD 層的 Volume 中，提供高效的向量相似度搜尋能力。目前配置 Collection 用於儲存 AI 報告的語義向量，支持 9GB 的向量索引儲存。
-
-在反向代理服務方面，Nginx 容器作為系統的統一入口與反向代理。容器基於 nginx:alpine 映像檔構建，配置 1 個 CPU 核心與 256MB 記憶體限制。Nginx 負責 SSL 終止、靜態資源服務、API 請求路由、以及負載均衡。配置 Gzip 壓縮以減少傳輸資料量，配置緩衝區以提升大請求的處理效率。
-
-在排程調度服務方面，Prefect 容器提供數據獲取與處理任務的排程調度功能。容器基於 prefecthq/prefect:2-python3.11 映像檔構建，配置 1 個 CPU 核心與 1GB 記憶體限制。Prefect 負責管理 FRED 宏觀數據、台灣政府數據、以及市場行情數據的定時獲取任務，確保數據的定期更新與處理流水線的可靠執行。
-
-在監控服務方面，Grafana 與 Prometheus 容器提供系統監控與可視化功能。Prometheus 收集各服務的效能指標與健康狀態，Grafana 提供儀表板視覺化呈現。配置監控告警規則，當系統異常時發出通知。
+這種架構將 "CRUD" 與 "Auth" 邏輯交給 Supabase 處理，讓 Python 專注於 "AI 分析" 與 "重運算" 任務。
 
 ### 3.3 網路架構設計
-
-系統的 Docker 網路採用隔離式設計，確保服務間通信的安全與可控。
-
-在內部網路方面，系統建立名為 app-network 的自定義 Bridge 網路，配置 172.20.0.0/16 的子網段。各服務容器連接至此網路，透過服務名稱進行相互通信。內部網路與外部網路隔離，只有透過 Nginx 反向代理才能從外部訪問服務。這種設計確保了內部服務的安全，減少了外部攻擊面。
-
-在外部訪問方面，系統對外提供 HTTPS 訪問，SSL 憑證由 Let's Encrypt 自動簽發與更新。用戶透過瀏覽器訪問系統時，首先連線至 Nginx（443 端口），Nginx 根據 URL 路徑將請求轉發至適當的後端服務。所有外部通信均經過 SSL 加密，確保傳輸過程中的數據安全。
-
-在端口配置方面，系統對外開放以下端口：443（HTTPS，Web 界面與 API 訪問）、5000（內部服務端口，不對外直接開放）。22 端口預設不對外開放，如有遠端管理需求，應透過 VPN 或 SSH 隧道訪問。
+Supabase 內部組件透過 `supabase-network` 溝通。外部僅暴露 Nginx (443) 與 Kong (8000)。所有資料庫操作優先透過 API 層 (Kong -> PostgREST) 進行，AI Worker 可直接連接 DB (5432) 以提升大量寫入效能。
 
 ### 3.4 數據持久化設計
+*   **Postgres Data**: 掛載於 NVMe SSD (RAID 1)，確保 ACID 事務與向量檢索效能。
+*   **Storage Data**: 掛載於 HDD (RAID 1) 或 SATA SSD，儲存非結構化檔案。
 
-系統採用 Docker Volume 實現容器數據的持久化，確保數據在容器重啟或重建時不會丟失。
-
-在資料庫 Volume 方面，PostgreSQL 數據儲存於名為 postgres_data 的 Docker Volume 中，實際儲存路徑對應至 NAS 的 NVMe SSD 儲存池。Volume 採用 local 驅動程式，透過 RAID 1 保護確保數據安全。資料庫的 WAL（Write-Ahead Log）同步寫入，確保交易的持久性。
-
-在 Redis Volume 方面，Redis 數據儲存於名為 redis_data 的 Docker Volume 中，採用 AOF 持久化模式。Redis 數據同步儲存至 NVMe SSD 層，確保快取數據在重啟後可恢復。
-
-在向量資料庫 Volume 方面，Milvus 數據儲存於名為 milvus_data 的 Docker Volume 中，對應至 SATA SSD 儲存池。Milvus 的數據包括 Collection Metadata 與向量索引檔案，佔用約 9GB 空間。
-
-在備份 Volume 方面，系統建立名為 backup_data 的 Docker Volume，用於存放定期備份的資料庫匯出檔案與重要配置檔案。備份資料儲存於 HDD 儲存層，確保長期保存的可靠性。
-
-### 3.5 Docker Compose 配置規格
-
-以下是系統的 Docker Compose 配置文件核心內容，展示各服務的配置關係。
-
-```yaml
-version: '3.8'
-
-services:
-  nginx:
-    image: nginx:alpine
-    container_name: ai-invest-nginx
-    restart: unless-stopped
-    ports:
-      - "443:443"
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - static_files:/usr/share/nginx/html
-    networks:
-      - app-network
-    depends_on:
-      - api
-      - grafana
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 256M
-
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    container_name: ai-invest-api
-    restart: unless-stopped
-    expose:
-      - "5000"
-    environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=ai_invest
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_DB=0
-      - FRED_API_KEY=${FRED_API_KEY}
-      - MILVUS_HOST=milvus
-      - MILVUS_PORT=19530
-    volumes:
-      - app_config:/app/config
-    networks:
-      - app-network
-    depends_on:
-      - db
-      - redis
-      - milvus
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-
-  db:
-    image: postgres:15
-    container_name: ai-invest-db
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=ai_invest
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ai_invest"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'
-          memory: 8G
-    command: >
-      postgres
-      -c shared_buffers=4GB
-      -c effective_cache_size=12GB
-      -c work_mem=256MB
-      -c maintenance_work_mem=1GB
-      -c max_connections=100
-      -c log_min_duration_statement=1000
-      -c log_lock_waits=on
-
-  redis:
-    image: redis:7-alpine
-    container_name: ai-invest-redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 800mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-
-  milvus:
-    image: milvusdb/milvus:2.3
-    container_name: ai-invest-milvus
-    restart: unless-stopped
-    command: etcd,minio,milvus
-    environment:
-      - ETCD_DATA_DIR=/etcd
-      - MINIO_DATA_DIR=/minio_data
-      - MILVUS_DATA_DIR=/var/lib/milvus/data
-    volumes:
-      - milvus_data:/var/lib/milvus/data
-      - milvus_etcd:/etcd
-      - milvus_minio:/minio_data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
-
-  prefect:
-    image: prefecthq/prefect:2-python3.11
-    container_name: ai-invest-prefect
-    restart: unless-stopped
-    environment:
-      - PREFECT_API_URL=http://prefect:4200/api
-      - PREFECT_ORION_API_HOST=0.0.0.0
-      - PREFECT_ORION_API_PORT=4200
-    volumes:
-      - prefect_data:/root/.prefect
-      - ./flows:/flows
-    networks:
-      - app-network
-    entrypoint: ["prefect", "orion", "start"]
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-
-  prometheus:
-    image: prom/prometheus:v2.47
-    container_name: ai-invest-prometheus
-    restart: unless-stopped
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=30d'
-    networks:
-      - app-network
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-
-  grafana:
-    image: grafana/grafana:10.2
-    container_name: ai-invest-grafana
-    restart: unless-stopped
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-    networks:
-      - app-network
-    depends_on:
-      - prometheus
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-
-volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /share/Container/nvme_data/postgres
-  redis_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /share/Container/nvme_data/redis
-  milvus_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /share/Container/ssd_data/milvus
-  milvus_etcd:
-    driver: local
-  milvus_minio:
-    driver: local
-  static_files:
-    driver: local
-  app_config:
-    driver: local
-  prefect_data:
-    driver: local
-  prometheus_data:
-    driver: local
-  grafana_data:
-    driver: local
-  backup_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /share/Backup/ai_invest
-
-networks:
-  app-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
 ```
 
 ---
@@ -672,6 +392,40 @@ CREATE INDEX idx_stock_factors_score ON stock_factors(composite_score DESC, trad
 
 在數據備份階段，系統實施每日全量備份與每小時增量備份策略。備份儲存於獨立的備份 Volume（對應 HDD 儲存池），確保與主數據的物理隔離。備份保留期限為 30 天，超過期限的備份會自動刪除。每月執行一次備份還原測試，驗證備份資料的完整性。
 
+### 4.5 外部數據源與採集策略
+
+系統採用「混合 API + 爬蟲」的雙軌策略，以確保數據的全面性與即時性。
+
+#### 4.5.1 混合 API 策略 (Hybrid API Strategy)
+
+**美股數據來源**
+*   **Tiingo** (主要): 提供高品質歷史 K 線、即時行情與量化數據 (環境變數: `TIINGO_API_KEY`)。
+*   **Finnhub** (核心): 提供即時報價、新聞、基本面與技術指標 (環境變數: `FINNHUB_API_KEY`)。
+*   **FMP** (財報): 提供財務報表、估值指標與 SEC 文件 (環境變數: `FMP_API_KEY`)。
+
+**台股數據來源**
+*   **Fugle** (核心): 提供盤中快照與歷史 K 線 (環境變數: `FUGLE_API_KEY`)。
+*   **TWSE/TPEX/TDCC**: 透過 OpenAPI 獲取收盤行情、法人買賣超、股權分散表等官方數據。
+
+**宏觀與匯率數據**
+*   **FRED**: 美國宏觀經濟指標 (GDP, CPI, 非農) 的核心來源。
+*   **政府開放平台**: 台灣央行與財政部的匯率與進出口數據。
+*   **Yahoo Finance**: 用於黃金 (GC=F), 白銀 (SI=F) 與 DXY 美元指數的報價。
+
+#### 4.5.2 爬蟲反制與風險管理 (Risk Mitigation)
+
+針對 Web Scraper 類型數據源 (PTT, CNN, Gov Data)，實作以下防禦機制：
+1.  **隨機延遲 (Random Delay)**: 請求間隔設定 `uniform(3, 10)` 秒。
+2.  **User-Agent 輪詢**: 建立 UA Pool 為每次請求更換 Header。
+3.  **Stealth Mode**: 使用 `undetected-chromedriver` 繞過 Cloudflare 指紋。
+4.  **DOM 監控**: 若連 3 次 Selector 抓不到資料，自動發送 Telegram 警報。
+
+#### 4.5.3 另類數據與情緒分析 (Alternative Data)
+
+*   **宏觀情緒**: 每日爬取 CNN Fear & Greed Index 與 Investing.com 殖利率矩陣。
+*   **機構持倉 (13F)**: 鎖定 Bridgewater, Berkshire, Renaissance 等頂級基金的季持倉變化。
+*   **社群輿情**: 每日分析 PTT Stock 版熱門文章，透過 LLM 計算情緒分數 (-1~+1)，作為反指標參考。
+
 ---
 
 ## 第五章：功能規格
@@ -725,6 +479,22 @@ AI 投資分析是本系統的核心差異化功能，透過演化策略優化�
 在語義搜尋功能方面，系統支援基於自然語言的投資報告搜尋。用戶可以輸入問題（如「最近半導體產業的投資建議」），系統會在 AI 報告語義庫中搜尋最相關的結果，返回符合條件的報告摘要與連結。
 
 在演化策略分析方面，系統記錄並展示演化策略的基因組優化歷史，讓用戶了解 AI 模型如何持續進化與適應市場變化。基因組可視化呈現 14 項核心基因與 12 項調控基因的變化趨勢。
+
+### 5.5 決策支援與情境模擬 (Decision Support)
+
+本模組提供深度的量化決策輔助，將靜態數據轉化為動態策略建議。
+
+*   **演化策略基因組 (Evolution Strategy)**: 每日自動透過遺傳演算法優化各家模型權重，並回測其適應度 (Sharpe Ratio)。
+*   **情境模擬與壓力測試 (Scenario Analysis)**: 模擬「黑天鵝事件」或「特定指標異常 (如 VIX 爆發)」下之資產回撤預判。
+*   **多代理人決策評議 (Multi-Agent Debate)**: 透過多組不同 Prompt 特性的 LLM 代理人進行多空辯論，提供最終之「共識意見」。
+
+### 5.6 帳務日誌與戰術執行 (Transaction & Tactics)
+
+負責管理用戶的執行紀律與實際資產軌跡。
+
+*   **交易戰術規劃 (Tactical Planner)**: 設定單一商品之短期作戰計畫 (MOD-AN-001)，包含進場點、停損停利位與執行期限。
+*   **自動化帳務日誌 (Transaction Log)**: 詳細紀錄每一筆交易的買賣價格、手續費、稅金與盈虧，支援多幣別換算。
+*   **作戰覆盤引擎 (Feedback Loop)**: 在交易結束後，自動將「執行結果」與「原計畫」對比，評估用戶交易紀律評分。
 
 ---
 
