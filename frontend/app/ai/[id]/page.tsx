@@ -4,8 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ArrowLeft, Calendar, FileText, Tag, Share2 } from 'lucide-react';
 
-// 設定 60 秒 Revalidate，讓報告內容保持相對新鮮
-export const revalidate = 60;
+// Force dynamic rendering to avoid build-time data fetching errors in CI
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: {

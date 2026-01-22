@@ -57,12 +57,12 @@ export default async function Home() {
                 <nav className="space-y-2">
                     <NavItem icon={<Activity />} label="總覽 (Overview)" active />
                     <NavItem icon={<Layers />} label="籌碼分析 (Chips)" href="/chips" />
-                    <NavItem icon={<TrendingUp />} label="市場動態" />
-                    <NavItem icon={<BarChart3 />} label="演化分析" />
-                    <NavItem icon={<FileText />} label="決策報告" />
+                    <NavItem icon={<TrendingUp />} label="市場動態" href="/stocks" />
+                    <NavItem icon={<BarChart3 />} label="演化分析" href="/evolution" />
+                    <NavItem icon={<FileText />} label="決策報告" href="/ai/ranking" />
                 </nav>
                 <div className="mt-auto">
-                    <NavItem icon={<Settings />} label="系統設定" />
+                    <NavItem icon={<Settings />} label="系統設定" href="/settings" />
                 </div>
             </aside>
 
@@ -149,6 +149,9 @@ export default async function Home() {
 }
 
 // --- Helper Components ---
+// Dashboard is dynamic
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 
 function NavItem({ icon, label, active = false, href = "#" }: { icon: React.ReactNode, label: string, active?: boolean, href?: string }) {
