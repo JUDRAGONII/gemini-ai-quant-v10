@@ -1,5 +1,17 @@
 # Changelog
 
+## [V10.0.4] - 2026-01-22
+### Added - Phase 4.3: 功能擴充 (完成 TDD)
+- **單元測試**: 完成 `/chips` 與 `/macro` 模組共 15 項單元測試，達成 100% 邏輯覆蓋。
+- **測試優化**: 重構 Recharts Mock 邏輯，解決 JSDOM 環境下的 SVG 渲染警告與跨組件 Mock 作用域衝突。
+- **邊界驗證**: 實作並驗證了路由大小寫識別 (Case-Insensitivity) 與零變化率 (Zero Change) 顯示邏輯。
+
+### Fixed
+- **Server Error**: 修復 `Cannot find module './329.js'`，排除建置快取衝突造成之伺服器崩潰。
+- **Runtime Error**: 修復「Event handlers cannot be passed to Client Component props」報錯 (補全 `not-found.tsx` 之 `use client`)。
+- **Environment**: 建立 `global-error.tsx` 全域錯誤攔截機制，提升根佈局崩潰後之恢復能力。
+- **Network**: 清除佔用 Port 3000 的殭屍進程，恢復開發伺服器正常訪問。
+
 ## [V10.0.3] - 2026-01-22
 
 ### Added - Phase 4.3: 功能擴充 (進行中)

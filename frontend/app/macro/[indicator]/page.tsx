@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { findIndicatorByCode, MACRO_INDICATORS } from "@/data/mockMacro";
 
+import InfoCard from "@/components/InfoCard";
+
 /**
  * 宏觀指標詳情頁
  * 展示單一指標的完整走勢圖與歷史數據表格
@@ -46,29 +48,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     }
     return null;
 };
-
-// 資訊卡片組件
-const InfoCard = ({
-    icon: Icon,
-    label,
-    value,
-}: {
-    icon: React.ElementType;
-    label: string;
-    value: string;
-}) => (
-    <div className="glass p-4 rounded-xl border border-white/10 flex items-center gap-4">
-        <div className="p-2 rounded-lg bg-white/5">
-            <Icon size={20} className="text-gray-400" />
-        </div>
-        <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider">
-                {label}
-            </p>
-            <p className="text-white font-medium">{value}</p>
-        </div>
-    </div>
-);
 
 export default function MacroIndicatorDetailPage() {
     const params = useParams();

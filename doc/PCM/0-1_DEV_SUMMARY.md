@@ -2,7 +2,7 @@
 
 ## 📌 當前里程碑 (Current Milestone)
 **階段**：Phase 4.3: 功能擴充 (Feature Expansion)
-**狀態**：✅ 籌碼與宏觀子頁面實作完成。語義搜尋 (P3) 延後。
+**狀態**：✅ 籌碼與宏觀子頁面 (P1/P2) 實作與 TDD 驗證達成 100% 通過。語義搜尋 (P3) 延後。
 
 ---
 
@@ -52,7 +52,10 @@
 | 2026-01-22 | **CI Repair** | 修復 CI/CD 流程：TypeScript 型別錯誤、ESLint 降級、Dynamic Routes 配置。 |
 | 2026-01-22 | **Phase 4.2** | 核心功能強化完成：StockCard, PriceChart, StocksPage, RankingPage，49 測試項目全數通過。 |
 | 2026-01-22 | **Review** | 同步前端剩餘工作清單 (`frontend_remaining_work.md`)，移除技術選型風險，確認完成度 75%。 |
-| 2026-01-22 | **Phase 4.3** | 完成籌碼與宏觀子頁面實作 (P1/P2)；語義搜尋 (P3) 依使用者指示暫緩移動至後續清單。 |
+| 2026-01-22 | **Phase 4.3** | 完成籌碼與宏觀子頁面實作 (P1/P2)；落實 TDD 測試驅動開發，確保圖表與導航邏輯正確。 |
+| 2026-01-22 | **Debug** | 修復 `Cannot find module './329.js'` 報錯，清理 `.next` 緩存。優化 Recharts 在 JSDOM 下的 Mock 穩定性。 |
+| 2026-01-22 | **Environment** | 修正 `not-found.tsx` 邊界宣告 (Client Component)；清除佔用 Port 3000 的殭屍進程，恢復 Dashboard 渲染。 |
+| 2026-01-22 | **QA / TDD** | 完成 Phase 4.3 測試計畫全項驗證（共 21 項案例），涵蓋 Edge Cases、安全性與 RWD 佈局。 |
 
 
 ---
@@ -67,4 +70,8 @@
 
 ## 🔔 後續提醒清單 (Future Reminders)
 - [ ] **語義搜尋 (P3) 開發**：待後端 RAG API 就緒後，提醒使用者重新啟動前端 `CommandK` 組件開發。
+- [ ] **性能優化 (SWR/React Query)**：針對頻繁更新的籌碼數據引入數據快取與 SWR 重新驗證機制。
+- [ ] **全系統安全性審核**：實作 Supabase RLS 策略並對 API 端點執行權限校驗。
+- [ ] **部署方案調整**：針對 NAS (QNAP/Synology) 環境優化 Docker Volume 映射路徑與組態持久化。
+- [ ] **響應式佈局 (Mobile Overlay)**：優化圖表組件在行動裝置上的顯示效果與側欄收合邏輯。
 
