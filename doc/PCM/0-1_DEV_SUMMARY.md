@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 3: 前端應用開發 (Frontend Development)
-**狀態**：🚀 正在實作 Dashboard 介面。子計畫 001_ 已完成。
+**階段**：Phase 4.3: 功能擴充 (Feature Expansion)
+**狀態**：🚀 正在實作籌碼子頁面 (P1)。
 
 ---
 
@@ -14,13 +14,19 @@
 - [x] **實作 AI 引擎** (`agents/dialectic.py`)
 - [x] **實作 Prefect 任務編排** (`flows.py`)
 
-### Priority 2: 前端應用開發 (Frontend Implementation)
-- [/] **Next.js 專案初始化**
+### Priority 2: 前端應用開發 (Frontend Implementation) - [Phase 4.2 COMPLETED]
+- [x] **Next.js 專案初始化**
 - [x] **Supabase Client (Frontend) 封裝**
 - [x] **Dashboard 介面實作** (Trend Charts, Recharts)
 - [x] **AI 報告視覺化頁面** (Markdown, Prose, Dynamic Route)
+- [x] **Phase 4.2 核心功能強化** (StockCard, PriceChart, Ranking)
 
-### Priority 3: 系統整合與發布 (Phase 5 & 6)
+### Priority 3: 功能擴充 (Phase 4.3) - [IN PROGRESS]
+- [/] **籌碼子頁面**：`/chips/margin`, `/chips/institutional` (Layout + Charts)
+- [ ] **宏觀子頁面**：`/macro`, `/macro/[indicator]` (Supabase Integration)
+- [ ] **語義搜尋**：RAG Pipeline + `CommandK` 組件
+
+### Priority 4: 系統整合與發布 (Phase 5 & 6)
 - [ ] **E2E Browser Test (Playwright)**: 解決 Mock 無法捕捉的渲染/CORS 問題 (Phase 5)。
 - [ ] **Refactor**: 統一升級專案環境 (Docker + CI) 至 Python 3.11 (Phase 5 Post-Launch)。
 - [ ] **Security Audit (CodeQL)**: 上線前安全掃描 (Phase 6)。
@@ -42,9 +48,10 @@
 | 2026-01-22 | **Feature** | 實作 `app/ai/[id]` 詳情頁，引入 Markdown 渲染引擎展現多空分析報告。 |
 | 2026-01-22 | **E2E Test** | 完成 System E2E 驗收 (P5.1)，修復 Supabase v2 Syntax Error (`.table` -> `.from`)。 |
 | 2026-01-22 | **Feature** | 實作 `app/chips` 籌碼分析頁 (Mock Data)，使用 ComposedChart 展示法人動向與股價關係。 |
-| 2026-01-22 | **Review & Doc** | 完成 P4.3 代碼審查 (Grade: A) 與技術文件撰寫 (`doc/tech_docs/005_Chips_Analysis_Feature.md`)。 |
-| 2026-01-22 | **CI Repair** | 修復 CI/CD 流程：1. 修正 TypeScript 型別錯誤 (`tsconfig`) 2. 移除 `continue-on-error` 用以強制檢查 3. 降級 Python 至 3.10 以匹配 Docker。 |
-| 2026-01-22 | **Phase 4.2** | 核心功能強化完成：1. 組件與頁面開發 (StockCard, PriceChart, StocksPage, RankingPage) 2. 自動化測試覆蓋 (34 Tests w/ Jest) 3. 完成代碼審查與技術文件。 |
+| 2026-01-22 | **Review & Doc** | 完成 P4.3 代碼審查 (Grade: A) 與技術文件撰寫。 |
+| 2026-01-22 | **CI Repair** | 修復 CI/CD 流程：TypeScript 型別錯誤、ESLint 降級、Dynamic Routes 配置。 |
+| 2026-01-22 | **Phase 4.2** | 核心功能強化完成：StockCard, PriceChart, StocksPage, RankingPage，49 測試項目全數通過。 |
+| 2026-01-22 | **Phase 4.3 Start** | 開始功能擴充，補建 doc/plans 計畫檔案，載入 UI/UX Pro Max 設計規範。 |
 
 
 ---
