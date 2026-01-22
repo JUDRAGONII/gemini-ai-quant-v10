@@ -4,6 +4,7 @@
 
 ### Added - Phase 4.3: 功能擴充 (進行中)
 - **計畫補建**: 補建 `doc/plans/005_Phase4.2_CoreFeatures_Plan.md` 與 `006_Phase4.3_FeatureExpansion_Plan.md`。
+- **憲級文件修正**: 修復架構偏移風險。將《前端完整開發文件》從 Vue.js 3 體系更新為 Next.js 14 + Tailwind CSS。
 - **UI/UX 規範**: 載入 UI/UX Pro Max 設計技能 (Glassmorphism + Fintech Dark)。
 - **籌碼子頁面 (P1)**: 完成 - `layout.tsx` (Tab 導航), `margin/page.tsx` (融資融券), `institutional/page.tsx` (三大法人), `mockMargin.ts` (模擬數據)。
 - **宏觀子頁面 (P2)**: 完成 - `MacroIndicatorCard.tsx` (卡片組件), `mockMacro.ts` (六大指標模擬數據), `/macro/page.tsx` (主頁), `/macro/[indicator]/page.tsx` (詳情頁)。

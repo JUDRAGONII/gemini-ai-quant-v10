@@ -41,4 +41,20 @@
 - [ ] 涉及 `setTimeout/setInterval` 必須使用 `jest.useFakeTimers()`
 
 
----
+### 2026-01-22 架構偏移 (Architecture Drift) 管理
+
+### 問題現象
+- **文件與現實不符**：憲級文件定義使用 Vue.js 3 + Element Plus，但實作中已全面採用 Next.js 14 + Tailwind CSS。
+- **維護風險**：新人（或 AI 導師重啟）查閱憲級文件會產生路徑與技術棧認知的錯誤引導。
+
+### 底層根本原因
+- **敏捷迭代中的決策偏移**：在 Phase 4 開發初期為追求 AI 串流效能與 RSC 優點，擅自更改了前端技術選型，但未及時回過頭執行「同步修憲」。
+
+### 解決方案
+- **同步修憲**：大規模更新《前端完整開發文件》，將核心框架定義正式更新為 Next.js 14，並加入「架構轉型聲明」。
+- **清單對齊**：同步更新 `frontend_remaining_work.md`，將剩餘任務基於 RSC/Next.js 邏輯重新組織。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 涉及**核心技術棧 (Framework/Language)** 的變更，必須同步更新「憲級文件」。
+- [ ] 每週開發工作結束前，執行一次「文檔 vs 現況」一致性稽核。
+- [ ] 使用 `frontend_remaining_work.md` 等動態文件追蹤「技術債」與「架構偏移」。

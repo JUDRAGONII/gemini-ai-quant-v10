@@ -51,6 +51,7 @@
 | 2026-01-22 | **Review & Doc** | 完成 P4.3 代碼審查 (Grade: A) 與技術文件撰寫。 |
 | 2026-01-22 | **CI Repair** | 修復 CI/CD 流程：TypeScript 型別錯誤、ESLint 降級、Dynamic Routes 配置。 |
 | 2026-01-22 | **Phase 4.2** | 核心功能強化完成：StockCard, PriceChart, StocksPage, RankingPage，49 測試項目全數通過。 |
+| 2026-01-22 | **Review** | 同步前端剩餘工作清單 (`frontend_remaining_work.md`)，移除技術選型風險，確認完成度 75%。 |
 | 2026-01-22 | **Phase 4.3** | 完成籌碼與宏觀子頁面實作 (P1/P2)；語義搜尋 (P3) 依使用者指示暫緩移動至後續清單。 |
 
 
