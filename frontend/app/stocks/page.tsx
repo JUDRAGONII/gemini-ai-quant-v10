@@ -62,7 +62,7 @@ export default function StocksPage() {
             }
             // 搜尋篩選
             if (searchQuery) {
-                const query = searchQuery.toLowerCase();
+                const query = searchQuery.trim().toLowerCase();
                 return (
                     stock.symbol.toLowerCase().includes(query) ||
                     stock.name.toLowerCase().includes(query)
@@ -166,6 +166,7 @@ export default function StocksPage() {
                             ].map((market) => (
                                 <button
                                     key={market.key}
+                                    data-testid={`market-btn-${market.key}`}
                                     onClick={() =>
                                         setActiveMarket(
                                             market.key as "all" | "TW" | "US"

@@ -46,8 +46,8 @@ export default function StockCard({
     const trendColor = isPositive
         ? "#10B981" // Green
         : isNegative
-        ? "#EF4444" // Red
-        : "#6B7280"; // Gray
+            ? "#EF4444" // Red
+            : "#6B7280"; // Gray
 
     // 格式化價格 (台股無小數點，美股兩位小數)
     const formatPrice = (val: number) => {
@@ -98,7 +98,7 @@ export default function StockCard({
                 <p className="text-sm text-gray-400 mb-4 truncate">{name}</p>
 
                 {/* 迷你走勢圖 */}
-                {sparklineData.length > 0 && (
+                {sparklineData.length > 0 ? (
                     <div className="h-12 mb-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={sparklineData}>
@@ -132,6 +132,10 @@ export default function StockCard({
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
+                ) : (
+                    <div data-testid="empty-sparkline" className="h-12 mb-4 flex items-center justify-center border border-dashed border-white/5 rounded-lg">
+                        <span className="text-xs text-gray-600">暫無趨勢數據</span>
+                    </div>
                 )}
 
                 {/* 底部：價格與漲跌幅 */}
@@ -140,10 +144,10 @@ export default function StockCard({
                         {formatPrice(price)}
                     </span>
                     <span
-                        className="text-sm font-semibold px-2 py-1 rounded"
+                        className={`text-sm font-semibold px-2 py-1 rounded ${isPositive ? "text-emerald-400" : isNegative ? "text-rose-400" : "text-gray-400"
+                            }`}
                         style={{
                             backgroundColor: `${trendColor}20`,
-                            color: trendColor,
                         }}
                     >
                         {formatChange(changePercent)}
