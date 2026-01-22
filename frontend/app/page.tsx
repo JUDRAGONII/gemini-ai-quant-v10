@@ -54,15 +54,15 @@ export default async function Home() {
                     <Cpu size={28} className="text-cyan-400" />
                     <span>AI QUANT</span>
                 </div>
-                <nav className="flex-1 space-y-2 py-4">
-                    <NavItem icon={<Activity />} label="總覽 (Overview)" active href="/" />
+                <nav className="space-y-2">
+                    <NavItem icon={<Activity />} label="總覽 (Overview)" active />
                     <NavItem icon={<Layers />} label="籌碼分析 (Chips)" href="/chips" />
-                    <NavItem icon={<TrendingUp />} label="市場動態" />
-                    <NavItem icon={<BarChart3 />} label="演化分析" />
-                    <NavItem icon={<FileText />} label="決策報告" />
+                    <NavItem icon={<TrendingUp />} label="市場動態" href="/stocks" />
+                    <NavItem icon={<BarChart3 />} label="演化分析" href="/evolution" />
+                    <NavItem icon={<FileText />} label="決策報告" href="/ai/ranking" />
                 </nav>
-                <div className="pt-4 border-t border-white/5">
-                    <NavItem icon={<Settings />} label="系統設定" />
+                <div className="mt-auto">
+                    <NavItem icon={<Settings />} label="系統設定" href="/settings" />
                 </div>
             </aside>
 

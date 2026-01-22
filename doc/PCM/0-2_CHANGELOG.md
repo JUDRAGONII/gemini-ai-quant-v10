@@ -11,6 +11,10 @@
 - **New Page**: 實作籌碼分析頁 (`app/chips`)，展示外資/投信/融資模擬數據與股價的連動分析。
 - **Library**: 引入 `react-markdown`, `remark-gfm`, `@tailwindcss/typography`。
 - **Docs**: 完成 Chips Page 相關代碼審查報告與技術規格書。
+- **Core Features (Phase 4.2)**:
+  - 實作完整股票查詢系統 (`/stocks`) 與 AI 評分排行 (`/ai/ranking`)。
+  - 完成前端自動化測試 (`__tests__/app/stocks`, `__tests__/app/ai`)，解決 Hydration 與 Async Update 問題。
+  - 實作 `StockCard`, `PriceChart` (Recharts), `ScoreRadarChart` 等核心組件。
 
 ## [V10.0.1] - 2026-01-20
 
