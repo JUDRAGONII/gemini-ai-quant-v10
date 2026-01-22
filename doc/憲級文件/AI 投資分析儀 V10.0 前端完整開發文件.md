@@ -23,6 +23,14 @@
 | 3.0.0 | 2026-02-10 | 前端架構師 | 整合 API 服務與狀態管理 | 專案經理 |
 | 4.0.0 | 2026-02-12 | 前端架構師 | 完成圖表與數據視覺化元件 | 系統架構師 |
 | 5.0.0 | 2026-02-15 | 前端架構師 | 完整前端開發文件定稿 | 專案經理 |
+| 6.0.0 | 2026-02-20 | 系統架構師 | **架構重大修正**：從 Vue.js 3 遷移至 Next.js 14 | 系統主理人 |
+
+---
+
+> [!IMPORTANT]
+> **架構轉型聲明 (Architecture Pivot Notice - 2026-02-20)**
+> 本文件原定義之 Vue.js 3 + Element Plus 體系已正式廢棄。**AI 投資分析儀 V10.0 全面採用 Next.js 14 (App Router) + Tailwind CSS 作為核心憲級技術棧。**
+> 後文若涉及 `.vue` 元件、`Pinia`、`Vite` 等技術描述，除邏輯參考外，具體實作應以 Next.js 規範為準。
 
 ---
 
@@ -48,11 +56,11 @@
 
 ### 1.1 架構設計原則
 
-AI 投資分析儀 V10.0 前端應用程式採用現代化的單頁應用程式架構，基於 Vue.js 3 框架構建，遵循元件化、模組化、可維護的設計原則。本架構設計充分考量了金融投資分析系統的特殊需求，包括大量的數據展示、複雜的圖表呈現、即時的數據更新、以及專業的分析功能。
+AI 投資分析儀 V10.0 前端應用程式採用現代化的 Web 架構，基於 **Next.js 14 (App Router)** 框架構建，遵循服務端優先、元件化、極致效能的設計原則。本架構設計充分考量了金融投資分析系統的特點，包括大量數據流傳輸、複雜的金融圖表呈現、以及 AI 串流輸出之互動需求。
 
-在前端技術選型方面，核心框架選用 Vue.js 3 搭配 Composition API，提供更靈活的程式碼組織方式與更好的 TypeScript 支援。構建工具選用 Vite 作為開發伺服器與生產構建工具，提供極速的開發體驗與優化的構建效能。狀態管理選用 Pinia 作為官方的狀態管理解決方案，簡潔直觀且支援 TypeScript。路由管理選用 Vue Router 4 進行頁面導航與視圖管理。UI 元件庫選用 Element Plus 作為基礎 UI 元件庫，提供豐富的表單、表格、對話框等元件。數據視覺化選用 ECharts 作為主要的圖表庫，提供豐富的金融圖表類型。
+在前端技術選型方面，核心框架選用 **Next.js 14**，利用其 **Server Components (RSC)** 縮短首屏載入時間並強化數據安全。樣式系統選用 **Tailwind CSS** 以實現高度自定義的「WOW Design (Glassmorphism)」風格。狀態管理機制主要依賴 **Server Context** 與用戶端的 **React Hooks**，避免過度工程化。UI 圖標庫使用 **Lucide React**，圖表核心選用 **Recharts** 提供高品質金融視覺化。
 
-在架構模式方面，系統採用分層架構模式，將前端應用程式劃分為視圖層（Pages/Views）、元件層（Components）、服務層（Services）、狀態層（Store）、以及工具層（Utils）。各層之間透過定義良好的介面進行通信，確保程式碼的解耦與可測試性。在頁面組織方面，系統採用基於路由的代碼分割策略，實現按需載入以優化初始載入效能。
+在架構模式方面，系統採用 Next.js 推薦的 **App Router** 模式，將頁面劃分為服務端組件（負責數據 fetch 與私密邏輯）與用戶端組件（負責動態互動）。在資料對接方面，直接透過 **Supabase Client SDK** 進行高效數據存取，減少不必要的 API 中轉層層級。
 
 ### 1.2 功能模組劃分
 
@@ -86,41 +94,29 @@ AI 投資分析儀 V10.0 前端應用程式採用現代化的單頁應用程式�
 
 ### 2.1 專案根目錄結構
 
-AI 投資分析儀 V10.0 前端專案的根目錄結構採用標準化的組織方式，利於團隊協作與專案維護。
+AI 投資分析儀 V10.0 前端專案採用 Next.js 14 標準結構，優化了數據流與元件邊界。
 
 ```
 ai-invest-frontend/
+├── app/                             # App Router 核心路由
+│   ├── (auth)/                      # 認證相關路由
+│   ├── ai/                          # AI 報告與排行
+│   ├── chips/                       # 籌碼分析
+│   ├── macro/                       # 宏觀指標
+│   ├── stocks/                      # 個股查詢
+│   └── layout.tsx                   # 全域配置與導航
+├── components/                      # UI 元件層
+│   ├── charts/                      # Recharts 封裝組件
+│   ├── ui/                          # 基礎 UI 原子組件
+│   └── ...                          # 業務相關組件
+├── lib/                             # 工具與配置
+│   ├── supabase.ts                  # Supabase SDK 單例
+│   └── utils.ts                     # 通用工具函式 (clsx, twMerge)
 ├── public/                          # 靜態資源目錄
-│   ├── favicon.ico                  # 網站圖示
-│   ├── robots.txt                   # 爬蟲規則
-│   └── manifest.json                # PWA 資訊清單
-├── src/                             # 源代碼目錄
-│   ├── api/                         # API 服務層
-│   ├── assets/                      # 靜態資源
-│   ├── components/                  # 通用元件
-│   ├── composables/                 # 組合式函式
-│   ├── config/                      # 配置檔案
-│   ├── layouts/                     # 布局元件
-│   ├── pages/                       # 頁面元件
-│   ├── plugins/                     # 插件配置
-│   ├── router/                      # 路由配置
-│   ├── services/                    # 業務服務
-│   ├── stores/                      # 狀態管理
-│   ├── styles/                      # 樣式檔案
-│   ├── types/                       # TypeScript 類型定義
-│   ├── utils/                       # 工具函式
-│   ├── App.vue                      # 根元件
-│   └── main.ts                      # 入口檔案
-├── tests/                           # 測試檔案
-├── .env                             # 環境變數
-├── .env.development                 # 開發環境變數
-├── .env.production                  # 生產環境變數
-├── .eslintrc.js                     # ESLint 配置
-├── .prettierrc                      # Prettier 配置
-├── index.html                       # HTML 模板
-├── package.json                     # 專案配置
-├── tsconfig.json                    # TypeScript 配置
-└── vite.config.ts                   # Vite 配置
+├── __tests__/                       # Jest / Playwright 測試
+├── next.config.js                   # Next.js 配置
+├── tailwind.config.ts               # Tailwind CSS 設計體系
+└── tsconfig.json                    # TypeScript 編譯配置
 ```
 
 ### 2.2 API 服務層目錄結構
