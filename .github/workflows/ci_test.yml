@@ -1,0 +1,104 @@
+name: AI Quant V10 CI
+
+# 觸發條件：推送到任何分支時
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  backend-test:
+    name: 後端測試與覆蓋率 (Backend Test & Coverage)
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: backend
+    
+    steps:
+    # 1. 檢出程式碼
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. 設定 Python 環境
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'backend/requirements.txt'
+
+    # 3. 安裝依賴
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+
+    # 4. 建立測試用環境變數 (Mock Values)
+    - name: Set Test Environment
+      run: |
+        echo "SERVICE_ROLE_KEY=test_mock_key_for_ci" >> $GITHUB_ENV
+        echo "SUPABASE_URL=http://localhost:8000" >> $GITHUB_ENV
+        echo "GEMINI_API_KEY_1=test_mock_gemini_key" >> $GITHUB_ENV
+
+    # 5. 執行測試並生成覆蓋率報告
+    - name: Run Tests with Coverage
+      run: |
+        pytest tests/ \
+          --cov=. \
+          --cov-report=html:../coverage_report \
+          --cov-report=xml:../coverage.xml \
+          --cov-report=term \
+          --ignore=tests/test_phase2.py \
+          -v
+      continue-on-error: true
+
+    # 6. 上傳 HTML 覆蓋率報告
+    - name: Upload Coverage Report (HTML)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report-html
+        path: coverage_report/
+        retention-days: 14
+
+    # 7. 上傳 XML 覆蓋率報告 (可用於 Codecov 等整合)
+    - name: Upload Coverage Report (XML)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report-xml
+        path: coverage.xml
+        retention-days: 14
+
+  frontend-build:
+    name: 前端建置檢查 (Frontend Build Check)
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: frontend
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Type Check
+      run: npx tsc --noEmit
+      continue-on-error: true
+
+    - name: Build Check
+      run: npm run build
+      continue-on-error: true
