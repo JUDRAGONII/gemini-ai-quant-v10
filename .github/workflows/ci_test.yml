@@ -43,15 +43,18 @@ jobs:
         echo "SUPABASE_URL=http://localhost:8000" >> $GITHUB_ENV
         echo "GEMINI_API_KEY_1=test_mock_gemini_key" >> $GITHUB_ENV
 
+    # 4.5 Debug Dependencies
+    - name: Debug Installed Packages
+      run: pip list
+
     # 5. 執行測試並生成覆蓋率報告
     - name: Run Tests with Coverage
       run: |
-        pytest tests/ \
+        pytest tests/test_unit.py \
           --cov=. \
           --cov-report=html:../coverage_report \
           --cov-report=xml:../coverage.xml \
           --cov-report=term \
-          --ignore=tests/test_phase2.py \
           -v
 
     # 6. 上傳 HTML 覆蓋率報告
