@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to avoid build-time data fetching errors in CI
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,8 +41,8 @@ const NavItem = ({
     <Link href={href}>
         <div
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
         >
             <Icon size={20} />

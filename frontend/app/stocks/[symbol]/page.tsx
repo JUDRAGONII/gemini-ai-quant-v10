@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to avoid build-time data fetching errors in CI
+export const dynamic = 'force-dynamic';
+
 import React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -40,8 +43,8 @@ const NavItem = ({
     <Link href={href}>
         <div
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
         >
             <Icon size={20} />
@@ -107,13 +110,13 @@ export default function StockDetailPage() {
             ? "text-red-400"
             : "text-gray-400";
 
-    // 模擬 AI 評分數據
+    // 模擬 AI 評分數據 (Static for correct hydration)
     const scoreData = [
-        { dimension: "價值", fullMark: 100, score: Math.floor(Math.random() * 30) + 60 },
-        { dimension: "成長", fullMark: 100, score: Math.floor(Math.random() * 40) + 50 },
-        { dimension: "動能", fullMark: 100, score: Math.floor(Math.random() * 35) + 55 },
-        { dimension: "品質", fullMark: 100, score: Math.floor(Math.random() * 25) + 65 },
-        { dimension: "籌碼", fullMark: 100, score: Math.floor(Math.random() * 40) + 45 },
+        { dimension: "價值", fullMark: 100, score: 75 },
+        { dimension: "成長", fullMark: 100, score: 65 },
+        { dimension: "動能", fullMark: 100, score: 80 },
+        { dimension: "品質", fullMark: 100, score: 70 },
+        { dimension: "籌碼", fullMark: 100, score: 60 },
     ];
 
     return (

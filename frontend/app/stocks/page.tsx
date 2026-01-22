@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to avoid build-time data fetching errors in CI
+export const dynamic = 'force-dynamic';
+
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -34,8 +37,8 @@ const NavItem = ({
     <Link href={href}>
         <div
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active
-                    ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
                 }`}
         >
             <Icon size={20} />
@@ -169,8 +172,8 @@ export default function StocksPage() {
                                         )
                                     }
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${activeMarket === market.key
-                                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                                            : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10"
+                                        ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                        : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10"
                                         }`}
                                 >
                                     {market.label}

@@ -23,7 +23,7 @@ describe("StockCard 組件", () => {
     price: 580,
     changePercent: 1.5,
     volume: 1000,
-    sparklineData: [570, 575, 580],
+    sparklineData: [{ value: 570 }, { value: 575 }, { value: 580 }],
   };
 
   it("TC-1101: StockCard 應正確渲染股票代碼與名稱", () => {
