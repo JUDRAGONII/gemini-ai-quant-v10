@@ -53,7 +53,6 @@ jobs:
           --cov-report=term \
           --ignore=tests/test_phase2.py \
           -v
-      continue-on-error: true
 
     # 6. 上傳 HTML 覆蓋率報告
     - name: Upload Coverage Report (HTML)
@@ -97,8 +96,17 @@ jobs:
 
     - name: Type Check
       run: npx tsc --noEmit
-      continue-on-error: true
+
+    - name: Run Jest Tests
+      run: npm test
+      env:
+        CI: true
+        NEXT_PUBLIC_SUPABASE_URL: http://localhost:8000
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: test_mock_key
+
 
     - name: Build Check
       run: npm run build
-      continue-on-error: true
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: http://localhost:8000
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: test_mock_key

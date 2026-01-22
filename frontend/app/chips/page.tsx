@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Cpu, Share2, Layers, DollarSign, TrendingUp, BarChart } from 'lucide-react';
 import ChipChart from '@/components/ChipChart';
