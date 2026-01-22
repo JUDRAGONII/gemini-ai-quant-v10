@@ -15,10 +15,10 @@
 - [x] **實作 Prefect 任務編排** (`flows.py`)
 
 ### Priority 2: 前端應用開發 (Frontend Implementation)
-- [ ] **Next.js 專案初始化**
-- [ ] **Supabase Client (Frontend) 封裝**
-- [ ] **Dashboard 介面實作**
-- [ ] **AI 報告視覺化頁面**
+- [/] **Next.js 專案初始化**
+- [x] **Supabase Client (Frontend) 封裝**
+- [x] **Dashboard 介面實作** (Trend Charts, Recharts)
+- [x] **AI 報告視覺化頁面** (Markdown, Prose, Dynamic Route)
 
 ---
 
@@ -32,6 +32,12 @@
 | 2026-01-20 | **AI Dialectic** | 實作多空辯論引擎，整合 Gemini 2.0 Flash。已通過端到端測試。 |
 | 2026-01-20 | **Orchestration** | 整合 Prefect 與 `schedule` 實現自動化任務排程。 |
 | 2026-01-20 | **CI/CD** | 設置 GitHub Actions，實現 Push Trigger 自動測試與覆蓋率報告生成。 |
+| 2026-01-22 | **Frontend UI** | 實作 Dashboard 趨勢圖 (`recharts`) 與 Glassmorphism 介面優化。 |
+| 2026-01-22 | **TDD** | 完成 `MacroChart` 單元測試 (Pass)，建立前端自動化測試基礎。 |
+| 2026-01-22 | **Feature** | 實作 `app/ai/[id]` 詳情頁，引入 Markdown 渲染引擎展現多空分析報告。 |
+| 2026-01-22 | **E2E Test** | 完成 System E2E 驗收 (P5.1)，修復 Supabase v2 Syntax Error (`.table` -> `.from`)。 |
+| 2026-01-22 | **Feature** | 實作 `app/chips` 籌碼分析頁 (Mock Data)，使用 ComposedChart 展示法人動向與股價關係。 |
+| 2026-01-22 | **Review & Doc** | 完成 P4.3 代碼審查 (Grade: A) 與技術文件撰寫 (`doc/tech_docs/005_Chips_Analysis_Feature.md`)。 |
 
 ---
 

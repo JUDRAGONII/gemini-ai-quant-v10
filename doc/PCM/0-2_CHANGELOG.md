@@ -1,5 +1,17 @@
 # Changelog
 
+## [V10.0.2] - 2026-01-22
+
+### Added - Phase 3: 前端應用開發
+- **Dashboard**: 實作 `MacroChart.tsx` 組件，引入 `recharts` 繪製 GDP/CPI/VIX 歷史趨勢圖。
+- **UI Design**: 升級為 "Premium Dark Mode"，採用 Glassmorphism 設計與動態漸層。
+- **Data Fetching**: 實作 `getIndicatorHistory` 並行抓取多維度時間序列數據。
+- **Testing**: 建立 `MacroChart` 單元測試 (`__tests__/components/MacroChart.test.tsx`)，覆蓋率 100%。
+- **New Page**: 實作 AI 報告詳情頁 (`app/ai/[id]`)，支援 Markdown 渲染與 Tailwind Typography 美化。
+- **New Page**: 實作籌碼分析頁 (`app/chips`)，展示外資/投信/融資模擬數據與股價的連動分析。
+- **Library**: 引入 `react-markdown`, `remark-gfm`, `@tailwindcss/typography`。
+- **Docs**: 完成 Chips Page 相關代碼審查報告與技術規格書。
+
 ## [V10.0.1] - 2026-01-20
 
 ### Added - Phase 2: 後端邏輯實作

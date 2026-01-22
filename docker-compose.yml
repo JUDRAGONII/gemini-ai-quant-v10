@@ -100,4 +100,7 @@ services:
     environment:
       NEXT_PUBLIC_SUPABASE_URL: http://localhost:8000
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on: [ kong ]
