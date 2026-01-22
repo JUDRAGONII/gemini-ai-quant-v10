@@ -149,6 +149,9 @@ export default async function Home() {
 }
 
 // --- Helper Components ---
+// Dashboard is dynamic
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 
 function NavItem({ icon, label, active = false, href = "#" }: { icon: React.ReactNode, label: string, active?: boolean, href?: string }) {
