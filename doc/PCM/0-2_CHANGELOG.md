@@ -1,5 +1,32 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.0.6] - 2026-01-23
+### Added
+- **數據監控中心 (Data Monitor Center)**:
+    - 新增 `/admin/monitor` 隱藏戰情室頁面。
+    - 支援四大核心表 (daily_price, macro_indicators, stock_factors, evolution_genes) 即時監控。
+    - 採用 OLED Dark Mode 與 Glassmorphism 設計。
+    - 透過設定頁「連點版本號 5 次」啟用開發者模式入口。
+- **歷史數據回補**:
+    - NVDA (美股): 6792 筆 (1999-01-22 ~ 2026-01-22) via Tiingo API。
+    - 0050 (台股 ETF): 5404 筆 (2004-02-11 ~ 2026-01-22) via Fugle API。
+    - 建立一次性回補腳本 `backend/scripts/backfill_history.py`。
+- **ETL 架構優化**:
+    - `BaseFetcher.upsert` 新增 `on_conflict` 參數支援複合主鍵衝突處理。
+    - 補齊 `macro_indicators` 表 `country`, `source`, `indicator_name` 欄位。
+    - 新增 `stock_factors` 與 `backtest_results` 表結構。
+
+### Fixed
+- 修復 `SettingsPage` 的 Hydration 衝突 (localStorage 存取移至 useEffect)。
+- 修復 `MonitorPage` 的 `ProBadge` 參數錯誤 (variant → status)。
+- 解決 `ai-worker` 容器缺少 `fredapi` 導致的 ModuleNotFoundError。
+- 解決 PostgREST Upsert 因唯一約束缺失導致的 23505 錯誤。
+
+### Testing
+- **TDD (MonitorPage)**: 完成 5 項測試案例 (100% Pass)，包含開發者模式權限驗證。
+
+---
+
 ## [V10.0.5] - 2026-01-23
 ### Added
 - **UI/UX Pro Max 原子組件庫**:

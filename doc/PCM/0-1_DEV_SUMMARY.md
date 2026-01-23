@@ -8,28 +8,23 @@
 
 ## 📝 待辦清單 (Todo List)
 
-### Priority 1: 基礎設施與後端 (Backend) - [COMPLETED]
-- [x] **建立專案環境與 QA**
-- [x] **實作 ETL 模組** (`etl/macro.py`)
-- [x] **實作 AI 引擎** (`agents/dialectic.py`)
-- [x] **實作 Prefect 任務編排** (`flows.py`)
-
-### Priority 2: 前端應用開發 (Frontend Implementation) - [Phase 4.2 COMPLETED]
-- [x] **Next.js 專案初始化**
-- [x] **Supabase Client (Frontend) 封裝**
-- [x] **Dashboard 介面實作** (Trend Charts, Recharts)
-- [x] **AI 報告視覺化頁面** (Markdown, Prose, Dynamic Route)
-- [x] **Phase 4.2 核心功能強化** (StockCard, PriceChart, Ranking)
-
-### Priority 3: 功能擴充 (Phase 4.3) - [P1/P2 COMPLETED]
-- [x] **籌碼子頁面**：`/chips/margin`, `/chips/institutional` (Layout + Charts)
-- [x] **宏觀子頁面**：`/macro`, `/macro/[indicator]` (Supabase Integration)
-- [ ] **[DEFERRED]** **語義搜尋**：RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)
-
-### Priority 4: 系統整合與發布 (Phase 5 & 6)
-- [ ] **E2E Browser Test (Playwright)**: 解決 Mock 無法捕捉的渲染/CORS 問題 (Phase 5)。
-- [ ] **Refactor**: 統一升級專案環境 (Docker + CI) 至 Python 3.11 (Phase 5 Post-Launch)。
+### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]
+- [x] **Market ETL 基礎模組**: 實作 `BaseFetcher` 與 Tiingo/Fugle 擷取器。
+- [x] **演化運算引擎 (Genetic Algorithm)**: 實作 26 項基因組優化與 Backtest 邏輯。
+- [x] **多因子評分 Service**: 實作 `FactorService` 與正規化算法。
+- [x] **TDD 驗證：AI 演化引擎**: 完成 TC-1101 至 TC-4102 共 9 項基礎與邊界測試，驗證邏輯 100% 正確。
+- [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
+- [x] **環境維護：清空 3000 端口並重啟**: 已中止佔用的 PID 3176 並穩定啟動 Next.js 於 3000 端口。
+- [x] **修復：數據監控中心打不開**: 已修復 `SettingsPage` 的 Hydration 衝突與 `ProBadge` 參數錯誤。已通過 Lint 驗證。
+- [x] **新功能：數據監控中心 (Data Monitor Center)**: 實作 `/admin/monitor` 與隱藏入口機制。
+- [x] **TDD 驗證：數據監控中心**: 完成 TC-1101 至 TC-4001 共 5 項測試，修復開發者模式權限漏洞。
+- [x] **Schema 補完**: 依照 3.0.0 規格書補齊 `stock_factors`, `macro_factors` 等表。
 - [ ] **Security Audit (CodeQL)**: 上線前安全掃描 (Phase 6)。
+
+### Priority 3: 前端功能對接 (Frontend Extension)
+- [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。
+- [ ] **E2E Browser Test (Playwright)**: 解決 Mock 無法捕捉的渲染/CORS 問題 (Phase 5)。
+
 
 ---
 
@@ -60,6 +55,10 @@
 | 2026-01-23 | **Settings** | 實作系統設定中心 (`/settings`)：API 管理、UI 偏好、數據源狀態監控。整合 `SettingsContext` 全域狀態。 |
 | 2026-01-23 | **TDD** | 新增 10 項組件測試 (ProComponents.test.tsx)；全站 79/79 測試 100% 通過。 |
 | 2026-01-23 | **RWD** | 建立 `MobileNav.tsx` 組件，包含 Sticky Header 與 Slide-over Drawer。整合至 Dashboard。 |
+| 2026-01-23 | **Data Monitor** | 建立「數據監控中心」頁面 (`/admin/monitor`)。支援四核心表監控、即時統計與隱藏入口切換。 |
+| 2026-01-23 | **Backend Core** | 完成 Phase 4.5 邏輯注入：實作 `BaseFetcher`、市場/宏觀擷取器與 DEAP 演化引擎。 |
+| 2026-01-23 | **Review & Doc** | 完成 P4.5 相關文檔補全：對齊 130+ 指標、26 項基因組與詳細 Schema 定義。 |
+| 2026-01-23 | **TDD** | 完成數據監控中心測試 (MonitorPage)，透過測試發現並修復了遺失的 Security Check 邏輯。 |
 | 2026-01-23 | **Phase 4.4** | 完成 18 項 TDD 測試與 RWD 適配驗證（100% Pass），正式結項。助於進入下一階段。 |
 
 

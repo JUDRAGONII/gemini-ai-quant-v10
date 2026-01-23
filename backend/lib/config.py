@@ -13,7 +13,7 @@ class Config:
     SERVICE_ROLE_KEY = os.getenv("SERVICE_ROLE_KEY")
     
     # APIs
-    FRED_API_KEY = os.getenv("FRED_API_KEY")
+    FRED_API_KEY = os.getenv("FRED_API_KEY_1") or os.getenv("FRED_API_KEY")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY_1") or os.getenv("GEMINI_API_KEY") # Support numbered or single
     TIINGO_API_KEY = os.getenv("TIINGO_API_KEY_1") or os.getenv("TIINGO_API_KEY")
 

@@ -1,34 +1,58 @@
 from prefect import flow, task
 import time
-from etl.macro import MacroETL
+import logging
+from lib.supabase_client import get_supabase
+from etl import MacroFetcher, TiingoFetcher, FugleFetcher, TwseFetcher
+from agents.evolution import EvolutionEngine
+from agents.backtest import BacktestEngine
 from agents.dialectic import DialecticAgent
 import schedule
 
-@task(name="Sync Macro Data", retries=3)
+logger = logging.getLogger(__name__)
+
+@task(name="Sync All Macro Data", retries=3)
 def sync_macro():
-    print("--- [Task] Sync Macro Data ---")
-    etl = MacroETL()
-    etl.run()
+    logger.info("--- [Task] Sync Macro Data ---")
+    client = get_supabase()
+    fetcher = MacroFetcher(client)
+    fetcher.run_all(lookback_days=365) # 預設同步一年
 
-@task(name="Run AI Dialectic", retries=0)
-def run_dialectic():
-    print("--- [Task] Run AI Dialectic ---")
-    agent = DialecticAgent()
-    # Topic could be dynamic
-    agent.conduct_debate("Market Trends Analysis")
+@task(name="Sync Market Prices", retries=2)
+def sync_market():
+    logger.info("--- [Task] Sync Market Prices ---")
+    client = get_supabase()
+    # 範例標的 (未來可從資料庫讀取列表)
+    us_tickers = ["AAPL", "TSLA", "MSFT"]
+    tw_tickers = ["2330", "2454", "2317"]
+    
+    tiingo = TiingoFetcher(client)
+    for t in us_tickers:
+        tiingo.run(ticker=t)
+        
+    fugle = FugleFetcher(client)
+    for t in tw_tickers:
+        fugle.run(ticker=t)
 
-@flow(name="Daily Analysis Pipeline")
+@task(name="Evolve Strategy Weights")
+def run_evolution():
+    logger.info("--- [Task] Evolve Strategy Weights ---")
+    # TODO: 真正實作時需先從 DB 載入行情 DataFrame
+    # engine = EvolutionEngine(generations=5)
+    # engine.run(backtest_engine)
+    pass
+
+@flow(name="Daily V10 Quantitative Pipeline")
 def daily_pipeline():
     sync_macro()
-    # run_dialectic() # Commented out to save quota for now or run carefully
+    sync_market()
+    run_evolution()
 
 def run_scheduler():
-    print("Starting Scheduler...")
-    # Schedule runs (e.g., every day at 08:00 AM)
+    logger.info("Starting V10.0 Orchestration Scheduler...")
+    # 每天早上八點執行
     schedule.every().day.at("08:00").do(daily_pipeline)
     
-    # Also run once on startup for verification
-    print("Running initial pipeline...")
+    # 啟動時執行一次驗證
     daily_pipeline()
 
     while True:
