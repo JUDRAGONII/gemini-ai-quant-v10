@@ -1,0 +1,221 @@
+"use client";
+
+/**
+ * 系統設定中心頁面
+ * @description 控制中心風格的設定管理介面
+ * @version 1.0.0 (Phase 4.4 Pro Max)
+ */
+
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+    Settings,
+    Key,
+    Palette,
+    Database,
+    ChevronLeft,
+    Save,
+    RotateCcw,
+    CheckCircle2,
+    AlertCircle,
+} from "lucide-react";
+
+import { GlassCard } from "@/components/ui/GlassCard";
+import { ProButton } from "@/components/ui/ProButton";
+import { ProInput } from "@/components/ui/ProInput";
+import { ProToggle } from "@/components/ui/ProToggle";
+import { ProBadge } from "@/components/ui/ProBadge";
+import { useSettings } from "@/context/SettingsContext";
+
+// API 健康狀態模擬
+const apiStatus = [
+    { name: "Supabase", status: "online" as const, endpoint: "localhost:54321" },
+    { name: "AI Worker", status: "online" as const, endpoint: "localhost:8787" },
+    { name: "FRED API", status: "online" as const, endpoint: "api.stlouisfed.org" },
+    { name: "Finnhub", status: "offline" as const, endpoint: "finnhub.io" },
+];
+
+export default function SettingsPage() {
+    const { settings, updateUISettings, updateSettings, resetSettings, isLoaded } = useSettings();
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
+    // 模擬 API Key (不實際存儲敏感資訊)
+    const [geminiKey, setGeminiKey] = useState("AIza****************");
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        // 模擬儲存延遲
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        setIsSaving(false);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+    };
+
+    if (!isLoaded) {
+        return (
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-950 text-white">
+            {/* 背景裝飾 */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+            </div>
+
+            {/* 主內容 */}
+            <div className="relative z-10 max-w-5xl mx-auto px-6 py-8">
+                {/* 頂部導航 */}
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                            <span>返回首頁</span>
+                        </Link>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Settings className="w-6 h-6 text-cyan-400" />
+                        <h1 className="text-2xl font-bold">系統設定</h1>
+                    </div>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-6">
+                    {/* API 管理區塊 */}
+                    <GlassCard glow className="p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 rounded-lg bg-cyan-500/20">
+                                <Key className="w-5 h-5 text-cyan-400" />
+                            </div>
+                            <h2 className="text-lg font-semibold">API 金鑰管理</h2>
+                        </div>
+
+                        <div className="space-y-4">
+                            <ProInput
+                                label="Google Gemini API Key"
+                                value={geminiKey}
+                                onChange={(e) => setGeminiKey(e.target.value)}
+                                isPassword
+                                placeholder="輸入您的 API Key"
+                            />
+                            <p className="text-xs text-gray-500">
+                                * API Key 僅用於本機測試，不會上傳至伺服器
+                            </p>
+                        </div>
+                    </GlassCard>
+
+                    {/* UI 偏好區塊 */}
+                    <GlassCard glow className="p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 rounded-lg bg-blue-500/20">
+                                <Palette className="w-5 h-5 text-blue-400" />
+                            </div>
+                            <h2 className="text-lg font-semibold">介面偏好</h2>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-300">顯示圖表數值標籤</span>
+                                <ProToggle
+                                    checked={settings.ui.showChartLabels}
+                                    onChange={(checked) =>
+                                        updateUISettings({ showChartLabels: checked })
+                                    }
+                                />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-300">啟用過渡動畫</span>
+                                <ProToggle
+                                    checked={settings.ui.enableAnimations}
+                                    onChange={(checked) =>
+                                        updateUISettings({ enableAnimations: checked })
+                                    }
+                                />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-300">緊湊模式</span>
+                                <ProToggle
+                                    checked={settings.ui.compactMode}
+                                    onChange={(checked) =>
+                                        updateUISettings({ compactMode: checked })
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </GlassCard>
+
+                    {/* 數據源狀態區塊 */}
+                    <GlassCard glow className="p-6 lg:col-span-2">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 rounded-lg bg-emerald-500/20">
+                                <Database className="w-5 h-5 text-emerald-400" />
+                            </div>
+                            <h2 className="text-lg font-semibold">數據源狀態</h2>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {apiStatus.map((api) => (
+                                <div
+                                    key={api.name}
+                                    className="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-white/5"
+                                >
+                                    <div>
+                                        <p className="font-medium text-white">{api.name}</p>
+                                        <p className="text-xs text-gray-500">{api.endpoint}</p>
+                                    </div>
+                                    <ProBadge
+                                        status={api.status === "online" ? "success" : "error"}
+                                        size="sm"
+                                        pulse={api.status === "online"}
+                                    >
+                                        {api.status === "online" ? "連線中" : "離線"}
+                                    </ProBadge>
+                                </div>
+                            ))}
+                        </div>
+                    </GlassCard>
+                </div>
+
+                {/* 操作按鈕區 */}
+                <div className="flex items-center justify-end gap-4 mt-8">
+                    {saveSuccess && (
+                        <div className="flex items-center gap-2 text-emerald-400 animate-in fade-in">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span className="text-sm">設定已儲存</span>
+                        </div>
+                    )}
+                    <ProButton
+                        variant="ghost"
+                        leftIcon={<RotateCcw className="w-4 h-4" />}
+                        onClick={resetSettings}
+                    >
+                        重置為預設
+                    </ProButton>
+                    <ProButton
+                        variant="primary"
+                        leftIcon={<Save className="w-4 h-4" />}
+                        isLoading={isSaving}
+                        onClick={handleSave}
+                    >
+                        儲存設定
+                    </ProButton>
+                </div>
+
+                {/* 版本資訊 */}
+                <div className="mt-12 text-center text-gray-500 text-sm">
+                    <p>AI 投資分析儀 V10.0 • Phase 4.4 Pro Max</p>
+                    <p className="text-xs mt-1">
+                        最後更新: {new Date(settings.lastUpdated).toLocaleString("zh-TW")}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
