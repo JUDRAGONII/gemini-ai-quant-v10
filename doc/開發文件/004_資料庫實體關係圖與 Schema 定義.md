@@ -56,33 +56,34 @@ erDiagram
 
 ### 2.1 行情數據 (`daily_price`)
 *   **用途**: 儲存台股、美股之 OHLCV 歷史行情。
-*   **分區策略**: 建議依 `trade_date` 按年分區 (Partition by Range) 以優化查詢效能。
-*   **索引**: `(stock_code, trade_date)` 複合主鍵。
+*   **關鍵欄位**: `stock_code`, `market_type` (上市/上櫃), `trade_date`, `open_price`, `high_price`, `low_price`, `close_price`, `volume`, `turnover`, `change_percent`。
+*   **索引**: `(stock_code, trade_date)` UNIQUE KEY；`idx_daily_price_date` 加速時間序列查詢。
 
 ### 2.2 宏觀指標 (`macro_indicators`)
-*   **用途**: 儲存 FRED、台灣央行之經濟數據。
-*   **特點**: `indicator_code` 統一使用 FRED 代碼 (如 `GDP`, `CPIAUCSL`)。
-*   **唯一性**: `UNIQUE(indicator_code, reference_date)` 防止重複匯入。
+*   **用途**: 儲存 FRED、台灣政府之 130+ 指標數據。
+*   **詳細欄位**:
+    - **識別**: `indicator_code`, `indicator_name`, `country`, `category`。
+    - **數值**: `value`, `unit`, `transformation_type` (原值/YoY/MoM), `frequency` (D/W/M/Q)。
+    - **元數據**: `source`, `retrieved_at`, `published_at`, `is_estimate`, `is_revised`。
+*   **特點**: `UNIQUE(indicator_code, reference_date)` 確保時間序列唯一性。
 
-### 2.3 AI 分析報告 (`ai_reports`)
+### 2.3 多因子評分 (`stock_factors`)
+*   **用途**: 儲存個股在價值、成長、品質、動能四個維度的量化分數。
+*   **詳細欄位**: 
+    - **價值**: `pe_ratio`, `pb_ratio`, `dividend_yield`。
+    - **成長**: `revenue_growth`, `eps_growth`。
+    - **動能**: `momentum_1m`, `relative_strength`。
+    - **品質**: `roe`, `gross_margin`, `debt_to_equity`。
+    - **綜合**: `composite_score` (由 AI 演化權重加權)。
+
+### 2.4 AI 分析報告 (`ai_reports`)
 *   **用途**: 儲存 Gemini 生成的文字報告與 RAG 用向量。
-*   **向量欄位**: `embedding vector(1536)` 對應 Gemini Embedding 模型維度。
-*   **索引**: 使用 `hnsw` 索引加速餘弦相似度 (Cosine Similarity) 搜尋。
+*   **欄位**: `stock_code`, `report_date`, `summary`, `full_content`, `embedding Vector(1536)`。
+*   **索引**: `hnsw` 索引加速餘弦相似度 (Cosine Similarity) 搜尋。
 
-### 2.4 演化基因組 (`evolution_genes`)
-*   **用途**: 儲存遺傳演算法優化後的策略參數。
-*   **RLS 保護**:
-    *   `SELECT`: 僅限擁有者 (`auth.uid() = user_id`)。
-    *   `INSERT`: 僅限擁有者或系統服務角色 (`service_role`)。
-*   **JSONB 結構**:
-    ```json
-    {
-      "weight_value": 0.3,
-      "weight_growth": 0.4,
-      "weight_momentum": 0.2,
-      "stop_loss_pct": 0.05
-    }
-    ```
+### 2.5 演化基因組 (`evolution_genes`)
+*   **用途**: 儲存遺傳演算法優化後的 26 項策略參數。
+*   **結構**: `user_id` (RLS), `generation`, `genes` (JSONB), `fitness_score` (Sharpe Ratio)。
 
 ---
 

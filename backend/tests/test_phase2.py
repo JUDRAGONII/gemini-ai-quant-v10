@@ -8,7 +8,7 @@ sys.path.append("/app")
 
 from lib.supabase_client import get_supabase
 from lib.config import Config
-from etl.macro import MacroETL
+from etl.macro import MacroFetcher
 from agents.dialectic import DialecticAgent
 from flows import sync_macro
 
@@ -30,8 +30,8 @@ class TestPhase2Backend(unittest.TestCase):
     def test_02_etl_data_integrity(self):
         """[Basic Path] ETL 資料完整性"""
         # Run ETL
-        etl = MacroETL()
-        etl.run()
+        etl = MacroFetcher(client=self.supabase)
+        etl.run_all(lookback_days=30)
         
         # Verify DB content
         # Check for VIX in last 30 days

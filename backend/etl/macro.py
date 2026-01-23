@@ -1,82 +1,115 @@
-import pandas_datareader.data as web
+from fredapi import Fred
 import pandas as pd
+import logging
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
-from lib.supabase_client import get_supabase
+from typing import List, Dict, Any, Optional
+from .base_fetcher import BaseFetcher
 from lib.config import Config
 
-# Mapping: Functional Name -> FRED Series ID
-MACRO_INDICATORS = {
-    "GDP": "GDP",                # Gross Domestic Product
-    "CPI": "CPIAUCSL",           # Consumer Price Index
-    "UNRATE": "UNRATE",          # Unemployment Rate
-    "FEDFUNDS": "FEDFUNDS",      # Federal Funds Effective Rate
-    "VIX": "VIXCLS",             # CBOE Volatility Index
-    "M2": "M2SL",                # M2 Money Stock
+logger = logging.getLogger(__name__)
+
+# 指標映射：功能名稱 -> FRED Series ID
+# 依照憲級文件 4.2 擴充
+MACRO_METADATA = {
+    # 利率與貨幣政策
+    "FEDFUNDS": {"id": "FEDFUNDS", "cat": "利率", "country": "US"},
+    "10Y_BOND": {"id": "DGS10", "cat": "利率", "country": "US"},
+    "2Y_BOND": {"id": "DGS2", "cat": "利率", "country": "US"},
+    "M2": {"id": "M2SL", "cat": "貨幣", "country": "US"},
+    
+    # 通貨膨脹
+    "CPI": {"id": "CPIAUCSL", "cat": "通膨", "country": "US"},
+    "CORE_CPI": {"id": "CPILFESL", "cat": "通膨", "country": "US"},
+    "PCE": {"id": "PCECTPI", "cat": "通膨", "country": "US"},
+    
+    # 就業
+    "UNRATE": {"id": "UNRATE", "cat": "就業", "country": "US"},
+    "PAYEMS": {"id": "PAYEMS", "cat": "就業", "country": "US"},
+    "ICSA": {"id": "ICSA", "cat": "就業", "country": "US"},
+    
+    # 成長
+    "GDP": {"id": "GDP", "cat": "成長", "country": "US"},
+    "IPMAN": {"id": "IPMAN", "cat": "成長", "country": "US"},
+    "RSXFS": {"id": "RSXFS", "cat": "成長", "country": "US"},
+    
+    # 風險與信心
+    "VIX": {"id": "VIXCLS", "cat": "風險", "country": "US"},
+    "BAA10Y": {"id": "BAA10Y", "cat": "風險", "country": "US"},
+    "CS_INDEX": {"id": "UMICHCSI", "cat": "信心", "country": "US"},
+
+    # 台灣宏觀數據 (FRED Source)
+    # GDP (Nominal, Annual)
+    "TW_GDP": {"id": "MKTGDPtwa646NWDB", "cat": "成長", "country": "TW", "name": "Taiwan GDP"},
+    # Consumer Price Index (Annual)
+    "TW_CPI": {"id": "CPItwa646NWDB", "cat": "通膨", "country": "TW", "name": "Taiwan CPI"},
+    # Unemployment Rate (Annual) - limited availability potentially
+    # Real GDP Growth
+    "TW_REAL_GDP_GROWTH": {"id": "NGDPRXXXtwa646NWDB", "cat": "成長", "country": "TW", "name": "Taiwan Real GDP Growth"},
 }
 
-class MacroETL:
-    def __init__(self):
-        self.supabase = get_supabase()
-        if not Config.FRED_API_KEY:
-            print("[Warning] FRED_API_KEY is missing. Macro ETL might fail.")
 
-    def fetch_series(self, series_id: str, start_date: str) -> pd.DataFrame:
-        """Fetch data from FRED using pandas-datareader"""
+class MacroFetcher(BaseFetcher):
+    """美國宏觀經濟指標擷取器 (FRED)"""
+
+    def __init__(self, client, api_key: Optional[str] = None):
+        super().__init__(client, "macro_indicators")
+        self.api_key = api_key or Config.FRED_API_KEY
+        self.fred = Fred(api_key=self.api_key) if self.api_key else None
+
+    def fetch(self, series_id: str, start_date: str = None) -> pd.DataFrame:
+        """從 FRED 獲取單一指標數據 (使用 fredapi)"""
+        if not self.fred:
+            logger.error("FRED API Key is missing. Cannot fetch data.")
+            return pd.DataFrame()
+            
+        if not start_date:
+            start_date = (datetime.now() - timedelta(days=365*2)).strftime('%Y-%m-%d')
+            
         try:
-            df = web.DataReader(series_id, "fred", start_date, api_key=Config.FRED_API_KEY)
+            s = self.fred.get_series(series_id, observation_start=start_date)
+            df = pd.DataFrame(s, columns=[series_id])
             return df
         except Exception as e:
-            print(f"Error fetching {series_id}: {e}")
+            logger.error(f"Error fetching FRED series {series_id}: {str(e)}")
             return pd.DataFrame()
 
-    def transform_and_load(self, series_name: str, series_id: str, df: pd.DataFrame):
-        """Transform dataframe and upsert to Supabase"""
-        if df.empty:
-            return
-
+    def transform(self, raw_data: pd.DataFrame, **kwargs) -> List[Dict[str, Any]]:
+        """將 DataFrame 轉換為 macro_indicators Schema"""
+        if raw_data.empty:
+            return []
+            
+        indicator_code = kwargs.get('indicator_code')
+        series_id = kwargs.get('series_id')
+        meta = MACRO_METADATA.get(indicator_code, {})
+        
         records = []
-        for index, row in df.iterrows():
-            # index is datetime
+        for index, row in raw_data.iterrows():
             val = row[series_id]
             if pd.isna(val):
                 continue
                 
             records.append({
-                "indicator_code": series_name, # Storing unified code (e.g. "GDP") not FRED ID
-                "reference_date": index.strftime('%Y-%m-%d'),
+                "indicator_code": indicator_code,
+                "indicator_name": meta.get('name', indicator_code),
+                "country": meta.get('country', 'US'),
+                "category": meta.get('cat', 'macro'),
                 "value": float(val),
-                "category": "macro"
+                "reference_date": index.strftime('%Y-%m-%d'),
+                "source": "FRED"
             })
+        return records
 
-        if not records:
-            return
-
-        # Upsert in batches to avoid payload limits
-        batch_size = 100
-        for i in range(0, len(records), batch_size):
-            batch = records[i:i+batch_size]
-            try:
-                self.supabase.table("macro_indicators").upsert(
-                    batch, 
-                    on_conflict="indicator_code,reference_date"
-                ).execute()
-                print(f"Upserted {len(batch)} records for {series_name}")
-            except Exception as e:
-                print(f"Error upserting batch for {series_name}: {e}")
-
-    def run(self, lookback_days=365*5):
-        """Main execution method"""
+    def run_all(self, lookback_days: int = 365*2):
+        """執行所有定義指標的同步"""
         start_date = (datetime.now() - timedelta(days=lookback_days)).strftime('%Y-%m-%d')
-        print(f"Starting Macro ETL from {start_date}...")
-
-        for name, series_id in MACRO_INDICATORS.items():
-            print(f"Processing {name} ({series_id})...")
-            df = self.fetch_series(series_id, start_date)
-            self.transform_and_load(name, series_id, df)
+        logger.info(f"Starting All Macro Sync from {start_date}")
         
-        print("Macro ETL Completed.")
-
-if __name__ == "__main__":
-    etl = MacroETL()
-    etl.run()
+        total_upserted = 0
+        for code, meta in MACRO_METADATA.items():
+            logger.info(f"Syncing {code} ({meta['id']})...")
+            df = self.fetch(meta['id'], start_date)
+            records = self.transform(df, indicator_code=code, series_id=meta['id'])
+            total_upserted += self.upsert(records, on_conflict='indicator_code,reference_date')
+            
+        logger.info(f"Macro Sync Completed. Total records: {total_upserted}")
+        return total_upserted

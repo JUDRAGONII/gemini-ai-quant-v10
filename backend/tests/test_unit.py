@@ -30,18 +30,20 @@ class TestMacroETLLogic(unittest.TestCase):
     """測試 ETL 模組的純邏輯部分"""
     
     def test_macro_indicator_mapping(self):
-        """驗證 MACRO_INDICATORS 字典結構正確"""
-        from etl.macro import MACRO_INDICATORS
+        """驗證 MACRO_METADATA 字典結構正確"""
+        from etl.macro import MACRO_METADATA
         
         # 驗證必要指標存在
-        self.assertIn("GDP", MACRO_INDICATORS)
-        self.assertIn("CPI", MACRO_INDICATORS)
-        self.assertIn("VIX", MACRO_INDICATORS)
+        self.assertIn("GDP", MACRO_METADATA)
+        self.assertIn("CPI", MACRO_METADATA)
+        self.assertIn("VIX", MACRO_METADATA)
         
-        # 驗證 FRED Series ID 格式（非空字串）
-        for name, series_id in MACRO_INDICATORS.items():
-            self.assertIsInstance(series_id, str)
-            self.assertGreater(len(series_id), 0, f"{name} should have a valid series_id")
+        # 驗證 FRED Series ID 格式
+        for name, meta in MACRO_METADATA.items():
+            self.assertIsInstance(meta, dict)
+            self.assertIn('id', meta)
+            self.assertIsInstance(meta['id'], str)
+            self.assertGreater(len(meta['id']), 0, f"{name} should have a valid series_id")
 
 class TestDialecticPromptStructure(unittest.TestCase):
     """測試 AI 辯論引擎的提示詞結構"""

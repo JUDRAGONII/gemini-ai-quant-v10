@@ -19,10 +19,33 @@ CREATE TABLE public.daily_price (
 CREATE TABLE public.macro_indicators (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     indicator_code TEXT NOT NULL,
+    indicator_name TEXT,
     reference_date DATE NOT NULL,
     value NUMERIC NOT NULL,
+    country TEXT DEFAULT 'US',
     category TEXT,
+    source TEXT DEFAULT 'FRED',
     UNIQUE(indicator_code, reference_date)
+);
+
+-- 3. 股票因子評分表
+CREATE TABLE public.stock_factors (
+    stock_code TEXT NOT NULL,
+    trade_date DATE NOT NULL,
+    factor_name TEXT NOT NULL,
+    factor_value NUMERIC,
+    rank_score NUMERIC,  -- 0-100 正規化分數
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (stock_code, trade_date, factor_name)
+);
+
+-- 4. 回測結果紀錄
+CREATE TABLE public.backtest_results (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    strategy_id TEXT NOT NULL,
+    performance_metrics JSONB, -- Sharpe, Drawdown, Return
+    gene_snapshot JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 3. AI 分析報告 (含 Vector)

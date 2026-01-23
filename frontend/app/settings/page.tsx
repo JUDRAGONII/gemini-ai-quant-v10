@@ -6,7 +6,7 @@
  * @version 1.0.0 (Phase 4.4 Pro Max)
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     Settings,
@@ -39,6 +39,14 @@ export default function SettingsPage() {
     const { settings, updateUISettings, updateSettings, resetSettings, isLoaded } = useSettings();
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [isDev, setIsDev] = useState(false);
+
+    // 檢查開發者模式
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem('dev_mode') === 'true') {
+            setIsDev(true);
+        }
+    }, []);
 
     // 模擬 API Key (不實際存儲敏感資訊)
     const [geminiKey, setGeminiKey] = useState("AIza****************");
@@ -210,10 +218,32 @@ export default function SettingsPage() {
 
                 {/* 版本資訊 */}
                 <div className="mt-12 text-center text-gray-500 text-sm">
-                    <p>AI 投資分析儀 V10.0 • Phase 4.4 Pro Max</p>
+                    <p
+                        className="cursor-default select-none active:opacity-50 transition-opacity"
+                        onClick={() => {
+                            const newCount = (window as any)._devClickCount || 0;
+                            (window as any)._devClickCount = newCount + 1;
+                            if ((window as any)._devClickCount >= 5) {
+                                localStorage.setItem('dev_mode', 'true');
+                                window.location.reload();
+                            }
+                        }}
+                    >
+                        AI 投資分析儀 V10.0 • Phase 4.4 Pro Max
+                    </p>
                     <p className="text-xs mt-1">
                         最後更新: {new Date(settings.lastUpdated).toLocaleString("zh-TW")}
                     </p>
+
+                    {/* 隱藏跳轉：僅在 dev_mode 下顯示 */}
+                    {isDev && (
+                        <Link
+                            href="/admin/monitor"
+                            className="inline-block mt-4 px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs hover:bg-red-500/20 transition-all font-mono"
+                        >
+                            [進入開發者數據監控中心]
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>
