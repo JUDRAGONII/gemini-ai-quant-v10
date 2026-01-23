@@ -2,6 +2,7 @@ import React from 'react';
 import { supabase } from '@/lib/supabase';
 import { Activity, TrendingUp, BarChart3, FileText, Settings, Cpu, Layers } from 'lucide-react';
 import MacroChart from '@/components/MacroChart';
+import { MobileNav } from '@/components/layout';
 
 // 獲取特定指標的歷史數據
 async function getIndicatorHistory(code: string, limit: number = 20) {
@@ -48,6 +49,9 @@ export default async function Home() {
 
     return (
         <div className="flex min-h-screen bg-black text-gray-100 font-sans selection:bg-cyan-500/30">
+            {/* Mobile Navigation (Sticky Top + Drawer) */}
+            <MobileNav />
+
             {/* Sidebar (Desktop) */}
             <aside className="w-64 glass m-4 mr-0 hidden lg:flex flex-col p-6 space-y-8 rounded-2xl border border-white/5">
                 <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent flex items-center space-x-2">

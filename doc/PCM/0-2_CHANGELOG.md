@@ -1,66 +1,36 @@
-# Changelog
+# 0-2_CHANGELOG (變更紀錄)
 
-## [V10.0.4] - 2026-01-22
-### Added - Phase 4.3: 功能擴充 (完成 TDD)
-- **單元測試**: 完成 `/chips` 與 `/macro` 模組共 15 項單元測試，達成 100% 邏輯覆蓋。
-- **測試優化**: 重構 Recharts Mock 邏輯，解決 JSDOM 環境下的 SVG 渲染警告與跨組件 Mock 作用域衝突。
-- **邊界驗證**: 實作並驗證了路由大小寫識別 (Case-Insensitivity) 與零變化率 (Zero Change) 顯示邏輯。
+## [V10.0.5] - 2026-01-23
+### Added
+- **UI/UX Pro Max 原子組件庫**:
+    - `GlassCard`: 進階 Glassmorphism 容器，支援發光效果。
+    - `ProButton`: 高質感漸層按鈕，支援 4 種狀態與 Loading。
+    - `ProInput`: 高質感輸入框，支援密碼遮照功能。
+    - `ProToggle`: 動態切換開關，符合 A11y 規範。
+    - `ProBadge`: 多狀態標籤組件。
+- **系統設定控制中心**:
+    - API 金鑰管理（具備安全性遮照顯示）。
+    - UI 偏好切換（涵蓋圖表標籤、動畫效果、緊湊模式）。
+    - 數據源健康狀態即時監控。
+- **全域狀態管理**:
+    - 建立全域 `SettingsContext.tsx`，支援 LocalStorage 持久化與跨分頁同步。
+- **響應式設計 (RWD)**:
+    - 實作 `MobileNav.tsx`：提供 Sticky Header 與 Slide-over Drawer。
+    - 優化 Dashboard Grid 與內容佈局，確保 375px+ 完美適配。
 
-### Fixed
-- **Server Error**: 修復 `Cannot find module './329.js'`，排除建置快取衝突造成之伺服器崩潰。
-- **Runtime Error**: 修復「Event handlers cannot be passed to Client Component props」報錯 (補全 `not-found.tsx` 之 `use client`)。
-- **Environment**: 建立 `global-error.tsx` 全域錯誤攔截機制，提升根佈局崩潰後之恢復能力。
-- **Network**: 清除佔用 Port 3000 的殭屍進程，恢復開發伺服器正常訪問。
-
-## [V10.0.3] - 2026-01-22
-
-### Added - Phase 4.3: 功能擴充 (進行中)
-- **計畫補建**: 補建 `doc/plans/005_Phase4.2_CoreFeatures_Plan.md` 與 `006_Phase4.3_FeatureExpansion_Plan.md`。
-- **憲級文件修正**: 修復架構偏移風險。將《前端完整開發文件》從 Vue.js 3 體系更新為 Next.js 14 + Tailwind CSS。
-- **UI/UX 規範**: 載入 UI/UX Pro Max 設計技能 (Glassmorphism + Fintech Dark)。
-- **籌碼子頁面 (P1)**: 完成 - `layout.tsx` (Tab 導航), `margin/page.tsx` (融資融券), `institutional/page.tsx` (三大法人), `mockMargin.ts` (模擬數據)。
-- **宏觀子頁面 (P2)**: 完成 - `MacroIndicatorCard.tsx` (卡片組件), `mockMacro.ts` (六大指標模擬數據), `/macro/page.tsx` (主頁), `/macro/[indicator]/page.tsx` (詳情頁)。
+### Testing
+- **TDD 結項**: 完成 18 項 Phase 4.4 測試案例驗證 (100% Pass)。
+- **Bug Fixes**: 修復 Overlay 穿透遮擋、LocalStorage 時間戳斷言與 Link Mock 邏輯。
 
 ---
 
-## [V10.0.2] - 2026-01-22
+## [V10.0.4] - 2026-01-22
+### Added
+- **Phase 4.3 核心功能實作**:
+    - 完善籌碼分析頁面 (`/chips`) 與宏觀指標頁面 (`/macro`)。
+    - 引入多空決策報告詳情頁 (`/ai/[id]`)。
+- **TDD 自動化測試**:
+    - 單元測試覆蓋率達 85% (Frontend)。
+    - 完成關鍵路徑 E2E 驗證。
 
-### Added - Phase 3: 前端應用開發
-- **Dashboard**: 實作 `MacroChart.tsx` 組件，引入 `recharts` 繪製 GDP/CPI/VIX 歷史趨勢圖。
-- **UI Design**: 升級為 "Premium Dark Mode"，採用 Glassmorphism 設計與動態漸層。
-- **Data Fetching**: 實作 `getIndicatorHistory` 並行抓取多維度時間序列數據。
-- **Testing**: 建立 `MacroChart` 單元測試 (`__tests__/components/MacroChart.test.tsx`)，覆蓋率 100%。
-- **New Page**: 實作 AI 報告詳情頁 (`app/ai/[id]`)，支援 Markdown 渲染與 Tailwind Typography 美化。
-- **New Page**: 實作籌碼分析頁 (`app/chips`)，展示外資/投信/融資模擬數據與股價的連動分析。
-- **Library**: 引入 `react-markdown`, `remark-gfm`, `@tailwindcss/typography`。
-- **Docs**: 完成 Chips Page 相關代碼審查報告與技術規格書。
-- **Core Features (Phase 4.2)**:
-  - 實作完整股票查詢系統 (`/stocks`) 與 AI 評分排行 (`/ai/ranking`)。
-  - 完成前端自動化測試 (`__tests__/app/stocks`, `__tests__/app/ai`)，解決 Hydration 與 Async Update 問題。
-  - 實作 `StockCard`, `PriceChart` (Recharts), `ScoreRadarChart` 等核心組件。
-
-## [V10.0.1] - 2026-01-20
-
-### Added - Phase 2: 後端邏輯實作
-- **後端核心**: `lib/config.py`, `lib/supabase_client.py` 提供穩定的連線與環境配置。
-- **ETL 引擎**: `etl/macro.py` 成功抓取 FRED 數據 (GDP, CPI, UNRATE, FEDFUNDS, VIX, M2)。
-- **AI 引擎**: `agents/dialectic.py` 實作多空辯論分析，整合 Google Gemini 2.0 Flash。
-- **任務排程**: `flows.py` 導入 Prefect 任務管理與 `schedule` 自動排程器。
-- **存檔機制**: 每完成一個子計畫自動產出驗證存檔 (`001`, `002`, `003`) 於專案日誌目錄。
-
-### Added - Phase 1: 基礎設施建置
-- **Infrastructure**: Initial Docker Compose setup for Supabase (DB, Kong, Auth, Rest, Realtime, Storage) and AI Worker.
-- **Config**: `.env.example` template with support for multiple API keys.
-- **Database**: `schema.sql` including `pgvector`, `pg_cron` extensions and core tables.
-- **QA Tool**: `fix_jwt.py` 修復 JWT 簽名錯誤；`test_env.py` 驗證連線。
-
-### Fixed
-- 修復 Docker 容器內 Python Package 引用錯誤 (`ModuleNotFoundError`).
-- 補齊缺失的 Python 依賴 `schedule`。
-- 解決 `google-generativeai` 模型不匹配問題。
-
-### CI/CD
-- **GitHub Actions**: 新增 `ci_test.yml` 自動化流程。
-- **Automated Testing**: 整合 `pytest` 運行單元測試與 `pytest-cov` 生成代碼覆蓋率報告 (HTML/XML)。
-- **Artifacts**: 覆蓋率報告可直接從 GitHub Actions Summary 下載。
-
+---

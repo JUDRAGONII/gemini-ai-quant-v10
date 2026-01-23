@@ -12,11 +12,11 @@ global.ResizeObserver = class ResizeObserver {
 // Mock Recharts
 jest.mock("recharts", () => ({
     ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    AreaChart: ({ children }: any) => <div data-testid="area-chart">{children}</div>,
-    Area: () => <div data-testid="area-chart-area" />,
-    XAxis: () => <div />,
-    YAxis: () => <div />,
-    CartesianGrid: () => <div />,
+    AreaChart: ({ children }: any) => <svg data-testid="area-chart">{children}</svg>,
+    Area: () => <g data-testid="area-chart-area" />,
+    XAxis: () => <g />,
+    YAxis: () => <g />,
+    CartesianGrid: () => <g />,
     Tooltip: () => <div />,
 }));
 

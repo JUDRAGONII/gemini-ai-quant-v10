@@ -5,11 +5,11 @@ import "@testing-library/jest-dom";
 // Mock Recharts
 jest.mock("recharts", () => ({
     ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    RadarChart: ({ children }: any) => <div data-testid="radar-chart">{children}</div>,
-    PolarGrid: () => <div />,
-    PolarAngleAxis: () => <div />,
-    PolarRadiusAxis: () => <div />,
-    Radar: () => <div />,
+    RadarChart: ({ children }: any) => <svg data-testid="radar-chart">{children}</svg>,
+    PolarGrid: () => <g />,
+    PolarAngleAxis: () => <g />,
+    PolarRadiusAxis: () => <g />,
+    Radar: () => <g />,
     Legend: () => <div />,
     Tooltip: () => <div />,
 }));

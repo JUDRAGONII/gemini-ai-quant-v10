@@ -12,8 +12,8 @@ jest.mock("lucide-react", () => ({
 // Mock Recharts
 jest.mock("recharts", () => ({
   ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-  AreaChart: ({ children }: any) => <div data-testid="area-chart">{children}</div>,
-  Area: () => <div data-testid="area" />,
+  AreaChart: ({ children }: any) => <svg data-testid="area-chart">{children}</svg>,
+  Area: () => <g data-testid="area" />,
 }));
 
 describe("StockCard 組件", () => {

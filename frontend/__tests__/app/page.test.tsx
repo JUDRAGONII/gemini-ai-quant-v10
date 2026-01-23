@@ -7,17 +7,24 @@ import Home from '../../app/page';
 // -----------------------------------------------------------------------------
 
 // 1. Mock Child Components to isolate Page logic
-jest.mock('../../components/MacroChart', () => {
+jest.mock('@/components/MacroChart', () => {
     return function MockMacroChart({ title, data, color }: any) {
         return (
             <div data-testid="macro-chart">
                 <span data-testid="chart-title">{title}</span>
-                <span data-testid="chart-data-count">{data.length}</span>
+                <span data-testid="chart-data-count">{data ? data.length : 0}</span>
                 <span data-testid="chart-color">{color}</span>
             </div>
         );
     };
 });
+
+// 1b. Global Recharts Mock (as a safety layer)
+jest.mock("recharts", () => ({
+    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+    AreaChart: ({ children }: any) => <svg>{children}</svg>,
+    Area: () => <g />,
+}));
 
 // 2. Mock Lucide Icons (Optional, but acts as a safeguard against render issues)
 jest.mock('lucide-react', () => ({
@@ -27,7 +34,14 @@ jest.mock('lucide-react', () => ({
     FileText: () => <svg data-testid="icon-file-text" />,
     Settings: () => <svg data-testid="icon-settings" />,
     Cpu: () => <svg data-testid="icon-cpu" />,
-    Layers: () => <svg data-testid="icon-layers" />, // Added for Chips Link
+    Layers: () => <svg data-testid="icon-layers" />,
+    Menu: () => <svg data-testid="icon-menu" />,
+    X: () => <svg data-testid="icon-x" />,
+}));
+
+// 2b. Mock MobileNav to avoid external component dependency
+jest.mock('@/components/layout', () => ({
+    MobileNav: () => <div data-testid="mobile-nav" />,
 }));
 
 // 3. Mock Supabase Client

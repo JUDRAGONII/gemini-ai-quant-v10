@@ -122,3 +122,26 @@
 ### 預防重複犯錯的 Checkbox
 - [ ] `not-found.tsx` 與 `error.tsx` 預設加入 `"use client"`。
 - [ ] 重大環境報錯修復後，務必檢查 Port 佔用狀態並重啟。
+---
+
+### 2026-01-23 Phase 4.4 RWD 與 TDD 測試教訓
+
+### 問題現象
+1. **測試攔截失敗**：`fireEvent.click(overlay)` 沒反應，Drawer 無法關閉。
+2. **時間戳斷言失敗**：`expect.stringContaining` 在驗證 `SettingsContext` 的 JSON 時報錯，因為 `lastUpdated` 欄位是動態變化的。
+3. **Mock 屬性遺失**：`Link` 組件在測試中丟失了 `className`，導致 CSS 斷言（如 `cursor-pointer`）失敗。
+
+### 底層根本原因
+1. **元素重疊與層次**：在 HTML 結構中，`spacer` 元素或不具備事件監聽器的 `div` 可能覆蓋了目標 `overlay`。使用過於通用的選擇器（如 `[aria-hidden="true"]`）會選中錯誤的元素。
+2. **非確定性數據驗證**：在斷言整個對象字串時，包含隨機值（UUID）或動態值（Timestamp）會導致精確匹配失敗。
+3. **Mock 不完全**：手動 Mock `next/link` 時若只考慮 `children` 和 `href`，會導致其他必要的 Props 被丟棄。
+
+### 解決方案
+1. **精準選擇器**：為測試目標添加唯一的類名（如 `.bg-black/60`）或使用 `data-testid` 以避開干擾元素。
+2. **局部斷言**：將字串 `JSON.parse` 後，使用 `expect.objectContaining` 只檢查確定性的欄位，或對動態欄位使用 `expect.any(String)`。
+3. **透傳屬性 (Spread Props)**：在 Mock 組件中透傳 `...props` 或明確定義 `className` 的傳遞。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 測試 Overlay 交互時，優先使用精準的類名或 `data-testid`。
+- [ ] 驗證 LocalStorage 持久化時，使用 `JSON.parse` 進行對象層級的比對。
+- [ ] Mock 第三方組件時，確保常用的 HTML 屬性（如 `className`, `id`）被正確傳遞。
