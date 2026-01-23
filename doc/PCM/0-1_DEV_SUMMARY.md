@@ -61,11 +61,8 @@
 | 2026-01-23 | **TDD** | 完成數據監控中心測試 (MonitorPage)，透過測試發現並修復了遺失的 Security Check 邏輯。 |
 | 2026-01-23 | **Phase 4.4** | 完成 18 項 TDD 測試與 RWD 適配驗證（100% Pass），正式結項。助於進入下一階段。 |
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
-| 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)，涵蓋 US/TW GDP, CPI, VIX 等指標。 |
-| 2026-01-23 | **CI/CD Fix** | 修復後端單元測試 (`test_unit.py`, `test_phase2.py`)，更新 API 調用以匹配 `MacroFetcher` 與 `MACRO_METADATA`。本地與 GitHub 測試均通過。 |
-| 2026-01-23 | **Planning** | 撰寫 `010_Phase4.5_Taiwan_Data_Plan.md`，規劃 Fugle/TWSE Fetcher 實作細節與 Schema 擴充方案 (`intraday_candles` 表)。 |
-| 2026-01-23 | **Doc Refactor** | 文檔標準化：將開發文件擴充計畫移至 `doc/plans` 目錄並依序號規則重新命名 (`009`, `010`)。 |
-| 2026-01-23 | **EoS** | 執行 `/eos_v10` 工作流，完成今日收尾、PCM 更新、Git 推送與服務關閉。 |
+| 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
+| 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4 結項，Phase 4.5 正式啟動。 |
 
 
 
@@ -85,7 +82,4 @@
 - [ ] **全系統安全性審核**：實作 Supabase RLS 策略並對 API 端點執行權限校驗。
 - [ ] **部署方案調整**：針對 NAS (QNAP/Synology) 環境優化 Docker Volume 映射路徑與組態持久化。
 - [ ] **響應式佈局 (Mobile Overlay)**：優化圖表組件在行動裝置上的顯示效果與側欄收合邏輯。
-- [ ] **台灣數據實作 (Ph 4.5)**：依照 `010_Taiwan_Data_Plan.md` 實作 `TwseFetcher` (官方基本面) 與 `FugleFetcher` (高頻行情)。
-- [ ] **新增 intraday_candles Schema**：為高頻分 K 數據建立專屬表格 (Partitioning 建議)。
-- [ ] **FactorService Backfill**：使用 TWSE PE/PB/Yield 填補 `stock_factors` 空表。
 
