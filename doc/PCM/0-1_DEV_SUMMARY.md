@@ -60,6 +60,8 @@
 | 2026-01-23 | **Review & Doc** | 完成 P4.5 相關文檔補全：對齊 130+ 指標、26 項基因組與詳細 Schema 定義。 |
 | 2026-01-23 | **TDD** | 完成數據監控中心測試 (MonitorPage)，透過測試發現並修復了遺失的 Security Check 邏輯。 |
 | 2026-01-23 | **Phase 4.4** | 完成 18 項 TDD 測試與 RWD 適配驗證（100% Pass），正式結項。助於進入下一階段。 |
+| 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
+| 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)，涵蓋 US/TW GDP, CPI, VIX 等指標。 |
 
 
 

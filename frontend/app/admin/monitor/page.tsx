@@ -58,13 +58,18 @@ export default function MonitorPage() {
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
+            // Determine sort column based on table
+            let sortColumn = 'created_at';
+            if (activeTab === 'daily_price' || activeTab === 'stock_factors') {
+                sortColumn = 'trade_date';
+            } else if (activeTab === 'macro_indicators') {
+                sortColumn = 'reference_date';
+            }
+
             const { data: result, error } = await supabase
                 .from(activeTab)
                 .select('*')
-            const { data: result, error } = await supabase
-                .from(activeTab)
-                .select('*')
-                .order('created_at', { ascending: false })
+                .order(sortColumn, { ascending: false })
                 .limit(50);
 
             if (!error) {
