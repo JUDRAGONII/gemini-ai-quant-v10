@@ -1,5 +1,23 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.0.7] - 2026-01-25
+### Added
+- **全市場數據回補強化 (Backfill Pro)**:
+    - 支援 1000+ 檔台美標的自動同步，包含上市櫃全市場與美股核心 ETF。
+    - 實作台股「15年全歷史」分段擷取機制 (Yearly Chunking)，突破 Fugle API 單次一年限制。
+    - 實作美股「Tiingo 金鑰自動輪詢」，解決免費配額 (500 Symbol) 限制。
+- **ETL 穩定性增強**:
+    - `BaseFetcher` 新增本地去重 (Local Deduplication)，杜絕資料庫 21000 Upsert 衝突。
+    - 修正 `FugleFetcher` 起始日期傳遞與模組依賴。
+
+### Changed
+- 清理無效的美股原始指數代號 (DJI, SPX 等)，改由對應 ETF (DIA, SPY, QQQ, SOXX) 提供更高密度的價格數據。
+- `Config` 擴充為支援多金鑰註冊與動態輪詢。
+
+### Fixed
+- 修復 `intraday.candles` 誤用導致歷史數據深度不足的問題。
+- 修復 `BackfillManager` 在台美跨市場同步時的優先序調度異常。
+
 ## [V10.0.6] - 2026-01-23
 ### Added
 - **數據監控中心 (Data Monitor Center)**:
@@ -15,12 +33,30 @@
     - `BaseFetcher.upsert` 新增 `on_conflict` 參數支援複合主鍵衝突處理。
     - 補齊 `macro_indicators` 表 `country`, `source`, `indicator_name` 欄位。
     - 新增 `stock_factors` 與 `backtest_results` 表結構。
+- **台灣在地化數據 (Taiwan Data)**:
+    - 實作 `FugleFetcher`：支援 1分K (intraday candles) 與即時 Tick 擷取。
+    - 實作 `TwseFetcher`：對接證交所 OpenAPI 獲取官方本益比、殖利率。
+    - 新增 `intraday_candles` (分K) 資料表 Schema。
 
 ### Fixed
 - 修復 `SettingsPage` 的 Hydration 衝突 (localStorage 存取移至 useEffect)。
 - 修復 `MonitorPage` 的 `ProBadge` 參數錯誤 (variant → status)。
 - 解決 `ai-worker` 容器缺少 `fredapi` 導致的 ModuleNotFoundError。
 - 解決 PostgREST Upsert 因唯一約束缺失導致的 23505 錯誤。
+- **UI & Bug Fix**:
+    - **大規模數據回補執行計畫**: 
+        - 實作 `backfill_manager.py`：具備斷點續傳、智慧速率限制與跨市場代號識別（精確過濾 00937B 等包含字母的台股）。
+        - 更新管理監控中心 UI：加入回補進度監控儀表板。
+        - 完成 130+ 項宏觀指標歷史回補入庫。
+    - **宏觀指標頁面重構**: 依據規格書 4.2 節，將宏觀頁面劃分為「台灣、美國、全球」三大區域標籤。
+    - 實作指標自動類別分組顯示（金融、通膨、勞動、成長等）。
+    - 新增支援名稱與代碼的即時搜尋過濾功能。
+    - 修復行動端導航缺失問題：為所有模組補齊 `MobileNav` 組件。
+    - 統一移除全站「固定頂部導航列」 (Fixed Header)，改為內頁標題欄設計。
+- **UI Inconsistency**: 
+    - 統一所有頁面 (Home, Chips, Stocks, Macro, Settings) 的 Sidebar 導航與設計風格 (Glassmorphism)。
+    - 修復 Sidebar 選單項目不一致問題 (補齊 Macro/Evolution)。
+    - 新增 `/evolution` 演化分析佔位頁面。
 
 ### Testing
 - **TDD (MonitorPage)**: 完成 5 項測試案例 (100% Pass)，包含開發者模式權限驗證。

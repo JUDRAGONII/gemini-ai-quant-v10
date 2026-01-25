@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 4.4: UI/UX Pro Max 完善與優化
-**狀態**：✅ Phase 4.4 UI/UX Pro Max 完善與 RWD 適配已結項。TDD 18 案例 100% 通過。助於保障交付品質。
+**階段**：Phase 4.5: 後端邏輯注入與大規模數據回補
+**狀態**：✅ Phase 4.5 資料庫基礎建設與大規模回補已順利結項。經調查所有核心行情數據與指標均已補齊。
 
 ---
 
@@ -13,6 +13,8 @@
 - [x] **演化運算引擎 (Genetic Algorithm)**: 實作 26 項基因組優化與 Backtest 邏輯。
 - [x] **多因子評分 Service**: 實作 `FactorService` 與正規化算法。
 - [x] **TDD 驗證：AI 演化引擎**: 完成 TC-1101 至 TC-4102 共 9 項基礎與邊界測試，驗證邏輯 100% 正確。
+- [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
+- [x] **2026-01-25 數據回補優化**: 實作 Tiingo 輪詢、Fugle 分段擷取與本地去重，成功啟動全市場回補。
 - [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
 - [x] **環境維護：清空 3000 端口並重啟**: 已中止佔用的 PID 3176 並穩定啟動 Next.js 於 3000 端口。
 - [x] **修復：數據監控中心打不開**: 已修復 `SettingsPage` 的 Hydration 衝突與 `ProBadge` 參數錯誤。已通過 Lint 驗證。
@@ -63,6 +65,11 @@
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
 | 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
 | 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4 結項，Phase 4.5 正式啟動。 |
+| 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
+| 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
+| 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。 |
+| 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
+| 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
 
 
 

@@ -13,7 +13,10 @@ import {
     RefreshCcw,
     Search,
     ChevronRight,
-    Activity
+    Activity,
+    Clock,
+    CheckCircle2,
+    AlertCircle
 } from 'lucide-react';
 
 // 定義監控表選項
@@ -29,6 +32,9 @@ export default function MonitorPage() {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<any>({});
+    const [backfillStatus, setBackfillStatus] = useState<any>({});
+    const [filterText, setFilterText] = useState('');
+    const [refreshKey, setRefreshKey] = useState(0);
     const router = useRouter();
 
     // Security Check: Developer Mode Only
@@ -40,45 +46,75 @@ export default function MonitorPage() {
     }, [router]);
 
     // 獲取統計資訊
-    useEffect(() => {
-        async function fetchStats() {
-            const results: any = {};
-            for (const table of TABLES) {
-                const { count } = await supabase
-                    .from(table.id)
-                    .select('*', { count: 'exact', head: true });
-                results[table.id] = count || 0;
-            }
-            setStats(results);
+    async function fetchStats() {
+        const results: any = {};
+        for (const table of TABLES) {
+            const { count } = await supabase
+                .from(table.id)
+                .select('*', { count: 'exact', head: true });
+            results[table.id] = count || 0;
         }
+        setStats(results);
+
+        // 🆕 獲取即時回補狀態 (當前代號)
+        const { data: bStatus } = await supabase
+            .from('backfill_status')
+            .select('*');
+        if (bStatus) {
+            const statusMap = bStatus.reduce((acc: any, curr: any) => {
+                acc[curr.id] = curr;
+                return acc;
+            }, {});
+            setBackfillStatus(statusMap);
+        }
+    }
+
+    useEffect(() => {
         fetchStats();
-    }, []);
+
+        // 🆕 每 5 秒自動輪詢一次狀態與統計量
+        const interval = setInterval(fetchStats, 5000);
+        return () => clearInterval(interval);
+    }, [refreshKey]);
 
     // 獲取具體表數據
-    useEffect(() => {
-        async function fetchData() {
-            setLoading(true);
-            // Determine sort column based on table
-            let sortColumn = 'created_at';
-            if (activeTab === 'daily_price' || activeTab === 'stock_factors') {
-                sortColumn = 'trade_date';
-            } else if (activeTab === 'macro_indicators') {
-                sortColumn = 'reference_date';
-            }
-
-            const { data: result, error } = await supabase
-                .from(activeTab)
-                .select('*')
-                .order(sortColumn, { ascending: false })
-                .limit(50);
-
-            if (!error) {
-                setData(result || []);
-            }
-            setLoading(false);
+    async function fetchData() {
+        setLoading(true);
+        // Determine sort column based on table
+        let sortColumn = 'created_at';
+        if (activeTab === 'daily_price' || activeTab === 'stock_factors') {
+            sortColumn = 'trade_date';
+        } else if (activeTab === 'macro_indicators') {
+            sortColumn = 'reference_date';
         }
+
+        const { data: result, error } = await supabase
+            .from(activeTab)
+            .select('*')
+            .order(sortColumn, { ascending: false })
+            .limit(50);
+
+        if (!error) {
+            setData(result || []);
+        }
+        setLoading(false);
+    }
+
+    useEffect(() => {
         fetchData();
-    }, [activeTab]);
+    }, [activeTab, refreshKey]);
+
+    const handleManualRefresh = () => {
+        setRefreshKey(prev => prev + 1);
+    };
+
+    // 計算進度
+    const macroCount = stats['macro_indicators'] || 0;
+    const priceCount = stats['daily_price'] || 0;
+    const totalCount = macroCount + priceCount;
+    const targetCount = 100000; // 目標筆數
+    const progressPercent = Math.min(Math.round((totalCount / targetCount) * 100), 100);
+    const isActuallyBackfilling = totalCount > 0;
 
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30">
@@ -100,11 +136,79 @@ export default function MonitorPage() {
                 </div>
 
                 <div className="flex items-center gap-4 bg-slate-900/50 p-1 rounded-xl border border-white/5">
-                    <button className="px-4 py-2 hover:bg-white/5 rounded-lg transition-colors text-sm flex items-center gap-2">
-                        <RefreshCcw className="w-4 h-4" />
+                    <button
+                        onClick={handleManualRefresh}
+                        className="px-4 py-2 hover:bg-white/5 rounded-lg transition-colors text-sm flex items-center gap-2 group"
+                    >
+                        <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
                         手動重新整理
                     </button>
                 </div>
+            </div>
+
+            {/* 🆕 數據回補執行進度 (Backfill Progress) */}
+            <div className="max-w-7xl mx-auto mb-10">
+                <GlassCard className="p-6 border-emerald-500/20 bg-emerald-500/5 overflow-hidden relative group">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <Activity className="w-32 h-32 text-emerald-400" />
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Clock className="w-4 h-4 text-emerald-400 animate-pulse" />
+                                <span className="text-emerald-400 font-bold text-sm tracking-wider uppercase">即時數據回補執行中</span>
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">大規模歷史數據瀑布</h2>
+                            <p className="text-slate-400 text-sm max-w-xl">
+                                正在執行台股 (2010+) 與全球宏觀指標 (1990+) 的全量回補。基於斷點續傳機制，進度將自動累加。
+                            </p>
+
+                            <div className="mt-6 flex items-center gap-6">
+                                <div className="flex flex-col">
+                                    <span className="text-slate-500 text-xs uppercase mb-1">台股回補狀態</span>
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${isActuallyBackfilling ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`}></div>
+                                        <span className={`${isActuallyBackfilling ? 'text-emerald-400' : 'text-slate-500'} font-mono font-bold text-xs`}>
+                                            {isActuallyBackfilling
+                                                ? `同步中 (${backfillStatus['stocks']?.current_symbol || '...'})`
+                                                : '閒置中'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="w-px h-8 bg-white/10 hidden md:block"></div>
+                                <div className="flex flex-col">
+                                    <span className="text-slate-500 text-xs uppercase mb-1">宏觀回補狀態</span>
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle2 className={`w-4 h-4 ${macroCount > 0 ? 'text-emerald-500' : 'text-slate-600'}`} />
+                                        <span className="text-slate-200 font-mono text-xs">
+                                            {macroCount > 0
+                                                ? `解析中 (${backfillStatus['macro']?.current_symbol || '...'})`
+                                                : '等待中'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full md:w-64 bg-slate-900/80 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
+                            <div className="flex justify-between text-xs mb-2">
+                                <span className="text-slate-500">當前進度 (預估)</span>
+                                <span className="text-emerald-400 font-bold">{progressPercent}%</span>
+                            </div>
+                            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-emerald-500 transition-all duration-1000 ease-out animate-shimmer"
+                                    style={{ width: `${progressPercent}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-2 text-center flex items-center justify-center gap-1 font-mono">
+                                <Database className="w-3 h-3" />
+                                累積入庫: {totalCount.toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                </GlassCard>
             </div>
 
             {/* Tabs / Stats Cards */}
@@ -150,13 +254,17 @@ export default function MonitorPage() {
                         <div className="flex items-center gap-2">
                             <Search className="w-4 h-4 text-slate-500" />
                             <input
+                                id="monitor-search"
+                                name="monitor-search"
                                 type="text"
-                                placeholder="快速過濾..."
+                                placeholder="快速過濾 (代號、日期、內容)..."
+                                value={filterText}
+                                onChange={(e) => setFilterText(e.target.value)}
                                 className="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-slate-600"
                             />
                         </div>
                         <div className="text-xs text-slate-500 font-mono">
-                            Showing last 50 entries
+                            Showing last {data.length} entries {filterText && `(Filtered)`}
                         </div>
                     </div>
 
@@ -178,15 +286,19 @@ export default function MonitorPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/[0.02]">
-                                    {data.map((row, i) => (
-                                        <tr key={i} className="hover:bg-white/[0.01] transition-colors group">
-                                            {Object.values(row).map((val: any, j) => (
-                                                <td key={j} className="px-6 py-4 text-slate-400 group-hover:text-slate-200">
-                                                    {typeof val === 'object' ? JSON.stringify(val).slice(0, 50) + '...' : String(val)}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
+                                    {data
+                                        .filter(row =>
+                                            JSON.stringify(row).toLowerCase().includes(filterText.toLowerCase())
+                                        )
+                                        .map((row, i) => (
+                                            <tr key={i} className="hover:bg-white/[0.01] transition-colors group">
+                                                {Object.values(row).map((val: any, j) => (
+                                                    <td key={j} className="px-6 py-4 text-slate-400 group-hover:text-slate-200">
+                                                        {typeof val === 'object' ? JSON.stringify(val).slice(0, 50) + '...' : String(val)}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
                         ) : (

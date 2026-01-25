@@ -38,6 +38,8 @@ async function getRecentReports() {
 // 設定 30 秒重新驗證 (ISR)
 export const revalidate = 30;
 
+import Sidebar from '@/components/layout/Sidebar';
+
 export default async function Home() {
     // 平行抓取數據
     const [gdpData, cpiData, vixData, reports] = await Promise.all([
@@ -48,30 +50,17 @@ export default async function Home() {
     ]);
 
     return (
-        <div className="flex min-h-screen bg-black text-gray-100 font-sans selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-black text-gray-100 font-sans selection:bg-cyan-500/30">
             {/* Mobile Navigation (Sticky Top + Drawer) */}
             <MobileNav />
 
-            {/* Sidebar (Desktop) */}
-            <aside className="w-64 glass m-4 mr-0 hidden lg:flex flex-col p-6 space-y-8 rounded-2xl border border-white/5">
-                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent flex items-center space-x-2">
-                    <Cpu size={28} className="text-cyan-400" />
-                    <span>AI QUANT</span>
-                </div>
-                <nav className="space-y-2">
-                    <NavItem icon={<Activity />} label="總覽 (Overview)" active />
-                    <NavItem icon={<Layers />} label="籌碼分析 (Chips)" href="/chips" />
-                    <NavItem icon={<TrendingUp />} label="市場動態" href="/stocks" />
-                    <NavItem icon={<BarChart3 />} label="演化分析" href="/evolution" />
-                    <NavItem icon={<FileText />} label="決策報告" href="/ai/ranking" />
-                </nav>
-                <div className="mt-auto">
-                    <NavItem icon={<Settings />} label="系統設定" href="/settings" />
-                </div>
-            </aside>
+            {/* Sidebar (Unified) */}
+            <div className="hidden lg:block">
+                <Sidebar />
+            </div>
 
             {/* Main Content */}
-            <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
+            <main className="flex-1 p-4 lg:p-8 lg:ml-64 overflow-y-auto">
                 <header className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-white/90">市場導航儀</h1>

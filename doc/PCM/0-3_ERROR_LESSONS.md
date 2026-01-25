@@ -185,3 +185,30 @@
 - [ ] 涉及權限與安全的功能，必須優先撰寫測試案例 (Test First)。
 
 ---
+
+### 2026-01-25 大規模數據回補與 API 限制教訓
+
+### 問題現象
+1. **美股卡頓**：Tiingo API 報錯「Quota Exceeded」(500 Symbol Limit)。
+2. **台股筆數不增**：每日回補僅新增 1 筆，且 15 年跨度請求被 Fugle 拒絕（400 Error）。
+3. **資料庫報錯**：Upsert 時出現 `ON CONFLICT DO UPDATE command cannot affect row a second time` (Error 21000)。
+
+### 底層根本原因
+1. **配額限制**：Tiingo 免費版單月僅能查詢 500 個不重覆標的。
+2. **接口與跨度限制**：
+    - 誤用盤中接口 `intraday.candles`（僅回傳最新日線）。
+    - 歷史接口 `historical.candles` 限制單次查詢跨度不得超過一年。
+3. **數據重複**：API 返回的單一批次中包含相同日期的重複行，導致 PostgreSQL 在執行 Upsert 時邏輯衝突。
+
+### 解決方案
+1. **金鑰輪詢**：實作 `Config.get_tiingo_key()` 循環調度多組 API Key。
+2. **接口切換與分段**：
+    - 切換至 `historical.candles`。
+    - 實作「年分段擷取 (Yearly Chunking)」循環邏輯。
+3. **本地去重**：在 `BaseFetcher.upsert` 前使用 Pandas `drop_duplicates(keep='last')` 預處理數據。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 大規模抓取前先確認 API 的「單次時間跨度限制」與「標的總量配額」。
+- [ ] 歷史數據 (EOD) 應優先使用 Historical 接口而非 Intraday 接口。
+- [ ] 執行 Bulk Upsert 前，必須在應用組序進行 Primary Key 級別的本地去重。
+- [ ] 關鍵外部 SDK 調用前，檢查核心組件（如 `time`）是否已匯入。

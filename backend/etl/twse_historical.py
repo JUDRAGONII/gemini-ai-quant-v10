@@ -71,7 +71,7 @@ class TwseHistoricalFetcher(BaseFetcher):
         try:
             # TWSE 建議延遲：避免過於頻繁
             time.sleep(3) 
-            response = requests.get(self.STOCK_DAY_URL, params=params, headers=headers, timeout=30)
+            response = requests.get(self.STOCK_DAY_URL, params=params, headers=headers, timeout=30, verify=False)
             response.raise_for_status()
             
             # 嘗試解析 JSON，若非 JSON (如 HTML 錯誤頁) 則會拋出 JSONDecodeError
