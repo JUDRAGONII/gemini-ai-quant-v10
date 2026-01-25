@@ -21,16 +21,23 @@ class TiingoFetcher(BaseFetcher):
 
     def rotate_key(self):
         """嘗試切換至下一個 API Key"""
+        if not Config.TIINGO_KEYS:
+            raise Exception("No Tiingo API keys configured.")
+            
         self.api_key_index += 1
+        # 如果已經轉了一圈回到原位，說明所有 Key 都失效了
+        if self.api_key_index >= len(Config.TIINGO_KEYS) * 2: 
+            raise Exception("All Tiingo API keys reached limits after full rotation.")
+            
         new_key = Config.get_tiingo_key(self.api_key_index)
-        if new_key == self.api_key:
-            # 已嘗試過所有 key
-            raise Exception("All Tiingo API keys reached limits.")
         logger.info(f"🔄 Tiingo API Key rotated to index {self.api_key_index % len(Config.TIINGO_KEYS)}")
         self.api_key = new_key
 
     def fetch(self, ticker: str, start_date: str = None, end_date: str = None) -> List[Dict[str, Any]]:
         """獲取美股日 K 數據"""
+        # 加強物理延遲至 3.0 秒，徹底保護帳號與 IP
+        time.sleep(3.0)
+        
         if not start_date:
             start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
             
@@ -44,18 +51,18 @@ class TiingoFetcher(BaseFetcher):
         url = self.BASE_URL.format(ticker=ticker)
         try:
             response = requests.get(url, params=params)
-            # 檢查是否達到配額限制
+            # 檢查是否達到配額限制 (Tiingo 特有的 500 Symbol 限制)
             if response.status_code == 200 and "run over your 500 symbol" in response.text:
                 logger.warning(f"⚠️ Tiingo Quota Exceeded for current key. Rotating...")
                 self.rotate_key()
-                # 遞迴重試一次
                 return self.fetch(ticker, start_date)
                 
             response.raise_for_status()
             data = response.json()
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
-                logger.warning("⚠️ Tiingo Rate Limit (429). Rotating...")
+                logger.warning("⚠️ Tiingo Rate Limit (429). Sleeping 60s for IP/Account cooling...")
+                time.sleep(60) # 429 深度冷卻時間
                 self.rotate_key()
                 return self.fetch(ticker, start_date)
             raise e

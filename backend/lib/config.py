@@ -16,13 +16,17 @@ class Config:
     FRED_API_KEY = os.getenv("FRED_API_KEY_1") or os.getenv("FRED_API_KEY")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY_1") or os.getenv("GEMINI_API_KEY")
     
-    # Tiingo Keys Registry (Support 1, 2, 3)
-    TIINGO_KEYS = [
-        os.getenv("TIINGO_API_KEY_1"),
-        os.getenv("TIINGO_API_KEY_2"),
-        os.getenv("TIINGO_API_KEY_3")
-    ]
-    TIINGO_KEYS = [k for k in TIINGO_KEYS if k] # Filter non-null
+    # Tiingo Keys Registry (Dynamic detection)
+    TIINGO_KEYS = []
+    for i in range(1, 11): # 預設偵測至第 10 組
+        key = os.getenv(f"TIINGO_API_KEY_{i}")
+        if key:
+            TIINGO_KEYS.append(key)
+    
+    # Fallback to single TIINGO_API_KEY if no numbered keys found
+    if not TIINGO_KEYS and os.getenv("TIINGO_API_KEY"):
+        TIINGO_KEYS.append(os.getenv("TIINGO_API_KEY"))
+
     TIINGO_API_KEY = TIINGO_KEYS[0] if TIINGO_KEYS else None
     
     FUGLE_API_KEY = os.getenv("FUGLE_API_KEY_1") or os.getenv("FUGLE_API_KEY")

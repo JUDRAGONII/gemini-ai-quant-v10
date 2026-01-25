@@ -5,6 +5,7 @@
 - **美股回補專項升級 (US Market Expansion)**:
     - 獲取並注入道瓊、標普500、那斯達克100、費半四大指數成分股各代號 (660+ 檔)。
     - `backfill_manager.py` 新增 `--market` 與 `--years` 過濾參數。
+    - **API 頻率防護 (Rate Limit)**：引入每請求 3.0s 強制延遲與 429 觸發後 60s 冷卻機制，並支援動態偵測無限量 Tiingo Key。
 - **文檔歸檔與治理 (Documentation Archiving)**:
     - 遷移 Phase 4.5 實作計畫與資料庫審計報告至 `doc/plans`。
     - 查核並確認 Phase 4.1 核心邏輯已整合。

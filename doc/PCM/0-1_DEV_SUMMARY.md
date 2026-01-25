@@ -18,7 +18,7 @@
     - 成功解決全市場歷史數據回補的技術障礙。
     - 實作 Tiingo API 金鑰輪詢機制，突破 500 標的限制。
     - 修正 Fugle 歷史行情分段擷取邏輯，支援 15 年全歷史同步。
-    - **美股回補升級**: 注入 DJI, SP500, NASDAQ100, SOX 共 660+ 檔成分股，並啟動專項回補程序。
+    - **美股回補升級**: 注入 DJI, SP500, NASDAQ100, SOX 共 660+ 檔成分股。已實作 429 強化防護機制 (3.0s delay / 60s cooldown)。
     - **文檔歸檔**: 將 Phase 1-5 實作計畫整理歸檔至 `doc/plans`，查核無遺漏。
 - [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
 - [x] **環境維護：清空 3000 端口並重啟**: 已中止佔用的 PID 3176 並穩定啟動 Next.js 於 3000 端口。
@@ -72,7 +72,8 @@
 | 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4 結項，Phase 4.5 正式啟動。 |
 | 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
 | 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
-| 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。 |
+| 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
+ |
 | 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
 | 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
 

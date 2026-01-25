@@ -191,21 +191,28 @@ class BackfillManager:
         return False
 
     def get_stock_list_from_db(self, market: str = None) -> List[Dict[str, Any]]:
-        """從資料庫獲取待回補股票清單，依優先序排序"""
-        try:
-            # 獲取所有有效標的，並依 priority 排序 (1 最高)
-            query = supabase.table('stocks').select('*').eq('is_active', True)
-            if market:
-                query = query.eq('market', market)
-            
-            result = query.order('priority', desc=False).execute()
-            if result.data:
-                logger.info(f"🔍 從資料庫加載 {len(result.data)} 檔標的{' (市場: ' + market + ')' if market else ''}。")
-                return result.data
-            return []
-        except Exception as e:
-            logger.error(f"Failed to fetch stock list from DB: {e}")
-            return [{"symbol": "2330", "market": "TW", "priority": 1}]
+        """從資料庫獲取待回補股票清單，依優先序排序 (具備重試機制)"""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # 獲取所有有效標的，並依 priority 排序 (1 最高)
+                query = supabase.table('stocks').select('*').eq('is_active', True)
+                if market:
+                    query = query.eq('market', market)
+                
+                result = query.order('priority', desc=False).execute()
+                if result.data:
+                    logger.info(f"🔍 從資料庫加載 {len(result.data)} 檔標的{' (市場: ' + market + ')' if market else ''}。")
+                    return result.data
+                return []
+            except Exception as e:
+                logger.warning(f"⚠️ 第 {attempt + 1} 次讀取資料庫失敗: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(5)
+                else:
+                    logger.error("❌ 讀取資料庫失敗且已達最大重試次數。")
+                    return [{"symbol": "2330", "market": "TW", "priority": 1}]
+        return []
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI 投資分析儀數據回補工具")
