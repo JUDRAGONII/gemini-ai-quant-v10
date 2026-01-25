@@ -190,13 +190,17 @@ class BackfillManager:
                 return True
         return False
 
-    def get_stock_list_from_db(self) -> List[Dict[str, Any]]:
+    def get_stock_list_from_db(self, market: str = None) -> List[Dict[str, Any]]:
         """從資料庫獲取待回補股票清單，依優先序排序"""
         try:
             # 獲取所有有效標的，並依 priority 排序 (1 最高)
-            result = supabase.table('stocks').select('*').eq('is_active', True).order('priority', desc=False).execute()
+            query = supabase.table('stocks').select('*').eq('is_active', True)
+            if market:
+                query = query.eq('market', market)
+            
+            result = query.order('priority', desc=False).execute()
             if result.data:
-                logger.info(f"🔍 從資料庫加載 {len(result.data)} 檔標的。")
+                logger.info(f"🔍 從資料庫加載 {len(result.data)} 檔標的{' (市場: ' + market + ')' if market else ''}。")
                 return result.data
             return []
         except Exception as e:
@@ -207,6 +211,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI 投資分析儀數據回補工具")
     parser.add_argument("--mode", choices=["all", "macro", "stocks"], default="all", help="執行模式")
     parser.add_argument("--stock", type=str, help="特定回補的股票代碼")
+    parser.add_argument("--market", type=str, help="過濾特定市場 (TW/US)")
+    parser.add_argument("--years", type=int, default=2010, help="回補起始年份 (預設 2010)")
     
     args = parser.parse_args()
     manager = BackfillManager()
@@ -217,9 +223,9 @@ if __name__ == "__main__":
     if args.mode in ["all", "stocks"]:
         if args.stock:
             # 測試特定標的
-            manager.backfill_stocks([{"symbol": args.stock, "market": "TW", "priority": 1}], start_year=2010)
+            manager.backfill_stocks([{"symbol": args.stock, "market": args.market or "TW", "priority": 1}], start_year=args.years)
         else:
-            stocks = manager.get_stock_list_from_db()
-            manager.backfill_stocks(stocks, start_year=2010)
+            stocks = manager.get_stock_list_from_db(market=args.market)
+            manager.backfill_stocks(stocks, start_year=args.years)
 
     logger.info("✨ 所有數據回補任務已依序處理完畢。")

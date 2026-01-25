@@ -2,13 +2,12 @@
 
 ## [V10.0.7] - 2026-01-25
 ### Added
-- **全市場數據回補強化 (Backfill Pro)**:
-    - 支援 1000+ 檔台美標的自動同步，包含上市櫃全市場與美股核心 ETF。
-    - 實作台股「15年全歷史」分段擷取機制 (Yearly Chunking)，突破 Fugle API 單次一年限制。
-    - 實作美股「Tiingo 金鑰自動輪詢」，解決免費配額 (500 Symbol) 限制。
-- **ETL 穩定性增強**:
-    - `BaseFetcher` 新增本地去重 (Local Deduplication)，杜絕資料庫 21000 Upsert 衝突。
-    - 修正 `FugleFetcher` 起始日期傳遞與模組依賴。
+- **美股回補專項升級 (US Market Expansion)**:
+    - 獲取並注入道瓊、標普500、那斯達克100、費半四大指數成分股各代號 (660+ 檔)。
+    - `backfill_manager.py` 新增 `--market` 與 `--years` 過濾參數。
+- **文檔歸檔與治理 (Documentation Archiving)**:
+    - 遷移 Phase 4.5 實作計畫與資料庫審計報告至 `doc/plans`。
+    - 查核並確認 Phase 4.1 核心邏輯已整合。
 
 ### Changed
 - 清理無效的美股原始指數代號 (DJI, SPX 等)，改由對應 ETF (DIA, SPY, QQQ, SOXX) 提供更高密度的價格數據。

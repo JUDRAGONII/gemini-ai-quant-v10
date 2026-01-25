@@ -1068,7 +1068,20 @@
         "2915": "completed",
         "2923": "completed",
         "2929": "completed",
-        "2939": "completed"
+        "2939": "completed",
+        "ABT": "completed",
+        "PKG": "completed",
+        "DECK": "completed",
+        "APD": "completed",
+        "PLTR": "completed",
+        "RL": "completed",
+        "CPB": "completed",
+        "GIS": "completed",
+        "EXR": "completed",
+        "OMC": "completed",
+        "VST": "completed",
+        "AFL": "completed",
+        "FIX": "completed"
     },
     "macro": {
         "FEDFUNDS": "completed",
