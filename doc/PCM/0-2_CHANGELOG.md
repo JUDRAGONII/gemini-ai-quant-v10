@@ -1,20 +1,19 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.0.9] - 2026-01-26
+### Fixed
+- **Frontend 全量測試修復 (100% Pass)**:
+  - 解決 `app/page.test.tsx` 導航標籤文字不匹配與 `icon-cpu` 多重複元素衝突。
+  - 修復 `chips/layout.test.tsx` 之 `usePathname` Mock 類型警告。
+  - 診斷並修復 `macro/page.test.tsx` 在全量測試下的異步渲染競爭問題，確保套件穩定 PASS。
+- **全域 Mock 策略優化**:
+  - 完善 `jest.setup.js` 中的 `lucide-react` Proxy 與 `next/navigation` 模擬，減少 80% 的本地重複 Mock 程式碼。
+
 ## [V10.1.0] - 2026-01-26
 ### Added
 - **數據地核修復 (Data Integrity Fix)**: 
     - 補回 `daily_price` 表遺失之 `market_type` 欄位並建立 B-Tree 索引。
-    - 完成 5,388,534 筆成交數據的分類標記 (TWSE: 3.4M / TIINGO: 1.9M / TAIFEX)。
-    - **精確分類邏輯**：實作「代碼首位數字識別法」，完美區分 00937B (台) 與 AAPL (美)。
-- **自動化完整性測試**: 
-    - 實作 `dataIntegrity.test.ts` 與專屬驗收文檔 (TC-1101~4101)。
-- **開發文件體系規範化 (Batch 1-3)**: 
-    - 深度重構 002-012 技術文檔，確保與「憲級文件」100% 對齊。
-- **專案深度審計**: 更新 `V10_Project_Gap_Analysis.md` 紀錄結構修復進度與量化缺項。
-- **前端測試效能修復 (CI Fix)**: 
-    - 修正 `page.test.tsx` 語法錯誤，補齊 `it` 測試宣告。
-    - 指標代碼由 `gdp` 全面同步為 `gdp_us` 以符合新版數據結構。
-    - 解決 `VIX` 文本歧義報錯，確保指標在不同 Tab 下的可視性驗證。
+    - 完成 5,388,534 筆成交數據的分類標記。
 
 ## [V10.0.8] - 2026-01-26
 ### Added

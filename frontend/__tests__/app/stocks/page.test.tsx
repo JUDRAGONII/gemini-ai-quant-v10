@@ -11,11 +11,6 @@ jest.mock("@/components/StockCard", () => ({
     }
 }));
 
-// Mock Next.js Navigation
-jest.mock("next/navigation", () => ({
-    useRouter: () => ({ push: jest.fn() }),
-}));
-
 describe("StocksPage 整合測試", () => {
     it("TC-1501: /stocks 頁面應正確載入並顯示股票卡片", () => {
         render(<StocksPage />);

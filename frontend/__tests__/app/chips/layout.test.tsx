@@ -3,24 +3,7 @@ import { render, screen } from "@testing-library/react";
 import ChipsLayout from "@/app/chips/layout";
 import { usePathname } from "next/navigation";
 
-// Mock next/navigation
-jest.mock("next/navigation", () => ({
-    usePathname: jest.fn(),
-}));
-
-// Mock Lucide icons to avoid potential issues in test environment
-jest.mock("lucide-react", () => ({
-    TrendingUp: () => <div data-testid="icon-trending-up" />,
-    BarChart3: () => <div data-testid="icon-barchart" />,
-    FileText: () => <div data-testid="icon-filetext" />,
-    Settings: () => <div data-testid="icon-settings" />,
-    Layers: () => <div data-testid="icon-layers" />,
-    Home: () => <div data-testid="icon-home" />,
-    ArrowLeft: () => <div data-testid="icon-arrowleft" />,
-    Wallet: () => <div data-testid="icon-wallet" />,
-    Building2: () => <div data-testid="icon-building" />,
-    PieChart: () => <div data-testid="icon-piechart" />,
-}));
+// 導航與圖標 Mock 已由 jest.setup.js 全域處理
 
 describe("籌碼分析模組 (Chips)", () => {
     describe("基礎路徑測試 (Happy Path)", () => {

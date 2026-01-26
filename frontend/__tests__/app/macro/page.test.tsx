@@ -4,41 +4,12 @@ import MacroPage from "@/app/macro/page";
 import MacroIndicatorCard from "@/components/MacroIndicatorCard";
 import IndicatorDetail from "@/app/macro/[indicator]/page";
 
-// Mock next/navigation
-jest.mock("next/navigation", () => ({
-    usePathname: jest.fn(() => "/"),
-    useParams: jest.fn(),
-    useRouter: () => ({
-        push: jest.fn(),
-        back: jest.fn(),
-        forward: jest.fn(),
-        refresh: jest.fn(),
-        replace: jest.fn(),
-        prefetch: jest.fn(),
-    }),
-}));
+// 導航、Recharts 及圖標 Mock 已由 jest.setup.js 全域處理
 
-// Mock Recharts to avoid DOM measurement issues
-jest.mock("recharts", () => ({
-    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    AreaChart: ({ children }: any) => <div>{children}</div>,
-    BarChart: ({ children }: any) => <div>{children}</div>,
-    ComposedChart: ({ children }: any) => <div>{children}</div>,
-    PieChart: ({ children }: any) => <div>{children}</div>,
-    Area: () => <div />,
-    Bar: () => <div />,
-    Line: () => <div />,
-    Pie: () => <div />,
-    Cell: () => <div />,
-    XAxis: () => <div />,
-    YAxis: () => <div />,
-    CartesianGrid: () => <div />,
-    Tooltip: () => <div />,
-    Legend: () => <div />,
-    ReferenceLine: () => <div />,
-    Defs: ({ children }: any) => <defs>{children}</defs>,
-    LinearGradient: ({ children }: any) => <linearGradient>{children}</linearGradient>,
-    Stop: () => <stop />,
+// 局部 Mock 頁面外部組件以穩定測試環境
+jest.mock("@/components/layout/Sidebar", () => () => <div data-testid="sidebar-mock" />);
+jest.mock("@/components/layout", () => ({
+    MobileNav: () => <div data-testid="mobilenav-mock" />
 }));
 
 // Mock custom components
@@ -51,41 +22,6 @@ jest.mock("@/components/InfoCard", () => {
         );
     };
 });
-
-// Mock Lucide icons
-jest.mock("lucide-react", () => ({
-    TrendingUp: () => <div data-testid="icon-trending-up" />,
-    TrendingDown: () => <div data-testid="icon-trending-down" />,
-    Minus: () => <div data-testid="icon-minus" />,
-    ExternalLink: () => <div data-testid="icon-externallink" />,
-    ArrowLeft: () => <div data-testid="icon-arrowleft" />,
-    Calendar: () => <div />,
-    Database: () => <div />,
-    Clock: () => <div />,
-    Info: () => <div />,
-    Globe: () => <div />,
-    BarChart3: () => <div />,
-    FileText: () => <div />,
-    Settings: () => <div />,
-    Layers: () => <div />,
-    Home: () => <div />,
-    Activity: () => <div />,
-    Percent: () => <div />,
-    PiggyBank: () => <div />,
-    Landmark: () => <div />,
-    Cpu: () => <div data-testid="icon-cpu" />,
-    Menu: () => <div data-testid="icon-menu" />,
-    X: () => <div data-testid="icon-x" />,
-    Search: () => <div data-testid="icon-search" />,
-    ChevronRight: () => <div data-testid="icon-chevron-right" />,
-    ChevronDown: () => <div data-testid="icon-chevron-down" />,
-    Filter: () => <div data-testid="icon-filter" />,
-    Briefcase: () => <div />,
-    LineChart: () => <div />,
-    Brain: () => <div />,
-    Sparkles: () => <div />,
-    AlertTriangle: () => <div />,
-}));
 
 
 describe("宏觀指標模組 (Macro)", () => {

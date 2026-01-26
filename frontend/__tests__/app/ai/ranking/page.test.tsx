@@ -17,17 +17,8 @@ jest.mock("@/components/ScoreRadarChart", () => ({
     default: () => <div data-testid="score-radar-chart" />
 }));
 
-jest.mock("lucide-react", () => ({
-    TrendingUp: () => <div />,
-    BarChart3: () => <div />,
-    FileText: () => <div />,
-    Settings: () => <div />,
-    Layers: () => <div />,
-    Home: () => <div />,
-    Trophy: () => <div />,
-    Filter: () => <div />,
-    RefreshCw: () => <div data-testid="icon-refresh" />,
-}));
+// 2. 圖標 Mock 已由 jest.setup.js 全域處理，若有特定 DataTestId 需求可在此保留 local mock，
+// 但目前 jest.setup.js 已能自動生成帶有 data-testid 的 Mock 組件。
 
 // Mock Data
 jest.mock("@/data/mockRanking", () => {
@@ -41,9 +32,7 @@ jest.mock("@/data/mockRanking", () => {
     };
 });
 
-jest.mock("next/navigation", () => ({
-    useRouter: () => ({ push: jest.fn() }),
-}));
+// Next.js Navigation 已由 jest.setup.js 全域處理
 
 describe("RankingPage 整合測試", () => {
     it("TC-1701: /ai/ranking 應正確渲染排行榜", () => {

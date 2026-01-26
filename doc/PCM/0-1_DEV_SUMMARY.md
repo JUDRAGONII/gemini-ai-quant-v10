@@ -43,10 +43,20 @@
 - [x] **自動化驗收測試 (TDD)**:
     - 實作並通過 `dataIntegrity.test.ts` (TC-1101~4101) 核心驗收。
     - 產出 `20260126_10_DataIntegrity_Validation.md` 完整執行報告。
-- [x] **修復 GitHub CI 前端測試失敗 (2026-01-26)**:
-    - 解決 `VIX` 指標文本歧義。
-    - 同步 Mock 數據代碼與指標路徑 (`gdp_us`)。
-    - 補齊缺失的 `it` 測試區塊語法，實踐 100% 通過。
+## [V10.0.8] - 2026-01-26
+### Added
+- **全域測試 Mock 基礎 (QA Infrastructure)**:
+  - 實作基於 Proxy 的全域 `lucide-react` 圖標 Mock，自動化生成 `data-testid`。
+  - 強化 `next/navigation` 全域 Mock，支援 `usePathname` 與 `useParams`。
+### Fixed
+- **前端測試報錯修復 (Frontend Test Repair)**:
+  - 修正 `app/page.test.tsx` 圖標 TestID 衝突與導航標籤內容不匹配。
+  - 修正 `chips/layout.test.tsx` 之導航 Mock 類型衝突。
+  - 透過局部組件 Mock 解決 `macro/page.test.tsx` 之異步渲染競爭，達成 100% 全量通過 (93/93)。
+- **模型中斷優化策略**:
+  - 針對 429 或超時中斷，優化單次工具呼叫鏈並增加非同步執行觀察。
+
+## [V10.0.7] - 2026-01-25
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。

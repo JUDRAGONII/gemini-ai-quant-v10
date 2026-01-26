@@ -13,7 +13,12 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 // 建立具備高度權限的 Client 進行結構檢查
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-describe("資料完整性與市場分類驗收測試", () => {
+// 若為測試 Dummy Key，則跳過此整合測試
+const isDummyKey = SUPABASE_SERVICE_ROLE_KEY === 'dummy-service-role-key';
+
+const describeSuite = isDummyKey ? describe.skip : describe;
+
+describeSuite("資料完整性與市場分類驗收測試", () => {
 
     describe("1. 基礎結構驗證 (Foundation)", () => {
 
