@@ -288,3 +288,27 @@
 - [ ] 涉及重要 UI 組件名稱（如 ticker symbol）的斷言，優先使用 `getAllBy...` 並配合索引或 `data-testid`。
 - [ ] Mock 數據變動後，需全域搜尋對應代碼字串並同步更新測試腳本。
 - [ ] 避免在未確認語法樹完整性的情況下，對大塊 `it` 區塊進行自動化替換。
+### 2026-01-26 前端全量測試 (Full Test Run) 報錯教訓
+
+### 問題現象
+1. **異步競爭與自毀渲染**: `macro/page.test.tsx` 在全量測試中偶爾失敗，Console 充滿 React 組件重建導致的警告。
+2. **Missing Key 警告**: `app/page.test.tsx` 顯示報錯，起因於 AI 報告 Mock 數據缺少 `id` 欄位。
+3. **整合測試環境缺失**: `dataIntegrity.test.ts` 因缺少 `SUPABASE_SERVICE_ROLE_KEY` 導致整個測試套件崩潰。
+
+### 底層根本原因
+1. **Proxy Mock 不穩定性**: `jest.setup.js` 中的 Lucide Proxy Mock 每次 get 都返回新定義的組件函式，React 認定組件身分已變，強制重建渲染，導致狀態遺失與警告，並在高併發測試下引發競爭。
+2. **數據完整性疏忽**: 測試用的 Mock 資料未對齊動態渲染所需的關鍵屬性（如 `key` 所在的 `id`）。
+3. **環境耦合**: 整合測試直接依賴 env，未在建置/單元測試流程中加入斷路器（Breaker）。
+
+### 解決方案
+1. **Mock 精細化**:
+   - 為 Lucide Proxy Mock 加入 **iconCache** 快取機制，確保組件穩定性。
+   - 補齊 Recharts 的 `ResponsiveContainer` 與 `ResizeObserver` 模擬。
+2. **數據校準**: 在測試數據中加入 `id: 'mock-id'` 消除 Key 警告。
+3. **環境解耦**: 在整合測試頂層加入 `isDummyKey = SUPABASE_SERVICE_ROLE_KEY === '...'` 判斷邏輯，滿足條件時自動 `describe.skip`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 編寫 Proxy-based Mock 時必須實作快取 (Caching) 以保證組件實體一致。
+- [ ] Mock 數據對象必須包含列表渲染所需的 `id` 或 `key` 屬性。
+- [ ] 具有外部依賴（DB/API）的整合測試必須具備環境檢測與自動跳過機制。
+- [ ] 在 `jest.setup.js` 中預設補齊 `useParams` 等 App Router 常用 Hook 的基礎 Mock。
