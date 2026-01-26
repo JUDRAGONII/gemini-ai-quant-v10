@@ -5,7 +5,7 @@ import time
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from .base_fetcher import BaseFetcher
-from backend.lib.config import Config
+from lib.config import Config
 
 logger = logging.getLogger(__name__)
 

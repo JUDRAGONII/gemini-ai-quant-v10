@@ -1,62 +1,79 @@
-"""
-Taifex 官方歷史行情擷取器 (Taiwan Futures Exchange Official API/CSV)
-- 抓取期貨 (Futures) 與選擇權 (Options) 的日交易數據
-- 優先處理台指期 (TX) 等核心品項
-"""
-import time
-import requests
 import logging
+import requests
+import time
+import json
 import pandas as pd
-from io import StringIO
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from .base_fetcher import BaseFetcher
+from lib.config import Config
 
 logger = logging.getLogger(__name__)
 
 class TaifexFetcher(BaseFetcher):
-    """期交所 (Taifex) 數據擷取器"""
-    
-    # 歷史 CSV 下載端點 (範例：台指期日報表)
-    FUT_DAILY_URL = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
+    """
+    期交所 (TAIFEX) 數據擷取器
+    透過官方 OpenAPI 獲取最新交易日行情。
+    """
 
     def __init__(self, client):
         super().__init__(client, "daily_price")
+        # 依照調研結果，正確 JSON 端點為 DailyMarketReportFut
+        self.base_url = "https://openapi.taifex.com.tw/v1"
 
-    def fetch(self, commodity_id: str, date_str: str) -> pd.DataFrame:
-        """
-        獲取特定品項單日行情
-        date_str: YYYY/MM/DD
-        """
-        params = {
-            "queryType": "2",
-            "marketCode": "0",
-            "dateString": date_str,
-            "commodity_id": commodity_id
-        }
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
+    def fetch(self, **kwargs) -> Any:
+        """從期交所獲取行情"""
+        time.sleep(1.1)
+        endpoint = f"{self.base_url}/DailyMarketReportFut"
+        headers = {'Accept': 'application/json'}
         try:
-            time.sleep(2)
-            resp = requests.post(self.FUT_DAILY_URL, data=params, headers=headers, timeout=30)
-            # 解析 HTML Table 或尋找 CSV 下載按鈕的 API 路徑
-            # 注意: Taifex 官網查詢結果通常是 HTML，這裡簡化實現邏輯
-            # 大規模回補建議下載整年 CSV
-            logger.info(f"[Taifex] Fetching {commodity_id} on {date_str}...")
-            return pd.DataFrame() # 暫回空，待實作詳細 HTML/CSV 解析
+            logger.info(f"正在從 TAIFEX 抓取期貨行情: {endpoint}")
+            response = requests.get(endpoint, headers=headers, timeout=15)
+            response.raise_for_status()
+            # 處理可能存在的 BOM
+            content = response.content.decode('utf-8-sig')
+            return json.loads(content)
         except Exception as e:
-            logger.error(f"[Taifex] Fetch failed: {e}")
-            return pd.DataFrame()
+            logger.error(f"TAIFEX Fetcher 數據抓取或解析失敗: {e}")
+            return []
 
-    def transform(self, raw_data: pd.DataFrame) -> List[Dict[str, Any]]:
+    def transform(self, raw_data: Any) -> List[Dict[str, Any]]:
+        """將原始數據轉換為 daily_price Schema"""
+        if not raw_data:
+            return []
+
+        # 目標標的
+        targets = ["TX", "MTX", "TE"]
+        transformed = []
+        for item in raw_data:
+            symbol = item.get("SymbolID", "").strip()
+            if symbol in targets:
+                try:
+                    date_str = item.get("Date")
+                    trade_date = datetime.strptime(date_str, "%Y%m%d").date()
+                    
+                    transformed.append({
+                        "stock_code": symbol,
+                        "trade_date": trade_date.isoformat(),
+                        "open_price": float(item.get("OpenPrice")) if item.get("OpenPrice") else None,
+                        "high_price": float(item.get("HighPrice")) if item.get("HighPrice") else None,
+                        "low_price": float(item.get("LowPrice")) if item.get("LowPrice") else None,
+                        "close_price": float(item.get("SettlementPrice")) if item.get("SettlementPrice") else None,
+                        "volume": int(item.get("TradingVolume")) if item.get("TradingVolume") else 0
+                    })
+                except Exception as e:
+                    logger.warning(f"跳近期貨紀錄轉換錯誤: {e} | Data: {item}")
+                    continue
+
+        # 由於同代號有多個合約，我們對 transformed 進行去重，只保留成交量最大的一筆 (代表主力合約)
+        if transformed:
+            df = pd.DataFrame(transformed)
+            # 依據代號群組，取成交量最大者
+            df_main = df.sort_values("volume", ascending=False).drop_duplicates("stock_code")
+            return df_main.to_dict("records")
+            
         return []
 
-    def backfill_futures(self, commodity_ids: List[str], start_year: int = 2010):
-        """
-        期權大規模回補
-        因為期交所官方 API 較為封閉，此處作為未來擴充介面
-        """
-        logger.info(f"🎬 準備回補期權數據: {commodity_ids}")
-        # TODO: 實作 CSV 下載並批量 Upsert 邏輯
-        return 0
+    def run(self, **kwargs) -> int:
+        """重寫執行流程，期貨行情 PK 是 symbol + date"""
+        return super().run(on_conflict="stock_code,trade_date", **kwargs)

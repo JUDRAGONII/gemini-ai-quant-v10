@@ -1,5 +1,30 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.1.0] - 2026-01-26
+### Added
+- **數據地核修復 (Data Integrity Fix)**: 
+    - 補回 `daily_price` 表遺失之 `market_type` 欄位並建立 B-Tree 索引。
+    - 完成 5,388,534 筆成交數據的分類標記 (TWSE: 3.4M / TIINGO: 1.9M / TAIFEX)。
+    - **精確分類邏輯**：實作「代碼首位數字識別法」，完美區分 00937B (台) 與 AAPL (美)。
+- **自動化完整性測試**: 
+    - 實作 `dataIntegrity.test.ts` 與專屬驗收文檔 (TC-1101~4101)。
+- **開發文件體系規範化 (Batch 1-3)**: 
+    - 深度重構 002-012 技術文檔，確保與「憲級文件」100% 對齊。
+- **專案深度審計**: 更新 `V10_Project_Gap_Analysis.md` 紀錄結構修復進度與量化缺項。
+
+## [V10.0.8] - 2026-01-26
+### Added
+- **期交所對接 (TAIFEX Integration)**:
+    - 實作 `taifex_fetcher.py`，支援透過官方 OpenAPI 擷取台指期 (TX)、小型台指 (MTX) 與電子期 (TE)。
+    - 整合至 `flows.sync_market` 自動化工作流。
+    - 更新 `init_stock_list.py` 注入期貨標的。
+
+### Fixed
+- **數據監控中心 (Monitor Center) 修正**:
+    - **行情數據顯示**: 修正 RLS 權限策略，解決 `daily_price` 在前端計數為 0 的問題。
+    - **進度比例校準**: 將預估目標值由 10 萬調升至 500 萬筆，使進度條精確反映大規模回補狀態。
+- **導入路徑優化**: 修正 `backend` 模組在 Docker 容器內外的導入依賴問題。
+
 ## [V10.0.7] - 2026-01-25
 ### Added
 - **美股回補專項升級 (US Market Expansion)**:

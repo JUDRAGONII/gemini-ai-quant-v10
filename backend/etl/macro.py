@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from .base_fetcher import BaseFetcher
-from backend.lib.config import Config
+from lib.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -35,16 +35,13 @@ MACRO_METADATA = {
     # 風險與信心
     "VIX": {"id": "VIXCLS", "cat": "風險", "country": "US"},
     "BAA10Y": {"id": "BAA10Y", "cat": "風險", "country": "US"},
-    "CS_INDEX": {"id": "UMICHCSI", "cat": "信心", "country": "US"},
+    "CS_INDEX": {"id": "UMCSENT", "cat": "信心", "country": "US"},
 
-    # 台灣宏觀數據 (FRED Source)
-    # GDP (Nominal, Annual)
-    "TW_GDP": {"id": "MKTGDPtwa646NWDB", "cat": "成長", "country": "TW", "name": "Taiwan GDP"},
-    # Consumer Price Index (Annual)
-    "TW_CPI": {"id": "CPItwa646NWDB", "cat": "通膨", "country": "TW", "name": "Taiwan CPI"},
-    # Unemployment Rate (Annual) - limited availability potentially
-    # Real GDP Growth
-    "TW_REAL_GDP_GROWTH": {"id": "NGDPRXXXtwa646NWDB", "cat": "成長", "country": "TW", "name": "Taiwan Real GDP Growth"},
+    # 台灣宏觀數據 (FRED Source: IMF)
+    # National Accounts: Real Gross Domestic Product for Taiwan Province of China
+    "TW_GDP": {"id": "TWNNGDPRPCPPPT", "cat": "成長", "country": "TW", "name": "Taiwan Real GDP (% Change)"},
+    # Prices: Consumer Price Index for Taiwan Province of China
+    "TW_CPI": {"id": "TWNPCPIPCPPPT", "cat": "通膨", "country": "TW", "name": "Taiwan CPI (% Change)"},
 }
 
 

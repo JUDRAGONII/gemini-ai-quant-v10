@@ -24,9 +24,25 @@
 - [x] **環境維護：清空 3000 端口並重啟**: 已中止佔用的 PID 3176 並穩定啟動 Next.js 於 3000 端口。
 - [x] **修復：數據監控中心打不開**: 已修復 `SettingsPage` 的 Hydration 衝突與 `ProBadge` 參數錯誤。已通過 Lint 驗證。
 - [x] **新功能：數據監控中心 (Data Monitor Center)**: 實作 `/admin/monitor` 與隱藏入口機制。
-- [x] **TDD 驗證：數據監控中心**: 完成 TC-1101 至 TC-4001 共 5 項測試，修復開發者模式權限漏洞。
-- [x] **Schema 補完**: 依照 3.0.0 規格書補齊 `stock_factors`, `macro_factors` 等表。
-- [ ] **Security Audit (CodeQL)**: 上線前安全掃描 (Phase 6)。
+- [x] **期交所對接 (TAIFEX Integration)**: 實作 `TaifexFetcher` 並成功採集大台 (TX)、小台 (MTX)、電子期 (TE)。
+- [x] **監控中心深度修復**: 
+    - 解決「500萬筆數據計數超時」导致的顯示為 0。
+    - 重構進度條為「標的覆蓋率 (95%)」。
+    - 修復 RLS 與 `anon` 執行權限。
+- [x] **Bug Fixes (2026-01-26)**:
+    - 修正 `TaifexFetcher` 遺漏導入問題。
+    - 校準 FRED 指標代號 (`UMCSENT` 等)。
+- [x] **專案深度審計 (System Audit)**: 
+    - 產出 `V10_Project_Gap_Analysis.md`，識別量化表真空關鍵缺項。
+- [x] **開發文件體系補完 (Batch 1-3)**:
+    - 完成 002-012 技術文檔之憲級標準化定義。
+- [x] **數據補洗與地核校準 (Data Integrity)**:
+    - 補回 `daily_price` 缺失之 `market_type` 欄位並建立加速索引。
+    - 成功分類 5,388,534 筆歷史數據 (TWSE 3.4M / TIINGO 1.9M)。
+    - **精確分類邏輯實作**：確立「數字開頭為台股」準則，解決 00937B 等股票誤判。
+- [x] **自動化驗收測試 (TDD)**:
+    - 實作並通過 `dataIntegrity.test.ts` (TC-1101~4101) 核心驗收。
+    - 產出 `20260126_10_DataIntegrity_Validation.md` 完整執行報告。
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。

@@ -16,13 +16,15 @@ from typing import List, Dict, Any
 # 設定 Python 路徑以匯入 backend 模組
 import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if project_root not in sys.path:
-    sys.path.append(project_root)
+backend_path = os.path.join(project_root, "backend")
+for path in [project_root, backend_path]:
+    if path not in sys.path:
+        sys.path.append(path)
 
-from backend.lib.supabase_client import get_supabase
-from backend.etl.twse_historical import TwseHistoricalFetcher
-from backend.etl.macro import MacroFetcher, MACRO_METADATA
-from backend.etl.market import TiingoFetcher, FugleFetcher
+from lib.supabase_client import get_supabase
+from etl.twse_historical import TwseHistoricalFetcher
+from etl.macro import MacroFetcher, MACRO_METADATA
+from etl.market import TiingoFetcher, FugleFetcher
 
 # 設定日誌
 logging.basicConfig(

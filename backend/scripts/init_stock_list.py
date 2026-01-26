@@ -6,11 +6,13 @@ import pandas as pd
 
 # 設定 Python 路徑
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if project_root not in sys.path:
-    sys.path.append(project_root)
+backend_path = os.path.join(project_root, "backend")
+for path in [project_root, backend_path]:
+    if path not in sys.path:
+        sys.path.append(path)
 
-from backend.lib.supabase_client import get_supabase
-from backend.etl.tw_official import TwseFetcher
+from lib.supabase_client import get_supabase
+from etl.tw_official import TwseFetcher
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -114,6 +116,14 @@ def init_stocks():
     
     us_constituents = get_us_constituents()
     all_records.extend(us_constituents)
+
+    # 4. 注入期交所標的 (TX, MTX, TE)
+    futures = [
+        {"symbol": "TX", "name": "台指期", "market": "Taifex", "priority": 1, "is_active": True},
+        {"symbol": "MTX", "name": "小型台指", "market": "Taifex", "priority": 1, "is_active": True},
+        {"symbol": "TE", "name": "電子期", "market": "Taifex", "priority": 1, "is_active": True},
+    ]
+    all_records.extend(futures)
 
     if all_records:
         logger.info(f"🚀 正在將 {len(all_records)} 檔標的存入資料庫 (台股上市櫃 + 美股指數)...")
