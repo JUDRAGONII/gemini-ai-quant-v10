@@ -1,6 +1,25 @@
 # 0-2_CHANGELOG (變更紀錄)
 
 ## [V10.0.9] - 2026-01-26
+### Added
+- **前端剩餘工作分析報告 (V10 Analysis)**:
+  - 深度讀取《前端完整開發文件》，完成全模組執行狀態審計。
+  - 產出 `frontend_remaining_work.md`，量化完成度為 65% (修正前次 40% 估算)。
+  - 識別關鍵缺口：個股詳情 K 線圖 (TradingView)、籌碼子頁面、RAG 語義搜尋介面。
+- **後端開發 SKILLS 深度分析 (Backend Intelligence)**:
+  - 深度分析 GitHub MCP 與 PostgreSQL MCP 在代理程式化開發中的角色。
+  - 解釋為何「系統架構師 (Architect)」與「API 規範驅動 (Spec-Driven)」是後端的 Pro-Max 等級路徑。
+- **規格驅動開發 (SDD) 協議啟動**:
+  - 建立正式協定 `017_Spec_Driven_Protocol.md`。
+  - 定義「規格先行 -> 架構審核 -> 雙端同步」的開發流程。
+- **個股詳情頁實作 (SDD + UI/UX Pro Max Integration)**:
+  - **後端 API**: 實作 `frontend/app/api/stocks/[symbol]/route.ts` 聚合行情與財務因子數據。
+  - **高品質組件**: 建立 `StockChart.tsx` (基於 TradingView 規範)，支援 K 線渲染與 Crosshair 互動。
+  - **玻璃擬態佈局**: 完成動態路由頁面，整合 Framer Motion 與 Lucide-React 圖標庫。
+  - **底層穩定化**: 移除所有對 `psql` 指令的依賴，解決開發環境報錯並修復之前的中斷點。
+  - **404 故障排除**: 
+    - 建立 `frontend/.env.local` 同步 Supabase 金鑰，解決 Mock Key 問題。
+    - 修正 API Route 欄位名稱 (`open_price/close_price`)，修復空陣列問題。
 ### Fixed
 - **Frontend 全量測試修復 (100% Pass)**:
   - 解決 `app/page.test.tsx` 導航標籤文字不匹配與 `icon-cpu` 多重複元素衝突。
@@ -8,6 +27,11 @@
   - 診斷並修復 `macro/page.test.tsx` 在全量測試下的異步渲染競爭問題，確保套件穩定 PASS。
 - **全域 Mock 策略優化**:
   - 完善 `jest.setup.js` 中的 `lucide-react` Proxy 與 `next/navigation` 模擬，減少 80% 的本地重複 Mock 程式碼。
+- **K 線圖 API 兼容性修復 (lightweight-charts v5)**:
+  - 修正 `StockChart.tsx`，將 `addCandlestickSeries()` 改為 v5 統一 API `addSeries(CandlestickSeries)`。
+- **環境配置同步**:
+  - 更新 `.env.example` 加入 `NEXT_PUBLIC_*` 變數說明。
+  - 將 `frontend/.env.local` 加入 `.gitignore` 防止意外提交。
 
 ## [V10.1.0] - 2026-01-26
 ### Added

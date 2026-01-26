@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 4.5: 後端邏輯注入與大規模數據回補
-**狀態**：✅ Phase 4.5 資料庫基礎建設與大規模回補已順利結項。經調查所有核心行情數據與指標均已補齊。
+**階段**：Phase 4.3: 核心功能深化與金融場景補完
+**狀態**：✅ 已完成 V10.0 前端剩餘工作之深度審計。當前系統完成度約 65%，前端基礎設施已 100% 穩定，進入核心業務功能補全階段。
 
 ---
 
@@ -43,6 +43,10 @@
 - [x] **自動化驗收測試 (TDD)**:
     - 實作並通過 `dataIntegrity.test.ts` (TC-1101~4101) 核心驗收。
     - 產出 `20260126_10_DataIntegrity_Validation.md` 完整執行報告。
+- [x] **前端剩餘工作深度分析 (V10 Core Audit)**:
+    - [x] 依據「憲級文件」1:1 比對 Next.js 14 實作現況。
+    - [x] 完成 `frontend_remaining_work.md` 更新，識別 P1 級別缺項 (K線、籌碼子頁)。
+    - [x] 整合 UI/UX Pro Max 規範，規劃 Phase 4.3 視覺優化路徑。
 ## [V10.0.8] - 2026-01-26
 ### Added
 - **全域測試 Mock 基礎 (QA Infrastructure)**:
@@ -56,11 +60,24 @@
 - **模型中斷優化策略**:
   - 針對 429 或超時中斷，優化單次工具呼叫鏈並增加非同步執行觀察。
 
-## [V10.0.7] - 2026-01-25
+- [x] **個股詳情頁實作 (SDD + UI/UX Pro Max)**:
+    - [x] 完成 `/api/stocks/[symbol]` 數據聚合接口。
+    - [x] 建立高品質 K 線圖組件 (StockChart) 與玻璃擬態詳情頁。
+    - [x] 整合財務因子 (PE/PB/ROE) 顯示。
+
+- [x] **後端開發 SKILLS 深度分析 (Backend Intelligence)**:
+    - [x] 分析 GitHub MCP 與 PostgreSQL MCP 對後端自動化的價值。
+    - [x] 識別 `architect` 技能在後端開發中的核心地位。
+    - [x] 推薦「Spec-Driven」開發模式作為後端版的 Pro-Max。
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。
-- [ ] **E2E Browser Test (Playwright)**: 解決 Mock 無法捕捉的渲染/CORS 問題 (Phase 5)。
+- [x] **規格驅動開發 (SDD) 協議啟動**:
+    - [x] 建立 `doc/plans/017_Spec_Driven_Protocol.md` 規範。
+    - [x] 整合 `/architect` 審計流程至開發前置作業。
+    - [x] **API 規格體系歸檔 (SDD Alignment)**:
+        - [x] 依據「憲級文件」規範，將個股詳情規格整合至 `doc/開發文件/008_API 端點詳細規格.md`。
+        - [x] 正式歸檔子規格至 `doc/開發文件/008_API端點詳細規格_StockDetail.md`。
 
 
 ---

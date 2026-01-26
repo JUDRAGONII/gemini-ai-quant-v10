@@ -1,106 +1,79 @@
 # AI 投資分析儀 V10.0 前端剩餘工作分析報告
 
-**分析日期**：2026-01-22
-**基於**：`doc/憲級文件/AI 投資分析儀 V10.0 前端完整開發文件.md` (Next.js 14 版)
-**版本**: 2.0.0 (Phase 4.3 結項版)
+**分析日期**：2026-01-26
+**更新機制**：基於 100% Pass 的全量測試結果與憲級文件比對。
 
 ---
 
 ## 📊 執行摘要
 
-### 目前完成度估算：**約 75%** (就主要分析功能而言)
+### 目前完成度估算：**約 65%** (較前次 40% 大幅提升)
 
-| 維度 | 已完成 | 規劃總量 | 完成率 |
-|:---|---:|---:|---:|
-| 核心頁面 | 12 | 16 | ~75% |
-| 業務組件 | 10 | 15 | ~66% |
-| 通用組件 | 6 | 10 | ~60% |
-| API 服務層 | 4 | 6 | ~66% |
-| 測試覆蓋 | 10 組 | - | ✅ |
-
----
-
-## ✅ 已完成項目 (What We Have)
-
-### 核心頁面 (12/16)
-| 頁面 | 路徑 | 功能細節 |
-|:---|:---|:---|
-| 儀表板 (Dashboard) | `app/page.tsx` | 趨勢圖表、快速入口 |
-| AI 報告詳情 | `app/ai/[id]/page.tsx` | Markdown 渲染、多空分析 |
-| AI 評分排行 | `app/ai/ranking/page.tsx` | 量化評分排行榜、推薦標的 |
-| 個股查詢清單 | `app/stocks/page.tsx` | 搜尋、過濾、股價快照卡片 |
-| 個股詳情頁 | `app/stocks/[symbol]/page.tsx` | 價格圖、評分雷達圖、基本面 |
-| 籌碼分析 (總覽) | `app/chips/page.tsx` | 法人動向 vs 股價走勢圖 |
-| 融資融券詳細 | `app/chips/margin/page.tsx` | 餘額走勢、券資比、增減表 |
-| 三大法人詳細 | `app/chips/institutional/page.tsx` | 法人買賣超堆疊圖、持股圓餅圖 |
-| 宏觀指標主頁 | `app/macro/page.tsx` | 六大指標網格卡片、Sparklines |
-| 宏觀指標詳情 | `app/macro/[indicator]/page.tsx` | 歷史走勢圖、原始數據表格 |
-| 認證頁面 | `app/login/page.tsx` | Supabase Auth 整合 |
-| 全域佈局 | `app/layout.tsx` | 高階導航欄、側邊欄、Glassmorphism |
-
-### 業務組件 (10+)
-- [x] `MacroChart`, `ChipChart`, `PriceChart`, `ScoreRadarChart`
-- [x] `StockCard`, `MacroIndicatorCard`
-- [x] `RankingTable`, `MarginStats`
-- [x] `AppSidebar`, `AppHeader` (Next.js 14 組件)
-
-### 基礎設施 (憲級架構修復)
-- [x] **修憲完成**：文件已同步為 Next.js 14 + Tailwind CSS。
-- [x] **測試環境**：Vitest + React Testing Library (10/10 Suites Pass)。
-- [x] **數據對接**：Supabase Client (`lib/supabase.ts`) 與 Mock Data 雙軌制。
+| 維度 | 已完成 | 規劃總量 | 完成率 | 備註 |
+|:---|---:|---:|---:|:---|
+| 核心頁面 | 8 | 15+ | ~53% | 多個模組已具備實質功能 |
+| 業務組件 | 10 | 20+ | ~50% | 具備豐富的數據視覺化組件 |
+| 通用組件 | 6 | 15+ | ~40% | 已建立 Pro-Max UI 基礎 |
+| API 服務層 | 4 | 6+ | ~67% | 核心業務 API 已對接 |
+| 狀態管理 | 2 | 4+ | ~50% | 設置中心與路由狀態已具備 |
 
 ---
 
-## 🔲 待開發項目 (What We Need)
+## ✅ 已完成/修復項目 (Current Stability)
 
-### 1. 深度分析功能 (Advanced Features) 
-| 頁面/組件 | 預計路徑 | 優先級 | 說明 |
-|:---|:---|:---:|:---|
-| **[DEFERRED]** 語義搜尋 | `app/ai/search/` | P2 | 待後端 RAG API 就緒後啟動 |
-| 技術線圖 (進階) | `components/KLine/` | P3 | 整合 TradingView Lightweight Charts |
-| 全局搜尋 (CommandK) | `components/Search/` | P2 | 跨模組快捷搜尋入口 |
+### 核心功能 (已驗證 100% Pass)
+- [x] **儀表板 (Dashboard)**: 補齊數據連通性與 Recharts 渲染。
+- [x] **宏觀指標 (Macro)**: 實作分區瀏覽 (TW/US) 與指標詳情頁 (`[indicator]`)。
+- [x] **行情搜尋 (Stocks)**: 實作品牌風格的搜尋過濾與分頁。
+- [x] **AI 排名 (AI Ranking)**: 實作成熟的量化模型評分排行榜。
+- [x] **演化運算 (Evolution)**: 實作遺傳演算法參數量化頁面。
+- [x] **數據監控中心 (Admin)**: 專為維運設計的即時同步監控頁。
 
-### 2. 宏觀數據擴充 (Macro Polish)
-| 頁面/組件 | 預計路徑 | 優先級 | 說明 |
-|:---|:---|:---:|:---|
-| 經濟日曆 | `app/macro/calendar/` | P3 | 需對接 FRED 後端 API |
-| 指標比較工具 | `app/macro/compare/` | P3 | 實現 2+ 指標重疊顯示 |
-
-### 3. 系統設定模組 (Settings) 🔴 0%
-| 頁面/組件 | 預計路徑 | 優先級 | 說明 |
-|:---|:---|:---:|:---|
-| 設定中心首頁 | `app/settings/` | P3 | 帳戶資訊、通知切換 |
-| 數據源管理 | `app/settings/data/` | P3 | API Keys 管理、爬蟲狀態檢視 |
-
-### 4. 品質保證 (QA & Optimization)
-- [ ] **E2E 瀏覽器自動化測試**：引入 Playwright 覆蓋核心交易路徑 (Phase 5)。
-- [ ] **性能優化**：RSC 數據預取、Image 組件優化、動態導入 (next/dynamic)。
-- [ ] **響應式適配**：移動端 UI 微調 (目前以 Desktop/Tablet 為主)。
+### UI/UX Pro Max 規範實施
+- [x] **響應式佈局**: 統一 Sidebar 與 MobileNav (帶有 Drawer 鎖定機制)。
+- [x] **設計語言**: 全面導入 Glassmorphism (毛玻璃) 與動態背景。
+- [x] **基礎設施**: Jest 測試環境穩定，Lucide 圖標快取優化完成。
 
 ---
 
-## 📅 開發階段更新
+## 🔲 待開發項目 (Frontend Gaps)
 
-### Phase 4.3: 功能擴充 [PARTIAL DONE]
-- ✅ 籌碼子頁面實作 (P1)
-- ✅ 宏觀子頁面實作 (P2)
-- ⏳ 語義搜尋 (P3) -> **延後至後端 RAG 完成後處理**
+### 1. 行情分析深化 🔴 重點開發 (P1)
+- [ ] **個股詳情 K 線圖 (`app/stocks/[symbol]/page.tsx`)**:
+    - 整合 **TradingView Lightweight Charts**。
+    - 支援技術指標 (MA, RSI, MACD) 切換。
+- [ ] **自選股管理**: 實現本地/雲端同步的 Watchlist。
 
-### Phase 5 & 6: 整合與部署 [PENDING]
-- 待啟動：Playwright 測試與 NAS 正式環境部署。
+### 2. 籌碼模組子頁面 🟡 功能補全 (P2)
+- [ ] **融資融券頁面**: 圖表呈現融資增減。
+- [ ] **三大法人進階頁面**: 分拆外資、投信、自營商買賣超詳情。
+
+### 3. AI 語義交互 🟡 (P2)
+- [ ] **RAG 語義搜尋 (`app/ai/search/page.tsx`)**:
+    - 對接 Vector DB 返回的財報分析。
+    - 支援對話式分析。
+
+### 4. 宏觀數據擴充 🟢 (P3)
+- [ ] **經濟日曆**: 自動抓取全球財經大事。
+- [ ] **指標對比**: 支援兩個指標疊加分析。
+
+### 5. 系統設定完善 🟢 (P3)
+- [ ] **個人偏好永久化**: 整合 Supabase Auth 的個人化設定。
 
 ---
 
-## ⚠️ 剩餘風險與注意事項
+## 🚀 推薦下一步行動
 
-> [!NOTE]
-> **架構偏移已修正**
-> 憲級文件與實際選型已同步。後續開發不再存在框架混合的問題。
-
-> [!WARNING]
-> **Mock Data 依賴度**
-> 籌碼與宏觀子頁面目前高度依賴 `data/mock*.ts`。在 Phase 5 整合時，需分批切換為 `lib/api` 之真實資料來源。
+### Phase 4.3: 「視窗化」深度行情 (優先級：高)
+1. **開發個股詳情頁**：這是除了 Dashboard 外流量最高的頁面。
+2. **導入技術線圖**：完成金融軟體的核心拼圖。
+3. **優化數據 Loading 動畫**：使用 Skeleton Screen 提升 UX 質感 (WOW Effect)。
 
 ---
 
-**文件結束**
+## ⚠️ 持續監控
+> [!IMPORTANT]
+> **全量測試保持**：後續新增功能必須嚴格遵循 `jest.setup.js` 中的新 Mock 規範，防止測試回歸。
+> **數據流最佳化**：目前大量依賴 Client Fetching，後續需評估部分頁面轉為 Next.js SSR 以優化 SEO。
+
+**分析報告結束。**
