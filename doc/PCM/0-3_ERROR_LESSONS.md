@@ -246,3 +246,45 @@
 ### 預防重複犯錯的 Checkbox
 - [ ] 任何 ETLFetcher 實作必須確保在 Docker 環境下具備正確的 `sys.path` 注入。
 - [ ] 統一採用 `backend.` 作為頂層包路徑。
+
+---
+
+### 2026-01-26 Mock 數據與組件介面不同步 (Mock/Interface Drift)
+
+### 問題現象
+- **CI 報錯**：GitHub Actions 前端建置失敗，報錯 `Property 'historyData' does not exist on type`。
+- **根本原因**：在重構 `mockMacro.ts` 時，將 `sparklineData` 替換為 `historyData`，但未同步修改：
+    1. `MacroIndicatorCard.tsx` 的 Props 定義。
+    2. `app/macro/page.tsx` 的調用處。
+    3. 測試檔案 `page.test.tsx` 中的 Mock 數據。
+- **連鏈反應**：`UNRATE`, `TW_SIGNAL` 等指標缺少 `fullName` 屬性，違反了新定義的 `MacroIndicator` 介面。
+
+### 解決方案
+1. 確保介面更新後，所有使用該介面的檔案同步修改。
+2. 使用 `npx tsc --noEmit` 主動在本地執行型別檢查，避免 CI 延遲回饋。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 修改 `interface` 或 `type` 定義後，立即搜索專案中所有引用該型別的檔案。
+- [ ] 推送前必須先在本地執行 `npm run build`，確認 TypeScript 與 Lint 皆通過。
+- [ ] 測試檔案中使用的 Mock Props 必須與真實組件的介面保持一致。
+### 2026-01-26 前端測試歧義與代碼偏移教訓
+
+### 問題現象
+- **FAIL**: `Found multiple elements with the text: /VIX/`。
+- **TypeError**: `indicator gdp not found` (Mock 數據中僅存在 `gdp_us`)。
+- **Syntax Error**: 測試檔案無法解析，因大量 `it` 區塊遺失。
+
+### 底層根本原因
+1. **文本歧義**: 指標卡片同時顯示 `VIX` (代碼) 與 `波動率指數 (VIX)` (名稱)，寬鬆的 Regex 匹配導致失敗。
+2. **路徑漂移 (Path Drift)**: 前端組件路徑實作為 `/macro/[indicator.toLowerCase()]`，而測試中使用了與 `mockMacro.ts` 二次定義不匹配的簡寫。
+3. **工具覆寫風險**: 在執行 `multi_replace_file_content` 時，由於 TargetContent 匹配過廣，誤將包裹邏輯的外部函式刪除。
+
+### 解決方案
+1. 改用 `screen.getAllByText(/VIX/)[0]` 確保選中首個卡片標題。
+2. 統一採用 `gdp_us` 作為基準代碼。
+3. 程式碼大幅更動後，必須立即執行 `npm run test` 進行噴火測試 (Smoke Test) 並保留完整備份。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 涉及重要 UI 組件名稱（如 ticker symbol）的斷言，優先使用 `getAllBy...` 並配合索引或 `data-testid`。
+- [ ] Mock 數據變動後，需全域搜尋對應代碼字串並同步更新測試腳本。
+- [ ] 避免在未確認語法樹完整性的情況下，對大塊 `it` 區塊進行自動化替換。

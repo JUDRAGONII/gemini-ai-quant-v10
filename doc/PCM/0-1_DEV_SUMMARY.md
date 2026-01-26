@@ -43,6 +43,10 @@
 - [x] **自動化驗收測試 (TDD)**:
     - 實作並通過 `dataIntegrity.test.ts` (TC-1101~4101) 核心驗收。
     - 產出 `20260126_10_DataIntegrity_Validation.md` 完整執行報告。
+- [x] **修復 GitHub CI 前端測試失敗 (2026-01-26)**:
+    - 解決 `VIX` 指標文本歧義。
+    - 同步 Mock 數據代碼與指標路徑 (`gdp_us`)。
+    - 補齊缺失的 `it` 測試區塊語法，實踐 100% 通過。
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。
@@ -92,6 +96,7 @@
  |
 | 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
 | 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
+| 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
 
 
 
