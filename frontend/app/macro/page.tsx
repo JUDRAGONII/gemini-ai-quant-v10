@@ -108,8 +108,8 @@ export default function MacroPage() {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${activeTab === tab
-                                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/10"
-                                            : "text-gray-500 hover:text-gray-300"
+                                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/10"
+                                        : "text-gray-500 hover:text-gray-300"
                                         }`}
                                 >
                                     {tab === "TW" ? "台灣" : tab === "US" ? "美國" : "全球"}
@@ -151,7 +151,7 @@ export default function MacroPage() {
                                                 value={indicator.latestValue}
                                                 unit={indicator.unit}
                                                 changePercent={indicator.changePercent}
-                                                sparklineData={indicator.sparklineData}
+                                                historyData={indicator.historyData}
                                                 color={indicator.color}
                                                 icon={INDICATOR_ICONS[indicator.code] || <Activity size={18} />}
                                             />

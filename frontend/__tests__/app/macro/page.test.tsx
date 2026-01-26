@@ -75,16 +75,16 @@ jest.mock("lucide-react", () => ({
     Landmark: () => <div />,
 }));
 
-describe("宏觀指標模組 (Macro)", () => {
-    describe("基礎路徑測試 (Happy Path)", () => {
-        it("TC-5201: 網格渲染: /macro 應正確顯示 GDP, CPI, VIX 等六大指標卡片", () => {
+describe("宏�??��?模�? (Macro)", () => {
+    describe("?��?路�?測試 (Happy Path)", () => {
+        it("TC-5201: 網格渲�?: /macro ?�正確顯�?GDP, CPI, VIX 等六大�?標卡??, () => {
             render(<MacroPage />);
             expect(screen.getByText(/GDP/)).toBeInTheDocument();
             expect(screen.getByText(/CPI/)).toBeInTheDocument();
             expect(screen.getByText(/VIX/)).toBeInTheDocument();
         });
 
-        it("TC-5202: 指標卡片內容: MacroIndicatorCard 應顯示最新值、變化率與 Sparkline", () => {
+        it("TC-5202: ?��??��??�容: MacroIndicatorCard ?�顯示�??�值、�??��???Sparkline", () => {
             const { MACRO_INDICATORS } = require("@/data/mockMacro");
             const indicator = MACRO_INDICATORS[0];
 
@@ -95,7 +95,7 @@ describe("宏觀指標模組 (Macro)", () => {
                     value={indicator.latestValue}
                     unit={indicator.unit}
                     changePercent={indicator.changePercent}
-                    sparklineData={indicator.sparklineData}
+                    historyData={indicator.historyData}
                     color={indicator.color}
                     icon={<div />}
                 />
@@ -107,7 +107,7 @@ describe("宏觀指標模組 (Macro)", () => {
             expect(screen.getByTestId("icon-trending-up")).toBeInTheDocument();
         });
 
-        it("TC-5203: 卡片導航: 點擊指標卡片應導航至 /macro/[code]", () => {
+        it("TC-5203: ?��?導航: 點�??��??��??��??�至 /macro/[code]", () => {
             render(
                 <MacroIndicatorCard
                     code="GDP"
@@ -115,7 +115,7 @@ describe("宏觀指標模組 (Macro)", () => {
                     value={100}
                     unit="unit"
                     changePercent={1}
-                    sparklineData={[]}
+                    historyData={[]}
                     color="#000"
                     icon={<div />}
                 />
@@ -124,30 +124,30 @@ describe("宏觀指標模組 (Macro)", () => {
             expect(link).toHaveAttribute("href", "/macro/gdp");
         });
 
-        it("TC-7103: Warning: 頁面必須包含「模擬數據展示」之顯眼警告字樣", () => {
+        it("TC-7103: Warning: ?�面必�??�含?�模?�數?��?示」�?顯眼警�?字樣", () => {
             render(<MacroPage />);
-            expect(screen.getByText(/此頁面目前使用模擬數據展示/)).toBeInTheDocument();
+            expect(screen.getByText(/此�??�目?�使?�模?�數?��?�?)).toBeInTheDocument();
         });
 
-        it("TC-7101 (Mock Data): 確認 mockMacro 數據結構符合 Recharts 要求", () => {
+        it("TC-7101 (Mock Data): 確�? mockMacro ?��?結�?符�? Recharts 要�?", () => {
             const { MACRO_INDICATORS } = require("@/data/mockMacro");
             MACRO_INDICATORS.forEach((indicator: any) => {
-                expect(indicator).toHaveProperty("sparklineData");
-                expect(Array.isArray(indicator.sparklineData)).toBe(true);
-                expect(indicator.sparklineData[0]).toHaveProperty("value");
+                expect(indicator).toHaveProperty("historyData");
+                expect(Array.isArray(indicator.historyData)).toBe(true);
+                expect(indicator.historyData[0]).toHaveProperty("value");
             });
         });
 
-        it("TC-7102 (Hydration): 驗證宏觀詳情頁渲染指標完整名稱與代碼", () => {
+        it("TC-7102 (Hydration): 驗�?宏�?詳�??�渲?��?標�??��?稱�?�?��", () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "cpi" });
             render(<IndicatorDetail />);
 
             expect(screen.getByText(/CPI/)).toBeInTheDocument();
-            expect(screen.getByText(/消費者物價指數/)).toBeInTheDocument();
+            expect(screen.getByText(/消費?�物?��???)).toBeInTheDocument();
         });
 
-        it("TC-6103 (Chart): 應處理無數據或數據點過少時的圖表降級顯示", () => {
+        it("TC-6103 (Chart): ?��??�無?��??�數?��??��??��??�表?��?顯示", () => {
             // Render card with empty sparkline
             render(
                 <MacroIndicatorCard
@@ -156,7 +156,7 @@ describe("宏觀指標模組 (Macro)", () => {
                     value={0}
                     unit="-"
                     changePercent={0}
-                    sparklineData={[]}
+                    historyData={[]}
                     color="#000"
                     icon={<div />}
                 />
@@ -167,47 +167,47 @@ describe("宏觀指標模組 (Macro)", () => {
         });
     });
 
-    describe("動態路由測試", () => {
-        it("TC-5204: 詳情頁渲染: /macro/[indicator] 應顯示指標完整描述與 30 日走勢", () => {
+    describe("?��?路由測試", () => {
+        it("TC-5204: 詳�??�渲?? /macro/[indicator] ?�顯示�?標�??��?述�? 30 ?�走??, () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "gdp" });
 
             render(<IndicatorDetail />);
 
             // Match actual translation in data
-            expect(screen.getByText(/國內生產總值/)).toBeInTheDocument();
-            expect(screen.getByText(/數據來源/)).toBeInTheDocument();
+            expect(screen.getByText(/?�內?�產總�?)).toBeInTheDocument();
+            expect(screen.getByText(/?��?來�?/)).toBeInTheDocument();
         });
 
-        it("TC-5205: 歷史表格: 指標詳情頁應顯示歷史數據表格", () => {
+        it("TC-5205: 歷史表格: ?��?詳�??��?顯示歷史?��?表格", () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "cpi" });
 
             render(<IndicatorDetail />);
 
-            expect(screen.getByText(/歷史數據/)).toBeInTheDocument();
+            expect(screen.getByText(/歷史?��?/)).toBeInTheDocument();
             expect(screen.queryAllByRole("row").length).toBeGreaterThan(5);
         });
 
-        it("TC-6201: Route: 訪問無效指標代碼 (e.g., /macro/unknown) 應顯示「找不到指標」訊息", () => {
+        it("TC-6201: Route: 訪�??��??��?�?�� (e.g., /macro/unknown) ?�顯示「找不到?��??��???, () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "unknown" });
 
             render(<IndicatorDetail />);
 
-            expect(screen.getByText(/找不到指標/)).toBeInTheDocument();
+            expect(screen.getByText(/?��??��?�?)).toBeInTheDocument();
         });
 
-        it("TC-6101 (Macro): 當指標代碼為小寫時 (e.g., /macro/gdp)，應能正確識別並渲染", () => {
+        it("TC-6101 (Macro): ?��?標代碼為小寫??(e.g., /macro/gdp)，�??�正確�??�並渲�?", () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "gdp" });
 
             render(<IndicatorDetail />);
             expect(screen.getByText(/GDP/)).toBeInTheDocument();
-            expect(screen.getByText(/國內生產總值/)).toBeInTheDocument();
+            expect(screen.getByText(/?�內?�產總�?)).toBeInTheDocument();
         });
 
-        it("TC-6102 (Indicator): 應處理變化率為 0 時的趨勢顯示 (顯示 Minus 圖標)", () => {
+        it("TC-6102 (Indicator): ?��??��??��???0 ?��?趨勢顯示 (顯示 Minus ?��?)", () => {
             const { useParams } = require("next/navigation");
             useParams.mockReturnValue({ indicator: "fedfunds" }); // FEDFUNDS has 0% change in mockMacro
 
@@ -219,8 +219,8 @@ describe("宏觀指標模組 (Macro)", () => {
         });
     });
 
-    describe("可訪問性與 UI/UX", () => {
-        it("TC-8001 (Pointer): 指標卡片應具有 cursor-pointer", () => {
+    describe("?�訪?�性�? UI/UX", () => {
+        it("TC-8001 (Pointer): ?��??��??�具??cursor-pointer", () => {
             render(<MacroPage />);
             // Find a card link and its content div
             const links = screen.getAllByRole("link");
@@ -229,7 +229,7 @@ describe("宏觀指標模組 (Macro)", () => {
             });
         });
 
-        it("TC-8002 (Hover): 指標卡片應具有懸停發光 (Glow) 樣式", () => {
+        it("TC-8002 (Hover): ?��??��??�具?�懸?�發??(Glow) �??", () => {
             render(
                 <MacroIndicatorCard
                     code="GDP"
@@ -237,7 +237,7 @@ describe("宏觀指標模組 (Macro)", () => {
                     value={100}
                     unit="unit"
                     changePercent={1}
-                    sparklineData={[]}
+                    historyData={[]}
                     color="#000"
                     icon={<div />}
                 />
@@ -247,7 +247,7 @@ describe("宏觀指標模組 (Macro)", () => {
             expect(card).toHaveClass("hover:border-white/30");
         });
 
-        it("TC-8003 (RWD): 在行動端寬度下，指標網格應正確配置 Grid 欄位", () => {
+        it("TC-8003 (RWD): ?��??�端寬度下�??��?網格?�正確�?�?Grid 欄�?", () => {
             const { container } = render(<MacroPage />);
             const grid = container.querySelector(".grid");
             expect(grid).toHaveClass("grid-cols-1"); // Mobile first

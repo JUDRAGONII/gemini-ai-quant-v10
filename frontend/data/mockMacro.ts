@@ -1,21 +1,76 @@
 /**
- * 宏觀指標模擬數據
- * Phase 4.5 專業版：支援區域分區與類別分組
+ * 宏觀指標模擬數據 (Mock Data)
+ * Phase 4.5 專業版：支援區域分區、類別分組與歷史走勢數據
  */
 
-// 生成模擬走勢數據
-const generateSparkline = (baseValue: number, volatility: number = 0.02) => {
-    const data = [];
-    let value = baseValue * (1 - volatility * 3);
-    for (let i = 12; i > 0; i--) {
-        value = value * (1 + (Math.random() - 0.45) * volatility);
-        data.push({ value: Math.round(value * 100) / 100 });
+// 定義歷史數據格式
+export interface HistoryPoint {
+    date: string;
+    value: number;
+}
+
+// 指標介面
+export interface MacroIndicator {
+    code: string;
+    name: string;
+    fullName: string;
+    country: string;
+    category: string;
+    description: string;
+    unit: string;
+    color: string;
+    latestValue: number;
+    changePercent: number;
+    frequency: string;
+    source: string;
+    historyData: HistoryPoint[];
+}
+
+// 生成模擬歷史數據 (History + Sparkline)
+// 為了滿足詳情頁需求，生成 30 天數據
+const generateHistory = (baseValue: number, volatility: number = 0.02, days: number = 60): HistoryPoint[] => {
+    const data: HistoryPoint[] = [];
+    let value = baseValue;
+    const today = new Date();
+
+    // 生成過去 N 天的數據 (倒序生成)
+    // 我們先生成一個數列，然後反轉日期賦值，確保今天是 latestValue
+    const values: number[] = [baseValue];
+
+    // 隨機漫步生成過去的值
+    let currentValue = baseValue;
+    for (let i = 0; i < days; i++) {
+        // 逆向推導：昨天的值 = 今天的值 / (1 + 變化率)
+        // 簡化：直接隨機波動
+        currentValue = currentValue * (1 + (Math.random() - 0.5) * volatility);
+        values.push(Math.round(currentValue * 1000) / 1000);
     }
+
+    // values[0] 是最新值 (Today)
+    // values[days] 是最舊值
+
+    // 賦予日期 (最新的在最後) - 對應 AreaChart 通常從左(舊)到右(新)
+    // 但 page.tsx 表格是 slice().reverse()，所以原始數據應該是 時間正序 (舊 -> 新)
+
+    const sortedValues = values.reverse(); // 變成 舊 -> 新 (大概)
+
+    for (let i = 0; i < sortedValues.length; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - (sortedValues.length - 1 - i));
+        const dateStr = date.toISOString().split('T')[0];
+
+        data.push({
+            date: dateStr,
+            value: sortedValues[i]
+        });
+    }
+
     return data;
 };
 
+
 // 指標配置
-export const MACRO_INDICATORS = [
+export const MACRO_INDICATORS: MacroIndicator[] = [
     // --- 美國 (US) ---
     {
         code: "FEDFUNDS",
@@ -30,7 +85,7 @@ export const MACRO_INDICATORS = [
         changePercent: 0.0,
         frequency: "FOMC",
         source: "FRED",
-        sparklineData: generateSparkline(5.33, 0.01),
+        historyData: generateHistory(5.33, 0.005),
     },
     {
         code: "DGS10",
@@ -45,7 +100,7 @@ export const MACRO_INDICATORS = [
         changePercent: 1.2,
         frequency: "日度",
         source: "FRED",
-        sparklineData: generateSparkline(4.12, 0.02),
+        historyData: generateHistory(4.12, 0.02),
     },
     {
         code: "CPI",
@@ -60,11 +115,12 @@ export const MACRO_INDICATORS = [
         changePercent: 3.2,
         frequency: "月度",
         source: "FRED",
-        sparklineData: generateSparkline(314.54, 0.005),
+        historyData: generateHistory(314.54, 0.005),
     },
     {
         code: "UNRATE",
         name: "失業率",
+        fullName: "Unemployment Rate",
         country: "US",
         category: "勞動市場",
         description: "勞動力中正在尋找工作但未找到工作的人的百分比。",
@@ -74,11 +130,12 @@ export const MACRO_INDICATORS = [
         changePercent: -0.1,
         frequency: "月度",
         source: "FRED",
-        sparklineData: generateSparkline(3.7, 0.03),
+        historyData: generateHistory(3.7, 0.03),
     },
     {
         code: "GDP_US",
         name: "美國實質 GDP (QoQ)",
+        fullName: "Real Gross Domestic Product (QoQ)",
         country: "US",
         category: "經濟成長",
         description: "衡量美國境內生產的所有商品和服務的總市場價值。",
@@ -88,13 +145,14 @@ export const MACRO_INDICATORS = [
         changePercent: 0.5,
         frequency: "季度",
         source: "FRED",
-        sparklineData: generateSparkline(3.1, 0.05),
+        historyData: generateHistory(3.1, 0.05),
     },
 
     // --- 台灣 (TW) ---
     {
         code: "TW_SIGNAL",
         name: "景氣對策信號",
+        fullName: "Taiwan Monitoring Indicator",
         country: "TW",
         category: "經濟成長",
         description: "國發會發布之衡量台灣經濟熱度的景氣燈號分數。",
@@ -104,11 +162,12 @@ export const MACRO_INDICATORS = [
         changePercent: 3.8,
         frequency: "月度",
         source: "國發會",
-        sparklineData: generateSparkline(27, 0.08),
+        historyData: generateHistory(27, 0.08),
     },
     {
         code: "TW_GDP",
         name: "台灣 GDP 年增率",
+        fullName: "Taiwan GDP Growth Rate (YoY)",
         country: "TW",
         category: "經濟成長",
         description: "衡量台灣國內生產總值相對於去年同期的增長速度。",
@@ -118,11 +177,12 @@ export const MACRO_INDICATORS = [
         changePercent: 0.15,
         frequency: "季度",
         source: "主計總處",
-        sparklineData: generateSparkline(3.98, 0.04),
+        historyData: generateHistory(3.98, 0.04),
     },
     {
         code: "USD_TWD",
         name: "美元/台幣匯率",
+        fullName: "USD/TWD Exchange Rate",
         country: "TW",
         category: "金融與利率",
         description: "一美元可兌換之新台幣金額。",
@@ -132,13 +192,14 @@ export const MACRO_INDICATORS = [
         changePercent: -0.2,
         frequency: "日度",
         source: "央行",
-        sparklineData: generateSparkline(31.25, 0.015),
+        historyData: generateHistory(31.25, 0.015),
     },
 
     // --- 全球 (Global) ---
     {
         code: "WTI_OIL",
         name: "WTI 原油價格",
+        fullName: "Crude Oil Prices: West Texas Intermediate (WTI)",
         country: "Global",
         category: "大宗商品",
         description: "西德州中級原油每桶價格，反映全球能源需求與通膨壓力。",
@@ -148,11 +209,12 @@ export const MACRO_INDICATORS = [
         changePercent: -1.5,
         frequency: "日度",
         source: "NYMEX",
-        sparklineData: generateSparkline(76.45, 0.05),
+        historyData: generateHistory(76.45, 0.05),
     },
     {
         code: "XAU_USD",
         name: "黃金現貨價格",
+        fullName: "Gold Spot Price",
         country: "Global",
         category: "大宗商品",
         description: "全球避險情緒的重要指標。",
@@ -162,11 +224,12 @@ export const MACRO_INDICATORS = [
         changePercent: 0.4,
         frequency: "日度",
         source: "LBMA",
-        sparklineData: generateSparkline(2024.15, 0.01),
+        historyData: generateHistory(2024.15, 0.01),
     },
     {
         code: "VIX",
         name: "恐慌指數 (VIX)",
+        fullName: "CBOE Volatility Index",
         country: "Global",
         category: "市場情緒",
         description: "反映市場對未來 30 天 S&P 500 指數波動率的預期。",
@@ -176,11 +239,12 @@ export const MACRO_INDICATORS = [
         changePercent: 2.3,
         frequency: "即時",
         source: "CBOE",
-        sparklineData: generateSparkline(14.85, 0.1),
+        historyData: generateHistory(14.85, 0.1),
     },
     {
         code: "DXY",
         name: "美元指數",
+        fullName: "US Dollar Index",
         country: "Global",
         category: "金融與利率",
         description: "衡量美元對於一籃子主要外幣的匯率變化。",
@@ -190,12 +254,13 @@ export const MACRO_INDICATORS = [
         changePercent: 0.1,
         frequency: "日度",
         source: "ICE",
-        sparklineData: generateSparkline(104.22, 0.01),
+        historyData: generateHistory(104.22, 0.01),
     }
 ];
 
 // 根據代碼查找指標
-export const findIndicatorByCode = (code: string) => {
+export const findIndicatorByCode = (code: string): MacroIndicator | undefined => {
+    if (!code) return undefined;
     return MACRO_INDICATORS.find(
         (i) => i.code.toLowerCase() === code.toLowerCase()
     );

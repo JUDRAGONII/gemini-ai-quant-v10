@@ -130,6 +130,7 @@ export default function MonitorPage() {
     const totalSymbols = 1599;
     const progressPercent = Math.round((completedSymbols / totalSymbols) * 100);
     const isActuallyBackfilling = true;
+    const macroCount = stats['macro_indicators'] || 0;
 
     // 累積大數據資產：以實體資料庫預估筆數為準
     const totalDataPoints = (stats['daily_price'] || 0) + (stats['macro_indicators'] || 0);
