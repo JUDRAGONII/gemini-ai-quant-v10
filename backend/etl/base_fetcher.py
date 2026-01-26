@@ -44,6 +44,19 @@ class BaseFetcher(ABC):
             logger.info(f"[{self.table_name}] No records to upsert.")
             return 0
             
+        # 🆕 本地去重：防止資料庫報 21000 錯誤 (ON CONFLICT DO UPDATE command cannot affect row a second time)
+        if on_conflict:
+            try:
+                df = pd.DataFrame(records)
+                subset = on_conflict.split(',')
+                # 只保留該批次中最後一筆重複紀錄
+                df_clean = df.drop_duplicates(subset=subset, keep='last')
+                records = df_clean.to_dict('records')
+                if len(df) != len(df_clean):
+                    logger.warning(f"[{self.table_name}] Local deduplication removed {len(df) - len(df_clean)} duplicates.")
+            except Exception as e:
+                logger.warning(f"[{self.table_name}] Local deduplication skipped due to error: {e}")
+
         try:
             # Supabase Python SDK v2 使用 .from_().upsert()
             query = self.client.table(self.table_name).upsert(records, on_conflict=on_conflict)

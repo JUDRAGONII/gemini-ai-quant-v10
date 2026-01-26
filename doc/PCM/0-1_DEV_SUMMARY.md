@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 4.4: UI/UX Pro Max 完善與優化
-**狀態**：✅ Phase 4.4 UI/UX Pro Max 完善與 RWD 適配已結項。TDD 18 案例 100% 通過。助於保障交付品質。
+**階段**：Phase 4.5: 後端邏輯注入與大規模數據回補
+**狀態**：✅ Phase 4.5 資料庫基礎建設與大規模回補已順利結項。經調查所有核心行情數據與指標均已補齊。
 
 ---
 
@@ -14,12 +14,49 @@
 - [x] **多因子評分 Service**: 實作 `FactorService` 與正規化算法。
 - [x] **TDD 驗證：AI 演化引擎**: 完成 TC-1101 至 TC-4102 共 9 項基礎與邊界測試，驗證邏輯 100% 正確。
 - [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
+- [x]- **2026-01-25**: 
+    - 成功解決全市場歷史數據回補的技術障礙。
+    - 實作 Tiingo API 金鑰輪詢機制，突破 500 標的限制。
+    - 修正 Fugle 歷史行情分段擷取邏輯，支援 15 年全歷史同步。
+    - **美股回補升級**: 注入 DJI, SP500, NASDAQ100, SOX 共 660+ 檔成分股。已實作 429 強化防護機制 (3.0s delay / 60s cooldown)。
+    - **文檔歸檔**: 將 Phase 1-5 實作計畫整理歸檔至 `doc/plans`，查核無遺漏。
+- [x] **歷史數據回補**: 0050.TW (5404筆) 與 NVDA (6792筆) 全量歷史 K 線已入庫。
 - [x] **環境維護：清空 3000 端口並重啟**: 已中止佔用的 PID 3176 並穩定啟動 Next.js 於 3000 端口。
 - [x] **修復：數據監控中心打不開**: 已修復 `SettingsPage` 的 Hydration 衝突與 `ProBadge` 參數錯誤。已通過 Lint 驗證。
 - [x] **新功能：數據監控中心 (Data Monitor Center)**: 實作 `/admin/monitor` 與隱藏入口機制。
-- [x] **TDD 驗證：數據監控中心**: 完成 TC-1101 至 TC-4001 共 5 項測試，修復開發者模式權限漏洞。
-- [x] **Schema 補完**: 依照 3.0.0 規格書補齊 `stock_factors`, `macro_factors` 等表。
-- [ ] **Security Audit (CodeQL)**: 上線前安全掃描 (Phase 6)。
+- [x] **期交所對接 (TAIFEX Integration)**: 實作 `TaifexFetcher` 並成功採集大台 (TX)、小台 (MTX)、電子期 (TE)。
+- [x] **監控中心深度修復**: 
+    - 解決「500萬筆數據計數超時」导致的顯示為 0。
+    - 重構進度條為「標的覆蓋率 (95%)」。
+    - 修復 RLS 與 `anon` 執行權限。
+- [x] **Bug Fixes (2026-01-26)**:
+    - 修正 `TaifexFetcher` 遺漏導入問題。
+    - 校準 FRED 指標代號 (`UMCSENT` 等)。
+- [x] **專案深度審計 (System Audit)**: 
+    - 產出 `V10_Project_Gap_Analysis.md`，識別量化表真空關鍵缺項。
+- [x] **開發文件體系補完 (Batch 1-3)**:
+    - 完成 002-012 技術文檔之憲級標準化定義。
+- [x] **數據補洗與地核校準 (Data Integrity)**:
+    - 補回 `daily_price` 缺失之 `market_type` 欄位並建立加速索引。
+    - 成功分類 5,388,534 筆歷史數據 (TWSE 3.4M / TIINGO 1.9M)。
+    - **精確分類邏輯實作**：確立「數字開頭為台股」準則，解決 00937B 等股票誤判。
+- [x] **自動化驗收測試 (TDD)**:
+    - 實作並通過 `dataIntegrity.test.ts` (TC-1101~4101) 核心驗收。
+    - 產出 `20260126_10_DataIntegrity_Validation.md` 完整執行報告。
+## [V10.0.8] - 2026-01-26
+### Added
+- **全域測試 Mock 基礎 (QA Infrastructure)**:
+  - 實作基於 Proxy 的全域 `lucide-react` 圖標 Mock，自動化生成 `data-testid`。
+  - 強化 `next/navigation` 全域 Mock，支援 `usePathname` 與 `useParams`。
+### Fixed
+- **前端測試報錯修復 (Frontend Test Repair)**:
+  - 修正 `app/page.test.tsx` 圖標 TestID 衝突與導航標籤內容不匹配。
+  - 修正 `chips/layout.test.tsx` 之導航 Mock 類型衝突。
+  - 透過局部組件 Mock 解決 `macro/page.test.tsx` 之異步渲染競爭，達成 100% 全量通過 (93/93)。
+- **模型中斷優化策略**:
+  - 針對 429 或超時中斷，優化單次工具呼叫鏈並增加非同步執行觀察。
+
+## [V10.0.7] - 2026-01-25
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。
@@ -61,7 +98,15 @@
 | 2026-01-23 | **TDD** | 完成數據監控中心測試 (MonitorPage)，透過測試發現並修復了遺失的 Security Check 邏輯。 |
 | 2026-01-23 | **Phase 4.4** | 完成 18 項 TDD 測試與 RWD 適配驗證（100% Pass），正式結項。助於進入下一階段。 |
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
-| 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)，涵蓋 US/TW GDP, CPI, VIX 等指標。 |
+| 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
+| 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4 結項，Phase 4.5 正式啟動。 |
+| 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
+| 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
+| 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
+ |
+| 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
+| 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
+| 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
 
 
 

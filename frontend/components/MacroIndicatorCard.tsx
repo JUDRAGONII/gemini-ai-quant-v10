@@ -22,8 +22,8 @@ interface MacroIndicatorCardProps {
     unit: string;
     /** 較前期變化 (百分比) */
     changePercent: number;
-    /** 迷你走勢數據 (最近 7-14 天) */
-    sparklineData: { value: number }[];
+    /** 迷你走勢數據 (最近 30 天) */
+    historyData: { date: string, value: number }[];
     /** 主色調 */
     color: string;
     /** 圖標 */
@@ -36,7 +36,7 @@ export default function MacroIndicatorCard({
     value,
     unit,
     changePercent,
-    sparklineData,
+    historyData,
     color,
     icon,
 }: MacroIndicatorCardProps) {
@@ -94,7 +94,7 @@ export default function MacroIndicatorCard({
                 {/* 中間：迷你走勢圖 */}
                 <div className="h-12 mb-3">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={sparklineData}>
+                        <AreaChart data={historyData}>
                             <defs>
                                 <linearGradient
                                     id={`sparkline-${code}`}

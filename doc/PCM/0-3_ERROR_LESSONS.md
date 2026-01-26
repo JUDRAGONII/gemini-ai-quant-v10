@@ -185,3 +185,130 @@
 - [ ] 涉及權限與安全的功能，必須優先撰寫測試案例 (Test First)。
 
 ---
+
+### 2026-01-25 大規模數據回補與 API 限制教訓
+
+### 問題現象
+1. **美股卡頓**：Tiingo API 報錯「Quota Exceeded」(500 Symbol Limit)。
+2. **台股筆數不增**：每日回補僅新增 1 筆，且 15 年跨度請求被 Fugle 拒絕（400 Error）。
+3. **資料庫報錯**：Upsert 時出現 `ON CONFLICT DO UPDATE command cannot affect row a second time` (Error 21000)。
+
+### 底層根本原因
+1. **配額限制**：Tiingo 免費版單月僅能查詢 500 個不重覆標的。
+2. **接口與跨度限制**：
+    - 誤用盤中接口 `intraday.candles`（僅回傳最新日線）。
+    - 歷史接口 `historical.candles` 限制單次查詢跨度不得超過一年。
+3. **數據重複**：API 返回的單一批次中包含相同日期的重複行，導致 PostgreSQL 在執行 Upsert 時邏輯衝突。
+
+### 解決方案
+1. **金鑰輪詢**：實作 `Config.get_tiingo_key()` 循環調度多組 API Key。
+2. **接口切換與分段**：
+    - 切換至 `historical.candles`。
+    - 實作「年分段擷取 (Yearly Chunking)」循環邏輯。
+3. **本地去重**：在 `BaseFetcher.upsert` 前使用 Pandas `drop_duplicates(keep='last')` 預處理數據。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 大規模抓取前先確認 API 的「單次時間跨度限制」與「標的總量配額」。
+- [ ] 歷史數據 (EOD) 應優先使用 Historical 接口而非 Intraday 接口。
+- [ ] 執行 Bulk Upsert 前，必須在應用組序進行 Primary Key 級別的本地去重。
+- [ ] 關鍵外部 SDK 調用前，檢查核心組件（如 `time`）是否已匯入。
+
+---
+
+---
+
+### 2026-01-26 數據分類邏輯偏差 (Market Mix-up Over-correction)
+
+### 問題現象
+- **現象**：數據補洗後，所有包含字母的標的（如台股債券 ETF `00937B`）被誤標為 `TIINGO` (美股)。
+- **影響**：台股行情數據在前端市場過濾時遺失部分重要標的，且美股數據庫充斥錯誤的台股代號。
+
+### 底層根本原因
+- **過度簡化的正則判定**：原先採用 `~ '[A-Z]'` (包含字母即美股) 作為分類標準，忽略了台股權證與債券 ETF 亦會使用字母後綴。
+
+### 解決方案
+- **特徵提取轉向**：將規則修正為 `~ '^[0-9]'` (首位數字開頭即台股)，利用台股代號物理結構的確定性來避開字母干擾。
+- **特定排除法**：針對期交所標的 (`TX`, `MTX`) 採用顯式清單排除。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 執行全球市場 SQL 補洗前，必須先抽樣檢索「代號交集區」(如混合數字與字母者)。
+- [ ] 分類邏輯應建立在「排除法」與「確定性前綴」之上，而非單一字符特徵。
+
+---
+
+### 2026-01-26 容器環境導入路徑 (Docker ModuleNotFoundError)
+
+### 問題現象
+- **現象**：`ai-worker` 容器啟動時報錯 `ModuleNotFoundError: No module named 'etl'`。
+- **根本原因**：Docker 容器內部工作目錄 (`/app`) 缺少與宿主機一致的 Python Path 配置，導致手動開發時建立的相對導入在封裝環境下失效。
+- **解決方案**：在啟動腳本中動態動入專案根目錄，或統一採用絕對路徑導入 (`backend.etl...`) 並配置 `PYTHONPATH`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 任何 ETLFetcher 實作必須確保在 Docker 環境下具備正確的 `sys.path` 注入。
+- [ ] 統一採用 `backend.` 作為頂層包路徑。
+
+---
+
+### 2026-01-26 Mock 數據與組件介面不同步 (Mock/Interface Drift)
+
+### 問題現象
+- **CI 報錯**：GitHub Actions 前端建置失敗，報錯 `Property 'historyData' does not exist on type`。
+- **根本原因**：在重構 `mockMacro.ts` 時，將 `sparklineData` 替換為 `historyData`，但未同步修改：
+    1. `MacroIndicatorCard.tsx` 的 Props 定義。
+    2. `app/macro/page.tsx` 的調用處。
+    3. 測試檔案 `page.test.tsx` 中的 Mock 數據。
+- **連鏈反應**：`UNRATE`, `TW_SIGNAL` 等指標缺少 `fullName` 屬性，違反了新定義的 `MacroIndicator` 介面。
+
+### 解決方案
+1. 確保介面更新後，所有使用該介面的檔案同步修改。
+2. 使用 `npx tsc --noEmit` 主動在本地執行型別檢查，避免 CI 延遲回饋。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 修改 `interface` 或 `type` 定義後，立即搜索專案中所有引用該型別的檔案。
+- [ ] 推送前必須先在本地執行 `npm run build`，確認 TypeScript 與 Lint 皆通過。
+- [ ] 測試檔案中使用的 Mock Props 必須與真實組件的介面保持一致。
+### 2026-01-26 前端測試歧義與代碼偏移教訓
+
+### 問題現象
+- **FAIL**: `Found multiple elements with the text: /VIX/`。
+- **TypeError**: `indicator gdp not found` (Mock 數據中僅存在 `gdp_us`)。
+- **Syntax Error**: 測試檔案無法解析，因大量 `it` 區塊遺失。
+
+### 底層根本原因
+1. **文本歧義**: 指標卡片同時顯示 `VIX` (代碼) 與 `波動率指數 (VIX)` (名稱)，寬鬆的 Regex 匹配導致失敗。
+2. **路徑漂移 (Path Drift)**: 前端組件路徑實作為 `/macro/[indicator.toLowerCase()]`，而測試中使用了與 `mockMacro.ts` 二次定義不匹配的簡寫。
+3. **工具覆寫風險**: 在執行 `multi_replace_file_content` 時，由於 TargetContent 匹配過廣，誤將包裹邏輯的外部函式刪除。
+
+### 解決方案
+1. 改用 `screen.getAllByText(/VIX/)[0]` 確保選中首個卡片標題。
+2. 統一採用 `gdp_us` 作為基準代碼。
+3. 程式碼大幅更動後，必須立即執行 `npm run test` 進行噴火測試 (Smoke Test) 並保留完整備份。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 涉及重要 UI 組件名稱（如 ticker symbol）的斷言，優先使用 `getAllBy...` 並配合索引或 `data-testid`。
+- [ ] Mock 數據變動後，需全域搜尋對應代碼字串並同步更新測試腳本。
+- [ ] 避免在未確認語法樹完整性的情況下，對大塊 `it` 區塊進行自動化替換。
+### 2026-01-26 前端全量測試 (Full Test Run) 報錯教訓
+
+### 問題現象
+1. **異步競爭與自毀渲染**: `macro/page.test.tsx` 在全量測試中偶爾失敗，Console 充滿 React 組件重建導致的警告。
+2. **Missing Key 警告**: `app/page.test.tsx` 顯示報錯，起因於 AI 報告 Mock 數據缺少 `id` 欄位。
+3. **整合測試環境缺失**: `dataIntegrity.test.ts` 因缺少 `SUPABASE_SERVICE_ROLE_KEY` 導致整個測試套件崩潰。
+
+### 底層根本原因
+1. **Proxy Mock 不穩定性**: `jest.setup.js` 中的 Lucide Proxy Mock 每次 get 都返回新定義的組件函式，React 認定組件身分已變，強制重建渲染，導致狀態遺失與警告，並在高併發測試下引發競爭。
+2. **數據完整性疏忽**: 測試用的 Mock 資料未對齊動態渲染所需的關鍵屬性（如 `key` 所在的 `id`）。
+3. **環境耦合**: 整合測試直接依賴 env，未在建置/單元測試流程中加入斷路器（Breaker）。
+
+### 解決方案
+1. **Mock 精細化**:
+   - 為 Lucide Proxy Mock 加入 **iconCache** 快取機制，確保組件穩定性。
+   - 補齊 Recharts 的 `ResponsiveContainer` 與 `ResizeObserver` 模擬。
+2. **數據校準**: 在測試數據中加入 `id: 'mock-id'` 消除 Key 警告。
+3. **環境解耦**: 在整合測試頂層加入 `isDummyKey = SUPABASE_SERVICE_ROLE_KEY === '...'` 判斷邏輯，滿足條件時自動 `describe.skip`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 編寫 Proxy-based Mock 時必須實作快取 (Caching) 以保證組件實體一致。
+- [ ] Mock 數據對象必須包含列表渲染所需的 `id` 或 `key` 屬性。
+- [ ] 具有外部依賴（DB/API）的整合測試必須具備環境檢測與自動跳過機制。
+- [ ] 在 `jest.setup.js` 中預設補齊 `useParams` 等 App Router 常用 Hook 的基礎 Mock。

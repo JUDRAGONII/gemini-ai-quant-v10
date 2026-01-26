@@ -1,0 +1,129 @@
+{
+    "timestamp": "2026-01-24T06:06:35.950869",
+    "tables": {
+        "daily_price": {
+            "total_count": 24785,
+            "details": {
+                "2330": {
+                    "count": 3962,
+                    "start": "2009-04-01",
+                    "end": "2026-01-23"
+                },
+                "2317": {
+                    "count": 3934,
+                    "start": "2005-06-01",
+                    "end": "2026-01-23"
+                },
+                "2454": {
+                    "count": 3940,
+                    "start": "2010-01-04",
+                    "end": "2026-01-23"
+                },
+                "NVDA": {
+                    "count": 6792,
+                    "start": "1999-01-22",
+                    "end": "2026-01-22"
+                },
+                "TSLA": {
+                    "count": 251,
+                    "start": "2025-01-23",
+                    "end": "2026-01-22"
+                },
+                "AAPL": {
+                    "count": 251,
+                    "start": "2025-01-23",
+                    "end": "2026-01-22"
+                }
+            }
+        },
+        "macro_indicators": {
+            "total_count": 41750,
+            "indicator_count": 15,
+            "codes_preview": [
+                "10Y_BOND",
+                "2Y_BOND",
+                "BAA10Y",
+                "CORE_CPI",
+                "CPI",
+                "FEDFUNDS",
+                "GDP",
+                "ICSA",
+                "IPMAN",
+                "M2"
+            ],
+            "details": {
+                "GDP": {
+                    "count": 143,
+                    "start": "1990-01-01",
+                    "end": "2025-07-01"
+                },
+                "CPI": {
+                    "count": 431,
+                    "start": "1990-01-01",
+                    "end": "2025-12-01"
+                },
+                "FEDFUNDS": {
+                    "count": 432,
+                    "start": "1990-01-01",
+                    "end": "2025-12-01"
+                },
+                "VIX": {
+                    "count": 9107,
+                    "start": "1990-01-02",
+                    "end": "2026-01-22"
+                }
+            }
+        },
+        "stock_factors": {
+            "total_count": 0
+        },
+        "backfill_status": {
+            "total_count": 2,
+            "data": [
+                {
+                    "id": "macro",
+                    "current_symbol": "Completed",
+                    "status": "finished",
+                    "updated_at": "2026-01-24T00:44:36.612178+00:00"
+                },
+                {
+                    "id": "stocks",
+                    "current_symbol": "Completed",
+                    "status": "finished",
+                    "updated_at": "2026-01-24T01:24:45.662378+00:00"
+                }
+            ]
+        }
+    },
+    "checkpoints": {
+        "stocks": {
+            "2330": "completed",
+            "2317": "completed",
+            "2454": "completed",
+            "0050": "completed",
+            "0056": "completed",
+            "2308": "completed"
+        },
+        "macro": {
+            "FEDFUNDS": "completed",
+            "10Y_BOND": "completed",
+            "2Y_BOND": "completed",
+            "M2": "completed",
+            "CPI": "completed",
+            "CORE_CPI": "completed",
+            "PCE": "completed",
+            "UNRATE": "completed",
+            "PAYEMS": "completed",
+            "ICSA": "completed",
+            "GDP": "completed",
+            "IPMAN": "completed",
+            "RSXFS": "completed",
+            "VIX": "completed",
+            "BAA10Y": "completed",
+            "CS_INDEX": "completed",
+            "TW_GDP": "completed",
+            "TW_CPI": "completed",
+            "TW_REAL_GDP_GROWTH": "completed"
+        }
+    }
+}

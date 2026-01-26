@@ -10,46 +10,21 @@ import {
     TrendingUp,
     BarChart3,
     FileText,
-    Settings,
-    Layers,
-    Home,
     Trophy,
     Filter,
     RefreshCw,
+    Activity
 } from "lucide-react";
 import RankingTable from "@/components/RankingTable";
 import ScoreRadarChart from "@/components/ScoreRadarChart";
 import { mockRankingData, generateRankingData } from "@/data/mockRanking";
+import Sidebar from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout";
 
 /**
  * AI 評分排行頁面
  * 展示量化因子評分排行榜與個股雷達圖
  */
-
-// 側邊欄導航項目組件
-const NavItem = ({
-    icon: Icon,
-    label,
-    href,
-    active = false,
-}: {
-    icon: React.ElementType;
-    label: string;
-    href: string;
-    active?: boolean;
-}) => (
-    <Link href={href}>
-        <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active
-                ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-                }`}
-        >
-            <Icon size={20} />
-            <span className="font-medium">{label}</span>
-        </div>
-    </Link>
-);
 
 // 統計卡片組件
 const StatCard = ({
@@ -141,69 +116,20 @@ export default function RankingPage() {
         : [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            {/* 頂部狀態列 */}
-            <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-                <div className="flex items-center justify-between px-6 py-3">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                            <TrendingUp size={18} className="text-white" />
-                        </div>
-                        <span className="text-lg font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                            AI QUANT
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-gray-400">AI Worker</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                            <span className="text-gray-400">Database</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-slate-950 text-gray-100 font-sans selection:bg-cyan-500/30">
+            {/* Mobile Navigation (Sticky Top + Drawer) */}
+            <MobileNav />
 
-            <div className="flex pt-14">
-                {/* 側邊欄 */}
-                <aside className="fixed left-0 top-14 bottom-0 w-56 glass border-r border-white/10 p-4 overflow-y-auto">
-                    <nav className="space-y-2">
-                        <NavItem icon={Home} label="總覽 (Overview)" href="/" />
-                        <NavItem
-                            icon={Layers}
-                            label="籌碼分析 (Chips)"
-                            href="/chips"
-                        />
-                        <NavItem
-                            icon={TrendingUp}
-                            label="市場動態"
-                            href="/stocks"
-                        />
-                        <NavItem
-                            icon={BarChart3}
-                            label="演化分析"
-                            href="/evolution"
-                        />
-                        <NavItem
-                            icon={FileText}
-                            label="決策報告"
-                            href="/ai"
-                            active
-                        />
-                        <NavItem
-                            icon={Settings}
-                            label="系統設定"
-                            href="/settings"
-                        />
-                    </nav>
-                </aside>
+            {/* Sidebar (Unified) */}
+            <div className="hidden lg:block">
+                <Sidebar />
+            </div>
 
-                {/* 主內容區 */}
-                <main className="flex-1 ml-56 p-8">
-                    {/* 頁面標題 */}
-                    <div className="flex justify-between items-start mb-8">
+            <div className="flex">
+                {/* Main Content */}
+                <main className="flex-1 lg:ml-64 p-4 lg:p-8">
+                    {/* 頁面標題與狀態欄 */}
+                    <header className="flex justify-between items-start mb-8">
                         <div>
                             <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent flex items-center gap-3">
                                 <Trophy size={32} className="text-amber-400" />
@@ -213,18 +139,24 @@ export default function RankingPage() {
                                 基於量化因子的多維度智能評分
                             </p>
                         </div>
-                        <button
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
-                            className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors disabled:opacity-50 cursor-pointer"
-                        >
-                            <RefreshCw
-                                size={16}
-                                className={isRefreshing ? "animate-spin" : ""}
-                            />
-                            {isRefreshing ? "刷新中..." : "刷新評分"}
-                        </button>
-                    </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex space-x-4">
+                                <StatusBadge label="AI Worker" status="online" />
+                                <StatusBadge label="Database" status="online" />
+                            </div>
+                            <button
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors disabled:opacity-50 cursor-pointer border border-amber-500/30"
+                            >
+                                <RefreshCw
+                                    size={16}
+                                    className={isRefreshing ? "animate-spin" : ""}
+                                />
+                                {isRefreshing ? "刷新中..." : "刷新評分"}
+                            </button>
+                        </div>
+                    </header>
 
                     {/* 統計卡片 */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -277,7 +209,7 @@ export default function RankingPage() {
                                     <Link
                                         href={`/stocks/${selectedStock.symbol}`}
                                     >
-                                        <button className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all cursor-pointer">
+                                        <button className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all cursor-pointer shadow-lg shadow-orange-500/20">
                                             查看 {selectedStock.symbol} 詳情
                                         </button>
                                     </Link>
@@ -336,6 +268,16 @@ export default function RankingPage() {
                     </div>
                 </main>
             </div>
+        </div>
+    );
+}
+
+// --- Helper Components ---
+function StatusBadge({ label, status }: { label: string, status: 'online' | 'offline' }) {
+    return (
+        <div className="glass px-3 py-1.5 rounded-full flex items-center space-x-2 border border-white/10">
+            <span className={`w-2 h-2 rounded-full ${status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+            <span className="text-xs font-medium text-gray-300">{label}</span>
         </div>
     );
 }
