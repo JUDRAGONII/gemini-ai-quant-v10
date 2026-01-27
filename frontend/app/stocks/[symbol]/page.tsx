@@ -4,15 +4,14 @@ import React from 'react';
 import { useStockDetail } from '@/hooks/useStockDetail';
 import { StockChart } from '@/components/Chart/StockChart';
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
-import Link from 'next/link';
+import { TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
 
 export default function StockDetailPage({ params }: { params: { symbol: string } }) {
     const { data, loading, error } = useStockDetail(params.symbol);
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#0a0a0b] text-white">
+            <div className="flex items-center justify-center h-96">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
         );
@@ -20,12 +19,9 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
 
     if (error || !data) {
         return (
-            <div className="p-8 text-center bg-[#0a0a0b] min-h-screen text-white">
+            <div className="p-8 text-center">
                 <h1 className="text-2xl font-bold text-red-400">無法載入數據</h1>
                 <p className="mt-2 text-gray-400">{error || '找不到此標的資訊'}</p>
-                <Link href="/stocks" className="mt-4 inline-flex items-center text-indigo-400 hover:underline">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> 回到列表
-                </Link>
             </div>
         );
     }
@@ -33,94 +29,63 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
     const { metadata, summary_stats, price_series } = data;
 
     return (
-        <div className="min-h-screen bg-[#0a0a0b] text-gray-100 p-4 md:p-8">
-            <div className="max-w-7xl mx-auto space-y-6">
-
-                {/* 1. Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div className="space-y-1">
-                        <Link href="/stocks" className="text-sm text-gray-400 hover:text-indigo-400 flex items-center transition-colors">
-                            <ArrowLeft className="w-4 h-4 mr-1" /> 行情搜尋
-                        </Link>
-                        <div className="flex items-baseline gap-3">
-                            <h1 className="text-4xl font-bold tracking-tight text-white">{metadata.name}</h1>
-                            <span className="text-xl font-mono text-gray-500">{metadata.symbol}</span>
-                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                                {metadata.market}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="text-right">
-                        <div className="text-3xl font-mono font-bold text-white">
-                            ${summary_stats.last_price?.toLocaleString() || '--'}
-                        </div>
-                        <div className="text-sm font-medium text-emerald-400 flex items-center justify-end">
-                            <TrendingUp className="w-4 h-4 mr-1" /> 即時行情 (模擬)
-                        </div>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in duration-500">
+            {/* Left: Chart Section */}
+            <div className="lg:col-span-3 space-y-6">
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-1 overflow-hidden backdrop-blur-sm">
+                    <StockChart data={price_series} />
                 </div>
 
-                {/* 2. Main Content Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* 額外描述卡片 */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
+                >
+                    <h3 className="text-lg font-semibold mb-3 flex items-center">
+                        <Activity className="w-5 h-5 mr-2 text-indigo-400" /> 標的概覽
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed text-sm">
+                        此標的隸屬於 {metadata.market} 市場，目前系統已對接歷史行情數據與多因子量化評分。
+                        建議搭配「AI 投資報告」進行深度辯證。
+                    </p>
+                </motion.div>
+            </div>
 
-                    {/* Left: Chart Section */}
-                    <div className="lg:col-span-3 space-y-6">
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-1 overflow-hidden backdrop-blur-sm">
-                            <StockChart data={price_series} />
-                        </div>
+            {/* Right: Stats Section */}
+            <div className="space-y-6">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">關鍵指標 (Factors)</h3>
 
-                        {/* 額外描述卡片 */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
-                        >
-                            <h3 className="text-lg font-semibold mb-3 flex items-center">
-                                <Activity className="w-5 h-5 mr-2 text-indigo-400" /> 標的概覽
-                            </h3>
-                            <p className="text-gray-400 leading-relaxed text-sm">
-                                此標的隸屬於 {metadata.market} 市場，目前系統已對接歷史行情數據與多因子量化評分。
-                                建議搭配「AI 投資報告」進行深度辯證。
-                            </p>
-                        </motion.div>
-                    </div>
+                <StatsCard
+                    title="本益比 (PE)"
+                    value={summary_stats.pe_ratio}
+                    icon={<BarChart3 className="w-5 h-5" />}
+                    suffix="x"
+                />
+                <StatsCard
+                    title="股價淨值比 (PB)"
+                    value={summary_stats.pb_ratio}
+                    icon={<PieChart className="w-5 h-5" />}
+                    suffix="x"
+                />
+                <StatsCard
+                    title="殖利率 (Yield)"
+                    value={summary_stats.dividend_yield}
+                    icon={<TrendingUp className="w-5 h-5" />}
+                    suffix="%"
+                />
+                <StatsCard
+                    title="股東權益報酬率 (ROE)"
+                    value={summary_stats.roe}
+                    icon={<Activity className="w-5 h-5" />}
+                    suffix="%"
+                />
 
-                    {/* Right: Stats Section */}
-                    <div className="space-y-6">
-                        <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">關鍵指標 (Factors)</h3>
-
-                        <StatsCard
-                            title="本益比 (PE)"
-                            value={summary_stats.pe_ratio}
-                            icon={<BarChart3 className="w-5 h-5" />}
-                            suffix="x"
-                        />
-                        <StatsCard
-                            title="股價淨值比 (PB)"
-                            value={summary_stats.pb_ratio}
-                            icon={<PieChart className="w-5 h-5" />}
-                            suffix="x"
-                        />
-                        <StatsCard
-                            title="殖利率 (Yield)"
-                            value={summary_stats.dividend_yield}
-                            icon={<TrendingUp className="w-5 h-5" />}
-                            suffix="%"
-                        />
-                        <StatsCard
-                            title="股東權益報酬率 (ROE)"
-                            value={summary_stats.roe}
-                            icon={<Activity className="w-5 h-5" />}
-                            suffix="%"
-                        />
-
-                        {/* 操作按鈕 */}
-                        <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
-                            啟動 AI 深度辯證
-                        </button>
-                    </div>
-                </div>
+                {/* 操作按鈕 */}
+                <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                    啟動 AI 深度辯證
+                </button>
             </div>
         </div>
     );

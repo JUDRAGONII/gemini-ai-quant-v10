@@ -71,6 +71,7 @@ jest.mock("recharts", () => ({
     Defs: ({ children }) => <defs>{children}</defs>,
     LinearGradient: ({ children }) => <linearGradient>{children}</linearGradient>,
     Stop: () => <stop />,
+    ComposedChart: ({ children }) => <svg data-testid="composed-chart">{children}</svg>,
 }));
 
 // 4. ResizeObserver Polyfill (Recharts 依賴)

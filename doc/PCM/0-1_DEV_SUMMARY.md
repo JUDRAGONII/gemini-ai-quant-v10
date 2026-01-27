@@ -2,7 +2,7 @@
 
 ## 📌 當前里程碑 (Current Milestone)
 **階段**：Phase 4.3: 核心功能深化與金融場景補完
-**狀態**：✅ 已完成 V10.0 前端剩餘工作之深度審計。當前系統完成度約 65%，前端基礎設施已 100% 穩定，進入核心業務功能補全階段。
+**狀態**：✅ Phase 4.3 籌碼分析模組 (Chips Analysis) 已全數完成並通過 TDD 驗證。目前進入 Phase 5.1 系統整合測試階段。
 
 ---
 
@@ -64,6 +64,12 @@
     - [x] 完成 `/api/stocks/[symbol]` 數據聚合接口。
     - [x] 建立高品質 K 線圖組件 (StockChart) 與玻璃擬態詳情頁。
     - [x] 整合財務因子 (PE/PB/ROE) 顯示。
+    - [x] **故障排除 & 優化**:
+        - [x] 修復 404 錯誤 (同步 Supabase 環境變數)。
+        - [x] 升級 K 線圖適配 lightweight-charts v5 API。
+    - [x] **深度審計 (Code Review & Audit)**:
+        - [x] 執行 [/code-review] 針對籌碼頁與 API 進行安全性與效能檢查 (Grade A)。
+        - [x] 執行 [/tech-writer] 產出系統架構文件 `011_Phase4.5_Frontend_Audit_And_Chips_Review.md`。
 
 - [x] **後端開發 SKILLS 深度分析 (Backend Intelligence)**:
     - [x] 分析 GitHub MCP 與 PostgreSQL MCP 對後端自動化的價值。
@@ -72,6 +78,11 @@
 
 ### Priority 3: 前端功能對接 (Frontend Extension)
 - [ ] **[DEFERRED]** **語義搜尋**: RAG Pipeline + `CommandK` 組件 (待後端開發完畢後啟動)。
+- [x] **籌碼分析模組 (Chips Analysis)**:
+    - [x] 實作 `/api/stocks/[symbol]/chips` 聚合每日成交與法人買賣超數據。
+    - [x] 完成 `StockDetailLayout` 分頁導航 (Overview / Chips)。
+    - [x] 整合 Recharts 實現價量與籌碼混合圖表 (ComposedChart)。
+    - [x] 通過 UI 單元測試與 TSC 嚴格檢核。
 - [x] **規格驅動開發 (SDD) 協議啟動**:
     - [x] 建立 `doc/plans/017_Spec_Driven_Protocol.md` 規範。
     - [x] 整合 `/architect` 審計流程至開發前置作業。
@@ -124,6 +135,10 @@
 | 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
 | 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
 | 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
+| 2026-01-27 | **Feature** | **籌碼分析實作完成**：後端 API (`/chips`) 與前台圖表 (`ChipsPage`) 100% 上線。整合 Layout 分頁導航，通過 TSC 全檢。 |
+| 2026-01-27 | **Audit** | **深度代碼審查**：完成 StockDetail 與 Chips 模組的 Code Review 與技術文件化 (Log 011)。 |
+| 2026-01-27 | **TDD** | **籌碼功能驗收**：完成 TC-1101~4001 共 5 項測試案例 (100% Pass)，驗證 API 整合與 UI 狀態。 |
+| 2026-01-27 | **Infra** | **環境故障排除**：診斷並修復 Docker Engine 停止導致的 404 API 錯誤，確認 Port 8000/3000 連線正常。 |
 
 
 

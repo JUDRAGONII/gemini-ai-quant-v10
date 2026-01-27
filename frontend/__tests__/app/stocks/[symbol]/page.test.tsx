@@ -58,7 +58,7 @@ describe("StockDetailPage 整合測試", () => {
     });
 
     it("TC-1601: /stocks/[symbol] 應正確載入個股數據", () => {
-        render(<StockDetailPage />);
+        render(<StockDetailPage params={{ symbol: '2330' }} />);
         expect(screen.getByText("2330")).toBeInTheDocument();
         expect(screen.getByText("台積電")).toBeInTheDocument();
         expect(screen.getByTestId("price-chart")).toBeInTheDocument();
@@ -66,12 +66,12 @@ describe("StockDetailPage 整合測試", () => {
 
     it("TC-1602: 不存在的 symbol 應顯示「找不到股票」訊息", () => {
         mockUseParams.mockReturnValue({ symbol: "9999" });
-        render(<StockDetailPage />);
+        render(<StockDetailPage params={{ symbol: '9999' }} />);
         expect(screen.getByText("找不到股票: 9999")).toBeInTheDocument();
     });
 
     it("TC-1603: 返回按鈕應正確導航至上一頁", () => {
-        render(<StockDetailPage />);
+        render(<StockDetailPage params={{ symbol: '2330' }} />);
         const backBtn = screen.getByTestId("icon-arrow-left").closest("button");
         fireEvent.click(backBtn!);
         expect(mockBack).toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe("StockDetailPage 整合測試", () => {
 
     it("TC-2203: URL 中的 symbol 應處理大小寫不一致", () => {
         mockUseParams.mockReturnValue({ symbol: "aapl" });
-        render(<StockDetailPage />);
+        render(<StockDetailPage params={{ symbol: 'aapl' }} />);
         expect(screen.getByText("Apple")).toBeInTheDocument();
     });
 });
