@@ -3,7 +3,6 @@ import StockDetailPage from "@/app/stocks/[symbol]/page";
 import "@testing-library/jest-dom";
 
 // Mock Components
-// Mock Components
 jest.mock("@/components/Chart/StockChart", () => ({
     __esModule: true,
     StockChart: () => <div data-testid="price-chart" />
