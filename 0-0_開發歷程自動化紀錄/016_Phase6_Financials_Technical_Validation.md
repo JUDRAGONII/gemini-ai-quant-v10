@@ -1,4 +1,4 @@
-# 013_Phase6_Financials_Technical_Validation (財報與技術分析驗證)
+# 016_Phase6_Financials_Technical_Validation (財報與技術分析驗證)
 
 ## 1. 任務概要
 完成美股財報 (Financials) 與技術分析 (Technical) 模組之端到端驗證，包含資料庫寫入修正、RLS 安全政策驗證及前端組件測試。

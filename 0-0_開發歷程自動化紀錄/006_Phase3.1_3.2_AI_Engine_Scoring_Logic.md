@@ -1,4 +1,4 @@
-# 016_Phase3.1_3.2_AI_Engine_Scoring_Logic (AI 引擎與多因子評分邏輯)
+# 006_Phase3.1_3.2_AI_Engine_Scoring_Logic (AI 引擎與多因子評分邏輯)
 
 ## ✅ 已完成項目
 1.  **多因子評分模型 (Multi-factor Scoring)**

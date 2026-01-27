@@ -208,8 +208,10 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
         }));
         histogramSeries.setData(histogramData);
 
-        rsiChart.priceScale().applyOptions({ scaleMargins: { top: 0.1, bottom: 0 } });
-        macdChart.priceScale().applyOptions({ scaleMargins: { top: 0.15, bottom: 0.1 } });
+        const rsiScale = rsiChart.priceScale('');
+        if (rsiScale) rsiScale.applyOptions({ scaleMargins: { top: 0.1, bottom: 0 } });
+        const macdScale = macdChart.priceScale('');
+        if (macdScale) macdScale.applyOptions({ scaleMargins: { top: 0.15, bottom: 0.1 } });
 
         const handleResize = () => {
             if (rsiContainerRef.current) {

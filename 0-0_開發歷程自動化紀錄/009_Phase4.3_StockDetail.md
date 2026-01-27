@@ -1,4 +1,4 @@
-# 007_Phase4.3_StockDetail.md  
+# 009_Phase4.3_StockDetail.md  
 **日期**: 2026-01-26  
 **階段**: Phase 4.3 - 個股詳情頁核心功能開發  
 **執行者**: Antigravity AI Agent
