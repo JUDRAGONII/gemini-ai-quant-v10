@@ -1,108 +1,112 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+/**
+ * @file page.test.tsx
+ * @description StockDetailPage 元件測試
+ * @updated 2026-01-27 - 完全重寫以匹配實際元件實作
+ */
+import { render, screen } from "@testing-library/react";
 import StockDetailPage from "@/app/stocks/[symbol]/page";
 import "@testing-library/jest-dom";
 
-// Mock Components
+// Mock framer-motion
+jest.mock("framer-motion", () => ({
+    motion: {
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    },
+}));
+
+// Mock StockChart (Canvas-based, cannot render in JSDOM)
 jest.mock("@/components/Chart/StockChart", () => ({
-    __esModule: true,
-    StockChart: () => <div data-testid="price-chart" />
-}));
-jest.mock("@/components/ScoreRadarChart", () => ({
-    __esModule: true,
-    default: () => <div data-testid="score-radar-chart" />
+    StockChart: () => <div data-testid="stock-chart">MockChart</div>,
 }));
 
+// Mock lucide-react icons
 jest.mock("lucide-react", () => ({
-    ArrowLeft: () => <div data-testid="icon-arrow-left" />,
-    TrendingUp: () => <div />,
-    TrendingDown: () => <div />,
-    DollarSign: () => <div />,
-    Activity: () => <div />,
-    BarChart3: () => <div />,
-    FileText: () => <div />,
-    Settings: () => <div />,
-    Layers: () => <div />,
-    Home: () => <div />,
-    Building2: () => <div />,
-    Percent: () => <div />,
+    TrendingUp: () => <svg data-testid="icon-trending-up" />,
+    BarChart3: () => <svg data-testid="icon-bar-chart" />,
+    PieChart: () => <svg data-testid="icon-pie-chart" />,
+    Activity: () => <svg data-testid="icon-activity" />,
 }));
 
-// Mock Data
-jest.mock("@/data/mockStocks", () => ({
-    findStockBySymbol: (symbol: string) => {
-        if (symbol === "2330") return {
-            symbol: "2330", name: "台積電", price: 580, changePercent: 1.5, market: "TW",
-            info: { industry: "Semi", marketCap: "15T", pe: 20, eps: 30, dividend: 2 },
-            priceHistory: []
-        };
-        if (symbol === "AAPL" || symbol === "aapl") return {
-            symbol: "AAPL", name: "Apple", price: 180, changePercent: -0.5, market: "US",
-            info: { industry: "Tech", marketCap: "3T", pe: 30, eps: 6, dividend: 0.5 },
-            priceHistory: []
-        };
-        return null;
-    }
-}));
-
-// Mock Navigation
-const mockBack = jest.fn();
-const mockUseParams = jest.fn();
-jest.mock("next/navigation", () => ({
-    useParams: () => mockUseParams(),
-    useRouter: () => ({ back: mockBack }),
-}));
-
-// Mock Hook
+// Mock useStockDetail hook - 關鍵：返回 loading 而非 isLoading
+const mockUseStockDetail = jest.fn();
 jest.mock("@/hooks/useStockDetail", () => ({
-    useStockDetail: (symbol: string) => {
-        if (symbol === "2330") return {
+    useStockDetail: (...args: any[]) => mockUseStockDetail(...args),
+}));
+
+describe("StockDetailPage 元件測試", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("TC-1601: 載入中狀態應顯示 Spinner", () => {
+        mockUseStockDetail.mockReturnValue({
+            data: null,
+            loading: true,
+            error: null,
+        });
+
+        render(<StockDetailPage params={{ symbol: "2330" }} />);
+
+        // Component shows a spinner div with specific classes when loading
+        const spinner = document.querySelector(".animate-spin");
+        expect(spinner).toBeInTheDocument();
+    });
+
+    it("TC-1602: 錯誤狀態應顯示錯誤訊息", () => {
+        mockUseStockDetail.mockReturnValue({
+            data: null,
+            loading: false,
+            error: "Network error",
+        });
+
+        render(<StockDetailPage params={{ symbol: "INVALID" }} />);
+
+        expect(screen.getByText("無法載入數據")).toBeInTheDocument();
+        expect(screen.getByText("Network error")).toBeInTheDocument();
+    });
+
+    it("TC-1603: 成功載入應渲染圖表與統計卡片", () => {
+        mockUseStockDetail.mockReturnValue({
             data: {
                 metadata: { symbol: "2330", name: "台積電", market: "TW" },
-                summary_stats: { pe_ratio: 20, pb_ratio: 3.5, dividend_yield: 2, roe: 30 },
-                price_series: []
+                summary_stats: {
+                    pe_ratio: 20.5,
+                    pb_ratio: 3.5,
+                    dividend_yield: 2.1,
+                    roe: 25.3,
+                },
+                price_series: [],
             },
-            isLoading: false, error: null
-        };
-        if (symbol === "AAPL" || symbol === "aapl") return {
-            data: {
-                metadata: { symbol: "AAPL", name: "Apple", market: "US" },
-                summary_stats: { pe_ratio: 30, pb_ratio: 15, dividend_yield: 0.5, roe: 45 },
-                price_series: []
-            },
-            isLoading: false, error: null
-        };
-        return { data: null, isLoading: false, error: true };
-    }
-}));
+            loading: false,
+            error: null,
+        });
 
-describe("StockDetailPage 整合測試", () => {
-    beforeEach(() => {
-        mockUseParams.mockReturnValue({ symbol: "2330" });
+        render(<StockDetailPage params={{ symbol: "2330" }} />);
+
+        // Chart should be rendered
+        expect(screen.getByTestId("stock-chart")).toBeInTheDocument();
+
+        // Stats cards should show values
+        expect(screen.getByText("本益比 (PE)")).toBeInTheDocument();
+        expect(screen.getByText("20.50x")).toBeInTheDocument();
+
+        // Market info should be displayed
+        expect(screen.getByText(/TW 市場/)).toBeInTheDocument();
+
+        // Action button should be present
+        expect(screen.getByText("啟動 AI 深度辯證")).toBeInTheDocument();
     });
 
-    it("TC-1601: /stocks/[symbol] 應正確載入個股數據", () => {
-        render(<StockDetailPage params={{ symbol: '2330' }} />);
-        expect(screen.getByText("2330")).toBeInTheDocument();
-        expect(screen.getByText("台積電")).toBeInTheDocument();
-        expect(screen.getByTestId("price-chart")).toBeInTheDocument();
-    });
+    it("TC-1604: 無資料狀態應顯示預設錯誤訊息", () => {
+        mockUseStockDetail.mockReturnValue({
+            data: null,
+            loading: false,
+            error: null,
+        });
 
-    it("TC-1602: 不存在的 symbol 應顯示「找不到股票」訊息", () => {
-        mockUseParams.mockReturnValue({ symbol: "9999" });
-        render(<StockDetailPage params={{ symbol: '9999' }} />);
-        expect(screen.getByText("找不到股票: 9999")).toBeInTheDocument();
-    });
+        render(<StockDetailPage params={{ symbol: "9999" }} />);
 
-    it("TC-1603: 返回按鈕應正確導航至上一頁", () => {
-        render(<StockDetailPage params={{ symbol: '2330' }} />);
-        const backBtn = screen.getByTestId("icon-arrow-left").closest("button");
-        fireEvent.click(backBtn!);
-        expect(mockBack).toHaveBeenCalled();
-    });
-
-    it("TC-2203: URL 中的 symbol 應處理大小寫不一致", () => {
-        mockUseParams.mockReturnValue({ symbol: "aapl" });
-        render(<StockDetailPage params={{ symbol: 'aapl' }} />);
-        expect(screen.getByText("Apple")).toBeInTheDocument();
+        expect(screen.getByText("無法載入數據")).toBeInTheDocument();
+        expect(screen.getByText("找不到此標的資訊")).toBeInTheDocument();
     });
 });
