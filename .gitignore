@@ -3,6 +3,7 @@ node_modules/
 __pycache__/
 *.pyc
 .env
+frontend/.env.local
 .DS_Store
 volumes/db/
 volumes/storage/

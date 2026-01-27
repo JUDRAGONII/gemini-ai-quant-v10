@@ -14,7 +14,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // 若為測試 Dummy Key，則跳過此整合測試
-const isDummyKey = SUPABASE_SERVICE_ROLE_KEY === 'dummy-service-role-key';
+const isDummyKey = !SUPABASE_SERVICE_ROLE_KEY || SUPABASE_SERVICE_ROLE_KEY === 'dummy-service-role-key';
 
 const describeSuite = isDummyKey ? describe.skip : describe;
 

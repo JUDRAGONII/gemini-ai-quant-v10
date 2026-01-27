@@ -8,6 +8,9 @@ description: 啟動 AI 投資分析儀 V10.0 開發環境
 
 1. **環境檢查 (Pre-flight Check)**
    - 檢查 `.env` 是否存在且包含必要 Key (GEMINI_API_KEY, SUPABASE_URL)。
+   - **[NEW]** 檢查 `NEXT_PUBLIC_SUPABASE_URL` 與 `NEXT_PUBLIC_SUPABASE_ANON_KEY` 是否存在於 `.env` 中 (前端連線必要)。
+   - **[NEW]** 檢查 `frontend/.env.local` 是否存在 (敏感變數隔離)。
+   - **[NEW]** 檢查 Port 3000 (Frontend) 與 Port 8000 (Supabase/Kong) 是否未被佔用 (`netstat -ano | findstr "3000"`).
    - 檢查 Docker Engine 是否運行中。
 
 2. **啟動容器 (Container Startup)**

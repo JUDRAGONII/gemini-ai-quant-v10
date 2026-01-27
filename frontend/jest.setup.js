@@ -71,6 +71,7 @@ jest.mock("recharts", () => ({
     Defs: ({ children }) => <defs>{children}</defs>,
     LinearGradient: ({ children }) => <linearGradient>{children}</linearGradient>,
     Stop: () => <stop />,
+    ComposedChart: ({ children }) => <svg data-testid="composed-chart">{children}</svg>,
 }));
 
 // 4. ResizeObserver Polyfill (Recharts 依賴)
@@ -84,3 +85,75 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'dummy-anon-key';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'dummy-service-role-key';
+
+// 6. Mock lightweight-charts (Canvas based, not supported in JSDOM)
+jest.mock('lightweight-charts', () => ({
+    createChart: jest.fn(() => ({
+        applyOptions: jest.fn(),
+        remove: jest.fn(),
+        resize: jest.fn(),
+        addSeries: jest.fn(() => ({
+            setData: jest.fn(),
+            applyOptions: jest.fn(),
+            setMarkers: jest.fn(),
+        })),
+        timeScale: jest.fn(() => ({
+            fitContent: jest.fn(),
+            subscribeVisibleTimeRangeChange: jest.fn(),
+            unsubscribeVisibleTimeRangeChange: jest.fn(),
+        })),
+    })),
+    ColorType: { Solid: 'solid' },
+    CrosshairMode: { Normal: 0, Magnet: 1 },
+    LineStyle: { Solid: 0 },
+}), { virtual: true });
+
+// 7. Polyfill Response/Request/Headers for JSDOM (Next.js 14 API Testing)
+if (typeof global.Response === 'undefined') {
+    class MockResponse {
+        constructor(body, init) {
+            this.body = body;
+            this.status = init?.status || 200;
+            this.ok = this.status >= 200 && this.status < 300;
+            this.headers = new Map(Object.entries(init?.headers || {}));
+        }
+        async json() {
+            return JSON.parse(this.body);
+        }
+        static json(data, init) {
+            return new MockResponse(JSON.stringify(data), {
+                ...init,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(init?.headers || {})
+                }
+            });
+        }
+    }
+
+    class MockRequest {
+        constructor(url, init) {
+            this.url = url;
+            this.method = init?.method || 'GET';
+            this.headers = new Map(Object.entries(init?.headers || {}));
+        }
+    }
+
+    class MockHeaders extends Map {
+        constructor(init) {
+            if (!init) {
+                super();
+            } else if (Array.isArray(init) || (init instanceof Map)) {
+                super(init);
+            } else if (typeof init === 'object') {
+                super(Object.entries(init));
+            } else {
+                super();
+            }
+        }
+    }
+
+    global.Response = MockResponse;
+    global.Request = MockRequest;
+    global.Headers = MockHeaders;
+}

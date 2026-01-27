@@ -1,289 +1,111 @@
-"use client";
+'use client';
 
-// Force dynamic rendering to avoid build-time data fetching errors in CI
-export const dynamic = 'force-dynamic';
+import React from 'react';
+import { useStockDetail } from '@/hooks/useStockDetail';
+import { StockChart } from '@/components/Chart/StockChart';
+import { motion } from 'framer-motion';
+import { TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
 
-import React from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import {
-    TrendingUp,
-    BarChart3,
-    FileText,
-    Settings,
-    Layers,
-    Home,
-    ArrowLeft,
-    Building2,
-    DollarSign,
-    Percent,
-    TrendingDown,
-} from "lucide-react";
-import PriceChart from "@/components/PriceChart";
-import ScoreRadarChart from "@/components/ScoreRadarChart";
-import { findStockBySymbol } from "@/data/mockStocks";
+export default function StockDetailPage({ params }: { params: { symbol: string } }) {
+    const { data, loading, error } = useStockDetail(params.symbol);
 
-/**
- * 個股詳情頁面
- * 展示股票價格走勢、公司資訊與 AI 評分
- */
-
-// 側邊欄導航項目組件
-const NavItem = ({
-    icon: Icon,
-    label,
-    href,
-    active = false,
-}: {
-    icon: React.ElementType;
-    label: string;
-    href: string;
-    active?: boolean;
-}) => (
-    <Link href={href}>
-        <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active
-                ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-                }`}
-        >
-            <Icon size={20} />
-            <span className="font-medium">{label}</span>
-        </div>
-    </Link>
-);
-
-// 資訊卡片組件
-const InfoCard = ({
-    icon: Icon,
-    label,
-    value,
-    color = "text-white",
-}: {
-    icon: React.ElementType;
-    label: string;
-    value: string | number;
-    color?: string;
-}) => (
-    <div className="glass p-4 rounded-xl border border-white/10">
-        <div className="flex items-center gap-2 mb-2">
-            <Icon size={16} className="text-gray-500" />
-            <span className="text-sm text-gray-400">{label}</span>
-        </div>
-        <span className={`text-xl font-bold ${color}`}>{value}</span>
-    </div>
-);
-
-export default function StockDetailPage() {
-    const params = useParams();
-    const router = useRouter();
-    const symbol = params.symbol as string;
-
-    // 查找股票數據
-    const stock = findStockBySymbol(symbol);
-
-    // 股票未找到
-    if (!stock) {
+    if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-white mb-4">
-                        找不到股票: {symbol}
-                    </h1>
-                    <Link
-                        href="/stocks"
-                        className="text-amber-400 hover:underline"
-                    >
-                        返回股票列表
-                    </Link>
-                </div>
+            <div className="flex items-center justify-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
         );
     }
 
-    // 判斷漲跌
-    const isPositive = stock.changePercent > 0;
-    const isNegative = stock.changePercent < 0;
-    const trendColor = isPositive
-        ? "text-emerald-400"
-        : isNegative
-            ? "text-red-400"
-            : "text-gray-400";
+    if (error || !data) {
+        return (
+            <div className="p-8 text-center">
+                <h1 className="text-2xl font-bold text-red-400">無法載入數據</h1>
+                <p className="mt-2 text-gray-400">{error || '找不到此標的資訊'}</p>
+            </div>
+        );
+    }
 
-    // 模擬 AI 評分數據 (Static for correct hydration)
-    const scoreData = [
-        { dimension: "價值", fullMark: 100, score: 75 },
-        { dimension: "成長", fullMark: 100, score: 65 },
-        { dimension: "動能", fullMark: 100, score: 80 },
-        { dimension: "品質", fullMark: 100, score: 70 },
-        { dimension: "籌碼", fullMark: 100, score: 60 },
-    ];
+    const { metadata, summary_stats, price_series } = data;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            {/* 頂部狀態列 */}
-            <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-                <div className="flex items-center justify-between px-6 py-3">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                            <TrendingUp size={18} className="text-white" />
-                        </div>
-                        <span className="text-lg font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                            AI QUANT
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-gray-400">AI Worker</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                            <span className="text-gray-400">Database</span>
-                        </div>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in duration-500">
+            {/* Left: Chart Section */}
+            <div className="lg:col-span-3 space-y-6">
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-1 overflow-hidden backdrop-blur-sm">
+                    <StockChart data={price_series} />
                 </div>
-            </header>
 
-            <div className="flex pt-14">
-                {/* 側邊欄 */}
-                <aside className="fixed left-0 top-14 bottom-0 w-56 glass border-r border-white/10 p-4 overflow-y-auto">
-                    <nav className="space-y-2">
-                        <NavItem icon={Home} label="總覽 (Overview)" href="/" />
-                        <NavItem
-                            icon={Layers}
-                            label="籌碼分析 (Chips)"
-                            href="/chips"
-                        />
-                        <NavItem
-                            icon={TrendingUp}
-                            label="市場動態"
-                            href="/stocks"
-                            active
-                        />
-                        <NavItem
-                            icon={BarChart3}
-                            label="演化分析"
-                            href="/evolution"
-                        />
-                        <NavItem icon={FileText} label="決策報告" href="/ai" />
-                        <NavItem
-                            icon={Settings}
-                            label="系統設定"
-                            href="/settings"
-                        />
-                    </nav>
-                </aside>
+                {/* 額外描述卡片 */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
+                >
+                    <h3 className="text-lg font-semibold mb-3 flex items-center">
+                        <Activity className="w-5 h-5 mr-2 text-indigo-400" /> 標的概覽
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed text-sm">
+                        此標的隸屬於 {metadata.market} 市場，目前系統已對接歷史行情數據與多因子量化評分。
+                        建議搭配「AI 投資報告」進行深度辯證。
+                    </p>
+                </motion.div>
+            </div>
 
-                {/* 主內容區 */}
-                <main className="flex-1 ml-56 p-8">
-                    {/* 返回按鈕與標題 */}
-                    <div className="flex items-center gap-4 mb-6">
-                        <button
-                            onClick={() => router.back()}
-                            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
-                        >
-                            <ArrowLeft size={20} />
-                        </button>
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-3xl font-bold text-white">
-                                    {stock.symbol}
-                                </h1>
-                                <span className="px-2 py-1 text-xs rounded-full bg-white/10 text-gray-400">
-                                    {stock.market === "TW" ? "台股" : "美股"}
-                                </span>
-                            </div>
-                            <p className="text-gray-400">{stock.name}</p>
-                        </div>
-                    </div>
+            {/* Right: Stats Section */}
+            <div className="space-y-6">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">關鍵指標 (Factors)</h3>
 
-                    {/* 價格與漲跌幅 */}
-                    <div className="glass p-6 rounded-xl border border-white/10 mb-8">
-                        <div className="flex items-end gap-4">
-                            <span className="text-4xl font-bold text-white">
-                                {stock.market === "TW"
-                                    ? stock.price.toLocaleString("zh-TW")
-                                    : `$${stock.price.toFixed(2)}`}
-                            </span>
-                            <div
-                                className={`flex items-center gap-2 text-lg font-semibold ${trendColor}`}
-                            >
-                                {isPositive ? (
-                                    <TrendingUp size={20} />
-                                ) : isNegative ? (
-                                    <TrendingDown size={20} />
-                                ) : null}
-                                <span>
-                                    {isPositive ? "+" : ""}
-                                    {stock.changePercent.toFixed(2)}%
-                                </span>
-                            </div>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-2">
-                            最後更新：{new Date().toLocaleDateString("zh-TW")}
-                        </p>
-                    </div>
+                <StatsCard
+                    title="本益比 (PE)"
+                    value={summary_stats.pe_ratio}
+                    icon={<BarChart3 className="w-5 h-5" />}
+                    suffix="x"
+                />
+                <StatsCard
+                    title="股價淨值比 (PB)"
+                    value={summary_stats.pb_ratio}
+                    icon={<PieChart className="w-5 h-5" />}
+                    suffix="x"
+                />
+                <StatsCard
+                    title="殖利率 (Yield)"
+                    value={summary_stats.dividend_yield}
+                    icon={<TrendingUp className="w-5 h-5" />}
+                    suffix="%"
+                />
+                <StatsCard
+                    title="股東權益報酬率 (ROE)"
+                    value={summary_stats.roe}
+                    icon={<Activity className="w-5 h-5" />}
+                    suffix="%"
+                />
 
-                    {/* 主要內容網格 */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* 左側：價格走勢圖 (佔 2 欄) */}
-                        <div className="lg:col-span-2">
-                            <PriceChart
-                                symbol={stock.symbol}
-                                data={stock.priceHistory}
-                                height={350}
-                            />
-                        </div>
-
-                        {/* 右側：AI 評分雷達圖 */}
-                        <div>
-                            <ScoreRadarChart
-                                symbol={stock.symbol}
-                                data={scoreData}
-                                size={280}
-                            />
-                        </div>
-                    </div>
-
-                    {/* 公司資訊卡片 */}
-                    <div className="mt-8">
-                        <h2 className="text-xl font-bold text-gray-200 mb-4">
-                            公司資訊
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                            <InfoCard
-                                icon={Building2}
-                                label="產業"
-                                value={stock.info.industry}
-                            />
-                            <InfoCard
-                                icon={DollarSign}
-                                label="市值"
-                                value={stock.info.marketCap}
-                            />
-                            <InfoCard
-                                icon={Percent}
-                                label="本益比"
-                                value={stock.info.pe.toFixed(1)}
-                                color="text-amber-400"
-                            />
-                            <InfoCard
-                                icon={TrendingUp}
-                                label="EPS"
-                                value={stock.info.eps.toFixed(2)}
-                                color="text-emerald-400"
-                            />
-                            <InfoCard
-                                icon={DollarSign}
-                                label="殖利率"
-                                value={`${stock.info.dividend}%`}
-                                color="text-blue-400"
-                            />
-                        </div>
-                    </div>
-                </main>
+                {/* 操作按鈕 */}
+                <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                    啟動 AI 深度辯證
+                </button>
             </div>
         </div>
+    );
+}
+
+function StatsCard({ title, value, icon, suffix = '' }: { title: string, value: number | null, icon: React.ReactNode, suffix?: string }) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 transition-colors hover:bg-white/10"
+        >
+            <div className="p-3 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+                {icon}
+            </div>
+            <div>
+                <p className="text-xs font-medium text-gray-500 uppercase">{title}</p>
+                <p className="text-xl font-mono font-bold text-white">
+                    {value ? `${value.toFixed(2)}${suffix}` : 'N/A'}
+                </p>
+            </div>
+        </motion.div>
     );
 }

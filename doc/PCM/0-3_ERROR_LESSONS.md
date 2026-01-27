@@ -312,3 +312,24 @@
 - [ ] Mock 數據對象必須包含列表渲染所需的 `id` 或 `key` 屬性。
 - [ ] 具有外部依賴（DB/API）的整合測試必須具備環境檢測與自動跳過機制。
 - [ ] 在 `jest.setup.js` 中預設補齊 `useParams` 等 App Router 常用 Hook 的基礎 Mock。
+- [ ] 在 `jest.setup.js` 中預設補齊 `useParams` 等 App Router 常用 Hook 的基礎 Mock。
+
+---
+
+### 2026-01-27 Docker 服務中斷導致 API 404 教訓
+
+### 問題現象
+- **API 失效**：前端呼叫 `/api/stocks/[symbol]` 回傳 404，Next.js Server Side Log 顯示 `TypeError: fetch failed`。
+- **誤判**：起初誤以為是 Port 3000 被佔用或 API Route 邏輯錯誤。
+
+### 底層根本原因
+- **Docker Engine Down**：Docker Desktop 服務本身已停止 (Crash 或未啟動)，導致 Supabase 本地實例 (Port 8000) 無法存取。
+- **錯誤訊息傳遞**：Next.js 的 `fetch` 失敗 (Connection Refused) 在 API Route 中被捕獲並回傳通用的 500 或 404，掩蓋了底層連線錯誤。
+
+### 解決方案
+- **服務檢查**：優先執行 `docker ps` 檢查容器狀態。
+- **連線測試**：使用 `Test-NetConnection -Port 8000` 確認資料庫端口可達性。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 遇到 `fetch failed` 時，第一步先檢查目標服務 (Docker/Database) 是否活著 (`docker ps`)。
+- [ ] API Route 的 `try-catch` 區塊應區分「業務邏輯 404」與「基礎設施 500」，並在 Log 中輸出具體錯誤原因 (如 Connection Refused)。
