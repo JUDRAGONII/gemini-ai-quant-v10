@@ -316,6 +316,27 @@
 
 ---
 
+## #23 Mock Hook 返回鍵名與元件解構不匹配
+
+| 屬性 | 值 |
+| --- | --- |
+| 發生日期 | 2026-01-27 |
+| 影響範圍 | CI/CD |
+| 嚴重程度 | 中 |
+
+### 問題現象
+`page.test.tsx` 測試始終失敗，錯誤訊息為 `TypeError: Cannot read properties of undefined (reading 'market')`。
+
+### 底層根因
+1.  `useStockDetail` Hook 實際返回 `{ data, loading, error }`。
+2.  測試中的 Mock 返回的是 `{ data, isLoading, error }` (鍵名不匹配)。
+3.  元件解構 `const { data, loading, error } = useStockDetail(...)` 時，`loading` 為 `undefined`，導致 `if (loading)` 不成立，元件嘗試渲染未載入的 `data`，造成屬性讀取錯誤。
+
+### 預防措施 (Checklist)
+- [ ] 撰寫 Hook Mock 時，必須先查看實際 Hook 的返回介面 (`useXXX.ts`)。
+- [ ] 測試新增後，先在本地執行 `npm test [file]` 確認通過再推送。
+- [ ] 若 CI 失敗，優先查看「返回結構」與「解構賦值」是否一致。
+
 ### 2026-01-27 Docker 服務中斷導致 API 404 教訓
 
 ### 問題現象

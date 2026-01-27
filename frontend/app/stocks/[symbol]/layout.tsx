@@ -21,7 +21,8 @@ export default function StockDetailLayout({
     const tabs = [
         { name: '總覽', path: `/stocks/${params.symbol}`, icon: <Activity className="w-4 h-4" /> },
         { name: '籌碼分析', path: `/stocks/${params.symbol}/chips`, icon: <Layers className="w-4 h-4" /> },
-        // Future: { name: '財務報表', path: `/stocks/${params.symbol}/financials`, icon: <PieChart className="w-4 h-4" /> },
+        { name: '財務報表', path: `/stocks/${params.symbol}/financials`, icon: <PieChart className="w-4 h-4" /> },
+        { name: '技術分析', path: `/stocks/${params.symbol}/technical`, icon: <BarChart3 className="w-4 h-4" /> },
     ];
 
     const isActive = (path: string) => pathname === path;
