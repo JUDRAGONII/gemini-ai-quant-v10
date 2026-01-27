@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useStockDetail } from '@/hooks/useStockDetail';
-import { KLineChart, ChartPeriod } from '@/components/Chart/KLineChart';
+import { KLineChart, ChartPeriod, KLinePricePoint } from '@/components/Chart/KLineChart';
+import { TechnicalIndicatorPanel } from '@/components/Chart/TechnicalIndicatorPanel';
 import { motion } from 'framer-motion';
 import { TrendingUp, BarChart3, PieChart, Activity, Calendar } from 'lucide-react';
 
@@ -65,6 +66,17 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
                         建議搭配「AI 投資報告」進行深度辯證。
                     </p>
                 </motion.div>
+
+                <TechnicalIndicatorPanel
+                    data={price_series.map(p => ({
+                        time: typeof p.time === 'number' ? p.time : new Date(p.time).getTime() / 1000,
+                        open: p.open,
+                        high: p.high,
+                        low: p.low,
+                        close: p.close,
+                        volume: p.volume,
+                    }))}
+                />
             </div>
 
             {/* Right: Stats Section */}

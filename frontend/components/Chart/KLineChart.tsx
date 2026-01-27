@@ -8,6 +8,7 @@ import {
     ISeriesApi,
     CandlestickSeries,
     LineSeries,
+    HistogramSeries,
     Time,
     CrosshairMode,
     UTCTimestamp,
@@ -83,7 +84,7 @@ export const KLineChart: React.FC<KLineChartProps> = ({
     const [currentPeriod, setCurrentPeriod] = useState<ChartPeriod>(period);
     const [dimensions, setDimensions] = useState({ width: 0, height });
 
-    const maPeriods = [5, 10, 20, 60, 120];
+    const maPeriods = useMemo(() => [5, 10, 20, 60, 120], []);
 
     const calculateSMA = useCallback((prices: number[], period: number): (number | null)[] => {
         return prices.map((_, i, arr) => {
@@ -174,7 +175,7 @@ export const KLineChart: React.FC<KLineChartProps> = ({
         candleSeriesRef.current = candleSeries;
 
         if (showVolume) {
-            const volumeSeries = chart.addSeries(LineSeries, {
+            const volumeSeries = chart.addSeries(HistogramSeries, {
                 priceFormat: { type: 'volume' },
                 priceScaleId: '',
             });
