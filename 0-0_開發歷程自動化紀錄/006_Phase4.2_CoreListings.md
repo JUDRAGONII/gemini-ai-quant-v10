@@ -1,4 +1,4 @@
-# 007_Phase4.2_CoreListings.md
+# 006_Phase4.2_CoreListings.md
 **日期**: 2026-01-22
 **階段**: Phase 4.2 - 核心功能強化
 **執行者**: Antigravity AI Agent
