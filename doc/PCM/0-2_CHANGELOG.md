@@ -2,14 +2,11 @@
 
 ## [V10.1.1] - 2026-01-27
 ### Added
-- **Phase 5: 美股財報與技術分析模組**:
-  - **後端 ETL (`financials_fetcher.py`)**: 整合 FMP API 擷取美股季報/年報三表 (Income/Balance/Cash Flow)，支援雙 Key 輪詢機制。
-  - **Config 擴充 (`lib/config.py`)**: 新增 `FMP_KEYS` 列表與 `get_fmp_key()` Key 輪詢方法。
-  - **DB Migration (`20260127_stock_financials.sql`)**: 建立 `stock_financials` 表，含 15 欄位與 Unique Constraint。
-  - **前端 API Route (`/api/stocks/[symbol]/financials`)**: 聚合年報(5年)與季報(8季)數據，含毛利率/淨利率計算。
-  - **財報頁面 (`/stocks/[symbol]/financials`)**: Glassmorphism UI，含統計卡片、季度趨勢 BarChart、年度盈利 LineChart、明細 Table。
-  - **技術分析頁面 (`/stocks/[symbol]/technical`)**: 前端即時計算 MA5/MA20/MA60、RSI(14)、MACD(12,26,9)，含指標卡片與三組圖表。
-  - **Layout 導航更新**: 個股詳情頁擴充至 4 Tab (總覽/籌碼/財報/技術)。
+- **Phase 6: 財報與技術分析驗證 (Validation Phase)**:
+  - **自動化測試**: 實作 `frontend/__tests__/financials_technical.test.tsx`，通過 8 項核心測試案例 (100% Pass)。
+  - **安全性驗證**: 驗證 `stock_financials` 表之 RLS 政策，確認匿名讀取與 Service Role 寫入隔離。
+  - **計算準確性**: 驗證前端 `useStockDetail` 結合即時指標 (MA, RSI, MACD) 邏輯在不同數據長度下的穩定性。
+  - **Bug Fix**: 解決 JSDOM 環境下 SWR 與 Framer Motion 導致的測試超時與組件重建問題。
 
 ### Verified
 - TypeScript: `npx tsc --noEmit` → Exit 0 ✅

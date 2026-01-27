@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 4.3: 核心功能深化與金融場景補完
-**狀態**：✅ Phase 4.3 籌碼分析模組 (Chips Analysis) 已全數完成並通過 TDD 驗證。目前進入 Phase 5.1 系統整合測試階段。
+**階段**：Phase 6: 財報與技術分析驗證 (COMPLETED) -> Phase 7: AI 投資組合建議 UI
+**狀態**：✅ Phase 6 美股財報與技術分析模組已通過全量驗證與 RLS 安全測試。目前準備進入 Phase 7 AI 投資組合建議功能開發。
 
 ---
 
@@ -135,10 +135,9 @@
 | 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
 | 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
 | 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
-| 2026-01-27 | **Feature** | **籌碼分析實作完成**：後端 API (`/chips`) 與前台圖表 (`ChipsPage`) 100% 上線。整合 Layout 分頁導航，通過 TSC 全檢。 |
-| 2026-01-27 | **Audit** | **深度代碼審查**：完成 StockDetail 與 Chips 模組的 Code Review 與技術文件化 (Log 011)。 |
-| 2026-01-27 | **TDD** | **籌碼功能驗收**：完成 TC-1101~4001 共 5 項測試案例 (100% Pass)，驗證 API 整合與 UI 狀態。 |
-| 2026-01-27 | **Infra** | **環境故障排除**：診斷並修復 Docker Engine 停止導致的 404 API 錯誤，確認 Port 8000/3000 連線正常。 |
+| 2026-01-27 | **ETL & DB** | **財報數據回補**：修正 `NaN` 寫入錯誤，實作 FMP 輪詢機制。成功同步 AAPL/AMZN 季報與年報。 |
+| 2026-01-27 | **TDD & QA** | **組件驗證**：完成 `financials_technical.test.tsx` 通過 8 項核心測試。驗證前端即時指標計算準確性與 RLS 讀取權限。 |
+| 2026-01-27 | **Archiving** | **開發歷程歸檔**：同步所有 PCM 文檔，完成 Phase 6 結項歸檔。 |
 
 
 

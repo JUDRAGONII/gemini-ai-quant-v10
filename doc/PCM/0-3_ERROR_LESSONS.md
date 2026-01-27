@@ -354,3 +354,21 @@
 ### 預防重複犯錯的 Checkbox
 - [ ] 遇到 `fetch failed` 時，第一步先檢查目標服務 (Docker/Database) 是否活著 (`docker ps`)。
 - [ ] API Route 的 `try-catch` 區塊應區分「業務邏輯 404」與「基礎設施 500」，並在 Log 中輸出具體錯誤原因 (如 Connection Refused)。
+### 2026-01-27 Phase 5.4/6 財報回補與驗證教訓
+
+### 問題現象
+1. **Supabase 400 Error**: Python ETL 寫入財報時報錯 `"invalid input syntax for type json"`。
+2. **Jest Timeout**: 前端測試時 `useSWR` 模擬數據導致 JSDOM 渲染死循環或超時。
+
+### 底層根本原因
+1. **NaN 污染**: FMP API 的原始數據包含空值，Pandas 讀取後轉為 `NaN` (float)。Python `json.dumps` 會將其轉為非標準 JSON 的 `NaN` 字串，而 Supabase (PostgreSQL) 的 `jsonb` 欄位無法解析此非標記符。
+2. **SWR 狀態不完整**: Mock `useSWR` 時若未指定 `isValidating: false`，Recharts 或 Framer Motion 可能因不斷偵測到「驗證中」狀態而重新觸發動畫或重繪，導致 Jest 環境下的 `findBy` 操作超出預設 5s 限制。
+
+### 解決方案
+1. **數據清洗**: 在回傳 JSON 前，使用 `df.where(pd.notnull(df), None)` 將所有 `NaN` 強制轉換為標準的 `null`。
+2. **Mock 狀態補完**: 確保 `useSWR` Mock 返回完整對象：`{ data, error, isLoading: false, isValidating: false }`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] Python ETL 在 `upsert` 前必須執行 `replace({np.nan: None})` 處理。
+- [ ] 涉及動畫或圖表的 Jest 測試，優先使用 `waitFor` 配合較大的 timeout 或縮減動畫時間。
+- [ ] Supabase SDK 批量寫入時，務必檢查傳入的是物件列表 `List[dict]` 而非單個物件。
