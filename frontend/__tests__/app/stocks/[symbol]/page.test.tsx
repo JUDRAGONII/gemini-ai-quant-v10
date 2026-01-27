@@ -3,9 +3,10 @@ import StockDetailPage from "@/app/stocks/[symbol]/page";
 import "@testing-library/jest-dom";
 
 // Mock Components
-jest.mock("@/components/PriceChart", () => ({
+// Mock Components
+jest.mock("@/components/Chart/StockChart", () => ({
     __esModule: true,
-    default: () => <div data-testid="price-chart" />
+    StockChart: () => <div data-testid="price-chart" />
 }));
 jest.mock("@/components/ScoreRadarChart", () => ({
     __esModule: true,
@@ -50,6 +51,29 @@ const mockUseParams = jest.fn();
 jest.mock("next/navigation", () => ({
     useParams: () => mockUseParams(),
     useRouter: () => ({ back: mockBack }),
+}));
+
+// Mock Hook
+jest.mock("@/hooks/useStockDetail", () => ({
+    useStockDetail: (symbol: string) => {
+        if (symbol === "2330") return {
+            data: {
+                metadata: { symbol: "2330", name: "台積電", market: "TW" },
+                summary_stats: { pe_ratio: 20, pb_ratio: 3.5, dividend_yield: 2, roe: 30 },
+                price_series: []
+            },
+            isLoading: false, error: null
+        };
+        if (symbol === "AAPL" || symbol === "aapl") return {
+            data: {
+                metadata: { symbol: "AAPL", name: "Apple", market: "US" },
+                summary_stats: { pe_ratio: 30, pb_ratio: 15, dividend_yield: 0.5, roe: 45 },
+                price_series: []
+            },
+            isLoading: false, error: null
+        };
+        return { data: null, isLoading: false, error: true };
+    }
 }));
 
 describe("StockDetailPage 整合測試", () => {

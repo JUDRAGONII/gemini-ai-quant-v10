@@ -94,21 +94,25 @@ describe('Chips API Endpoint', () => {
         // Since execution is parallel, we can't rely on call order easily with a single mock object unless we are careful.
         // But `from` is called twice. We can mock `from` implementation to return specific chains based on table name.
 
+        const createMockChain = (data) => {
+            const chain: any = {
+                select: jest.fn().mockReturnThis(),
+                eq: jest.fn().mockReturnThis(),
+                order: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockResolvedValue({ data, error: null }),
+            };
+            return chain;
+        };
+
         const fromSpy = require('@/lib/supabase').supabase.from;
         fromSpy.mockImplementation((table: string) => {
             if (table === 'daily_price') {
-                return {
-                    ...mockChain,
-                    limit: jest.fn().mockResolvedValue({ data: mockPrices, error: null })
-                };
+                return createMockChain(mockPrices);
             }
             if (table === 'institutional_investors') {
-                return {
-                    ...mockChain,
-                    limit: jest.fn().mockResolvedValue({ data: mockChips, error: null })
-                };
+                return createMockChain(mockChips);
             }
-            return mockChain;
+            return createMockChain([]);
         });
 
         const res = await GET(req, { params: { symbol } });
@@ -136,11 +140,15 @@ describe('Chips API Endpoint', () => {
     });
 
     it('should handle database errors gracefully', async () => {
+        const createErrorChain = () => ({
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockResolvedValue({ data: null, error: { message: 'DB Error' } }),
+        });
+
         const fromSpy = require('@/lib/supabase').supabase.from;
-        fromSpy.mockImplementation(() => ({
-            ...mockChain,
-            limit: jest.fn().mockResolvedValue({ data: null, error: { message: 'DB Error' } })
-        }));
+        fromSpy.mockImplementation(() => createErrorChain());
 
         const req = { url: 'http://localhost/api/stocks/2330/chips' } as any;
         const res = await GET(req, { params: { symbol: '2330' } });
