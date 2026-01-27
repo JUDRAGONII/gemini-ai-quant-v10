@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useStockDetail } from '@/hooks/useStockDetail';
-import { StockChart } from '@/components/Chart/StockChart';
+import { KLineChart, ChartPeriod } from '@/components/Chart/KLineChart';
 import { motion } from 'framer-motion';
-import { TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
+import { TrendingUp, BarChart3, PieChart, Activity, Calendar } from 'lucide-react';
 
 export default function StockDetailPage({ params }: { params: { symbol: string } }) {
+    const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('1Y');
     const { data, loading, error } = useStockDetail(params.symbol);
 
     if (loading) {
@@ -30,10 +31,23 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in duration-500">
-            {/* Left: Chart Section */}
             <div className="lg:col-span-3 space-y-6">
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-1 overflow-hidden backdrop-blur-sm">
-                    <StockChart data={price_series} />
+                    <KLineChart
+                        data={price_series.map(p => ({
+                            time: typeof p.time === 'number' ? p.time : new Date(p.time).getTime() / 1000,
+                            open: p.open,
+                            high: p.high,
+                            low: p.low,
+                            close: p.close,
+                            volume: p.volume,
+                        }))}
+                        symbol={params.symbol}
+                        showMA={true}
+                        showVolume={true}
+                        period={chartPeriod}
+                        onPeriodChange={setChartPeriod}
+                    />
                 </div>
 
                 {/* 額外描述卡片 */}

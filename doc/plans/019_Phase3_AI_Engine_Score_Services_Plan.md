@@ -1,4 +1,4 @@
-# 021_Phase3_AI_Engine_Score_Services_Plan (AI 引擎與評分服務計畫)
+# 019_Phase3_AI_Engine_Score_Services_Plan (AI 引擎與評分服務計畫)
 
 ## 1. 目標描述
 開發系統的智慧核心，包含基於基因演算法 (Genetic Algorithm) 的策略優化引擎，以及多因子量化評分服務，為投資決策提供量化依據。

@@ -1,4 +1,4 @@
-# 020_Phase2_CoreData_Backend_Services_Plan (核心數據與後端服務計畫)
+# 018_Phase2_CoreData_Backend_Services_Plan (核心數據與後端服務計畫)
 
 ## 1. 目標描述
 實作 V10.0 的數據基石，建立高性能的 PostgreSQL 資料庫模型與自動化數據擷取管道 (ETL)，確保市場行情與宏觀指標持續更新。

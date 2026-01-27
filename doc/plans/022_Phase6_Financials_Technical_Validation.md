@@ -1,4 +1,4 @@
-# 019_Phase6_Financials_Technical_Validation (美股財報與技術分析驗收計畫)
+# 022_Phase6_Financials_Technical_Validation (美股財報與技術分析驗收計畫)
 
 ## 1. 目標描述
 實作美股財務報表 (Financials) 數據對接與前端技術分析子頁面，擴展現有個股詳情頁導航體系，並完成自動化測試驗證。
