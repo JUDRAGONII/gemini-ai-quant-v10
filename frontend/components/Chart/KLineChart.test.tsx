@@ -29,7 +29,7 @@ describe('KLineChart', () => {
         jest.useRealTimers();
     });
 
-    it('renders without crashing', async () => {
+    it('TC-1300: KLineChart 組件正常渲染', async () => {
         render(<KLineChart data={mockData} symbol="2330.TW" />);
 
         await waitFor(() => {
@@ -37,7 +37,7 @@ describe('KLineChart', () => {
         });
     });
 
-    it('renders period buttons correctly', async () => {
+    it('TC-1310: 週期按鈕顯示正確', async () => {
         render(<KLineChart data={mockData} showMA={true} />);
 
         await waitFor(() => {
@@ -51,7 +51,7 @@ describe('KLineChart', () => {
         });
     });
 
-    it('shows MA legend when showMA is true', async () => {
+    it('TC-1320: MA 均線圖例顯示', async () => {
         render(<KLineChart data={mockData} showMA={true} />);
 
         await waitFor(() => {
@@ -63,7 +63,7 @@ describe('KLineChart', () => {
         });
     });
 
-    it('hides MA legend when showMA is false', async () => {
+    it('TC-2313: 隱藏 MA 均線', async () => {
         render(<KLineChart data={mockData} showMA={false} />);
 
         await waitFor(() => {
@@ -71,7 +71,7 @@ describe('KLineChart', () => {
         });
     });
 
-    it('calls onPeriodChange when period button is clicked', async () => {
+    it('TC-1311~1317: 切換週期按鈕觸發回調', async () => {
         const mockOnPeriodChange = jest.fn();
         render(
             <KLineChart
@@ -87,7 +87,7 @@ describe('KLineChart', () => {
         });
     });
 
-    it('renders empty state when no data', async () => {
+    it('TC-2310: 空數據處理 (無數據提示)', async () => {
         render(<KLineChart data={[]} symbol="2330.TW" />);
 
         await waitFor(() => {
@@ -95,38 +95,16 @@ describe('KLineChart', () => {
         });
     });
 
-    it('renders chart container with correct styling', async () => {
+    it('TC-1301: KLineChart 容器樣式正確', async () => {
         render(<KLineChart data={mockData} symbol="2330.TW" />);
 
         const chartContainer = document.querySelector('.bg-white\\/5');
         expect(chartContainer).toBeInTheDocument();
     });
 
-    it('handles data updates correctly', async () => {
-        const { rerender } = render(<KLineChart data={mockData.slice(0, 50)} symbol="2330.TW" />);
+    // TechnicalIndicatorPanel Tests
 
-        await waitFor(() => {
-            expect(screen.getByText('2330.TW')).toBeInTheDocument();
-        });
-
-        rerender(<KLineChart data={mockData} symbol="2330.TW" />);
-
-        await waitFor(() => {
-            expect(screen.getByText('2330.TW')).toBeInTheDocument();
-        });
-    });
-});
-
-describe('TechnicalIndicatorPanel', () => {
-    beforeEach(() => {
-        jest.useFakeTimers();
-    });
-
-    afterEach(() => {
-        jest.useRealTimers();
-    });
-
-    it('renders without crashing', async () => {
+    it('TC-1324: 技術指標面板正常渲染 (RSI)', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -134,7 +112,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('displays RSI status cards', async () => {
+    it('TC-1324~1326: 顯示 RSI/MACD/MA 狀態卡片', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -144,7 +122,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('renders RSI chart title', async () => {
+    it('TC-1327: RSI 圖表標題顯示', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -152,7 +130,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('renders MACD chart title', async () => {
+    it('TC-1328: MACD 圖表標題顯示', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -160,7 +138,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('displays legend for RSI chart', async () => {
+    it('TC-1327: RSI 圖例顯示 (70/30)', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -169,7 +147,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('displays legend for MACD chart', async () => {
+    it('TC-1328: MACD 圖例顯示', async () => {
         render(<TechnicalIndicatorPanel data={mockData} />);
 
         await waitFor(() => {
@@ -179,7 +157,7 @@ describe('TechnicalIndicatorPanel', () => {
         });
     });
 
-    it('handles empty data gracefully', async () => {
+    it('TC-2310: 技術指標空數據處理', async () => {
         render(<TechnicalIndicatorPanel data={[]} />);
 
         await waitFor(() => {

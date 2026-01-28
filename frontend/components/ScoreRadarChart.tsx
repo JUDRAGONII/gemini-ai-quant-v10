@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     RadarChart,
     PolarGrid,
@@ -11,79 +11,99 @@ import {
     Tooltip,
 } from "recharts";
 
-/**
- * 評分雷達圖組件
- * 使用 Recharts RadarChart 展示多維度評分
- */
-
 interface ScoreData {
-    /** 維度名稱 */
     dimension: string;
-    /** 滿分 (通常為 100) */
     fullMark: number;
-    /** 實際分數 */
     score: number;
 }
 
 interface ScoreRadarChartProps {
-    /** 股票代碼 */
     symbol: string;
-    /** 評分數據陣列 */
     data: ScoreData[];
-    /** 圖表尺寸 (預設 280px) */
     size?: number;
-    /** 主色調 */
     color?: string;
+    showLegend?: boolean;
+    showAnimation?: boolean;
+    comparisonData?: ScoreData[];
 }
 
-// 預設的維度數據模板
-export const DEFAULT_SCORE_DIMENSIONS: ScoreData[] = [
-    { dimension: "價值", fullMark: 100, score: 0 },
-    { dimension: "成長", fullMark: 100, score: 0 },
-    { dimension: "動能", fullMark: 100, score: 0 },
-    { dimension: "品質", fullMark: 100, score: 0 },
-    { dimension: "籌碼", fullMark: 100, score: 0 },
-];
+const DIMENSION_COLORS: Record<string, string> = {
+    "價值": "#F59E0B",
+    "成長": "#10B981",
+    "動能": "#3B82F6",
+    "品質": "#8B5CF6",
+    "籌碼": "#EC4899",
+};
 
 export default function ScoreRadarChart({
     symbol,
     data,
     size = 280,
-    color = "#F59E0B", // Amber (主色)
+    color = "#F59E0B",
+    showLegend = true,
+    showAnimation = true,
+    comparisonData,
 }: ScoreRadarChartProps) {
-    // 計算總分 (平均)
+    const [isAnimating, setIsAnimating] = useState(true);
+    const [hoveredDimension, setHoveredDimension] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (showAnimation) {
+            const timer = setTimeout(() => setIsAnimating(false), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [showAnimation]);
+
     const avgScore =
         data.length > 0
-            ? Math.round(
-                data.reduce((sum, d) => sum + d.score, 0) / data.length
-            )
+            ? Math.round(data.reduce((sum, d) => sum + d.score, 0) / data.length)
             : 0;
 
-    // 評級判斷
     const getGrade = (score: number) => {
-        if (score >= 80) return { label: "A+", color: "#10B981" };
-        if (score >= 70) return { label: "A", color: "#22C55E" };
-        if (score >= 60) return { label: "B", color: "#F59E0B" };
-        if (score >= 50) return { label: "C", color: "#EAB308" };
-        return { label: "D", color: "#EF4444" };
+        if (score >= 80) return { label: "S", color: "#10B981", bg: "bg-green-500/20" };
+        if (score >= 70) return { label: "A", color: "#22C55E", bg: "bg-emerald-500/20" };
+        if (score >= 60) return { label: "B", color: "#F59E0B", bg: "bg-amber-500/20" };
+        if (score >= 50) return { label: "C", color: "#EAB308", bg: "bg-yellow-500/20" };
+        return { label: "D", color: "#EF4444", bg: "bg-red-500/20" };
     };
 
     const grade = getGrade(avgScore);
 
-    // 自定義 Tooltip
+    const chartData = data.map((d, i) => ({
+        ...d,
+        comparison: comparisonData?.[i]?.score || 0,
+        fullMark: 100,
+    }));
+
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
-            const dataPoint = payload[0].payload as ScoreData;
+            const dataPoint = payload[0].payload as ScoreData & { comparison?: number };
+            
             return (
-                <div className="glass p-2 rounded-lg border border-white/20 text-sm">
-                    <span className="text-gray-400">{dataPoint.dimension}</span>
-                    <span
-                        className="ml-2 font-bold"
-                        style={{ color }}
-                    >
-                        {dataPoint.score}
-                    </span>
-                    <span className="text-gray-500"> / 100</span>
+                <div className="glass p-3 rounded-lg border border-white/20 text-sm min-w-[140px]">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: color }}
+                        />
+                        <span className="text-gray-400">{dataPoint.dimension}</span>
+                    </div>
+                    <div className="space-y-1">
+                        <div className="flex justify-between">
+                            <span className="text-gray-500">得分</span>
+                            <span className="font-bold" style={{ color }}>
+                                {dataPoint.score}
+                            </span>
+                        </div>
+                        {dataPoint.comparison !== undefined && (
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">比較</span>
+                                <span className="font-bold text-gray-400">
+                                    {dataPoint.comparison}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             );
         }
@@ -92,40 +112,30 @@ export default function ScoreRadarChart({
 
     return (
         <div className="glass p-5 rounded-xl border border-white/10">
-            {/* 標題與總分 */}
-            <div className="flex justify-between items-center mb-2">
-                <h4 className="text-sm font-semibold text-gray-400">
-                    AI 多維評分
-                </h4>
-                <div className="flex items-center gap-2">
-                    <span
-                        className="text-2xl font-bold"
-                        style={{ color: grade.color }}
-                    >
+            <div className="flex justify-between items-start mb-4">
+                <div>
+                    <h4 className="text-sm font-semibold text-gray-400">
+                        AI 多維評分
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-1">{symbol}</p>
+                </div>
+                <div className={`px-3 py-1 rounded-lg ${grade.bg} text-center`}>
+                    <span className="text-2xl font-bold" style={{ color: grade.color }}>
                         {grade.label}
                     </span>
-                    <span className="text-sm text-gray-500">
-                        {avgScore} 分
-                    </span>
+                    <p className="text-xs text-gray-500">{avgScore} 分</p>
                 </div>
             </div>
 
-            {/* 雷達圖 */}
             <div style={{ height: size }}>
                 <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart
-                        cx="50%"
-                        cy="50%"
-                        outerRadius="75%"
-                        data={data}
-                    >
+                    <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
                         <PolarGrid stroke="#333" />
                         <PolarAngleAxis
                             dataKey="dimension"
-                            tick={{
-                                fill: "#9CA3AF",
-                                fontSize: 12,
-                            }}
+                            tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                            onMouseEnter={(e: any) => setHoveredDimension(e.value)}
+                            onMouseLeave={() => setHoveredDimension(null)}
                         />
                         <PolarRadiusAxis
                             angle={90}
@@ -135,22 +145,78 @@ export default function ScoreRadarChart({
                         />
                         <Tooltip content={<CustomTooltip />} />
                         <Radar
-                            name={symbol}
+                            name="score"
                             dataKey="score"
                             stroke={color}
                             strokeWidth={2}
                             fill={color}
-                            fillOpacity={0.3}
-                            animationDuration={800}
+                            fillOpacity={isAnimating ? 0 : 0.3}
+                            animationDuration={showAnimation ? 1000 : 0}
                         />
+                        {comparisonData && (
+                            <Radar
+                                name="comparison"
+                                dataKey="comparison"
+                                stroke="#6B7280"
+                                strokeWidth={1}
+                                fill="#6B7280"
+                                fillOpacity={0.1}
+                                animationDuration={showAnimation ? 1000 : 0}
+                            />
+                        )}
                     </RadarChart>
                 </ResponsiveContainer>
             </div>
 
-            {/* 底部說明 */}
-            <div className="text-center text-xs text-gray-500 mt-2">
-                基於價值、成長、動能、品質、籌碼五大維度
-            </div>
+            {showLegend && (
+                <div className="mt-4 grid grid-cols-5 gap-2">
+                    {data.map((d) => {
+                        const score = d.score;
+                        const barWidth = score;
+                        
+                        return (
+                            <div
+                                key={d.dimension}
+                                className="transition-all hover:scale-105"
+                            >
+                                <div className="flex justify-between items-center mb-1">
+                                    <span 
+                                        className="text-xs text-gray-400"
+                                        style={{ color: DIMENSION_COLORS[d.dimension] }}
+                                    >
+                                        {d.dimension}
+                                    </span>
+                                    <span className="text-xs font-mono text-gray-300">
+                                        {d.score}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-white/10 rounded-full h-1.5">
+                                    <div
+                                        className="h-1.5 rounded-full transition-all duration-500"
+                                        style={{
+                                            width: `${barWidth}%`,
+                                            backgroundColor: DIMENSION_COLORS[d.dimension],
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {comparisonData && (
+                <div className="mt-4 flex items-center justify-center gap-6 text-xs text-gray-500">
+                    <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                        <span>當前標的</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gray-500" />
+                        <span>產業平均</span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

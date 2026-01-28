@@ -41,6 +41,8 @@ export default function WatchlistPage() {
         } catch (err: any) {
             console.error('Error fetching watchlist:', err);
             setError(err.message);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -215,9 +217,8 @@ export default function WatchlistPage() {
                                         <span className="text-2xl font-mono font-bold">
                                             {searchResult.price.toFixed(2)}
                                         </span>
-                                        <span className={`flex items-center gap-1 ${
-                                            searchResult.change >= 0 ? 'text-green-400' : 'text-red-400'
-                                        }`}>
+                                        <span className={`flex items-center gap-1 ${searchResult.change >= 0 ? 'text-green-400' : 'text-red-400'
+                                            }`}>
                                             {searchResult.change >= 0 ? (
                                                 <TrendingUp className="w-4 h-4" />
                                             ) : (
@@ -294,9 +295,8 @@ export default function WatchlistPage() {
                                                 <div className="text-xl font-mono font-bold">
                                                     {quote.price.toFixed(2)}
                                                 </div>
-                                                <div className={`flex items-center justify-end gap-1 ${
-                                                    quote.change >= 0 ? 'text-green-400' : 'text-red-400'
-                                                }`}>
+                                                <div className={`flex items-center justify-end gap-1 ${quote.change >= 0 ? 'text-green-400' : 'text-red-400'
+                                                    }`}>
                                                     {quote.change >= 0 ? (
                                                         <TrendingUp className="w-4 h-4" />
                                                     ) : (

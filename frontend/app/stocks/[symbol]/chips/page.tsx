@@ -44,9 +44,12 @@ export default function StockChipsPage({ params }: { params: { symbol: string } 
                         >
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
                             <XAxis
-                                dataKey="date"
+                                dataKey="time"
                                 tick={{ fill: '#888', fontSize: 12 }}
-                                tickFormatter={(val) => val.slice(5)} // 只顯示 MM-DD
+                                tickFormatter={(val) => {
+                                    const date = new Date(val * 1000);
+                                    return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                }}
                             />
                             {/* 左軸：法人買賣超 (張) */}
                             <YAxis

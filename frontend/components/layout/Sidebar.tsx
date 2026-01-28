@@ -12,7 +12,9 @@ import {
     Settings,
     Activity,
     Cpu,
-    PieChart
+    PieChart,
+    Search,
+    Sparkles
 } from "lucide-react";
 
 /**
@@ -26,6 +28,7 @@ const MENU_ITEMS = [
     { label: "市場動態 (Market)", href: "/stocks", icon: TrendingUp },
     { label: "宏觀指標 (Macro)", href: "/macro", icon: Activity },
     { label: "演化分析 (Evolution)", href: "/evolution", icon: BarChart3 },
+    { label: "AI 搜尋 (Semantic)", href: "/ai/search", icon: Search },
     { label: "決策報告 (Reports)", href: "/ai/ranking", icon: FileText },
 ];
 

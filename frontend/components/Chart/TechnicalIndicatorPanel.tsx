@@ -28,6 +28,7 @@ interface TechnicalIndicatorPanelProps {
 }
 
 interface IndicatorData {
+    times: number[];
     dates: string[];
     rsi: number[];
     macd: { macd: number[]; signal: number[]; histogram: number[] };
@@ -96,18 +97,19 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
         if (!data || data.length === 0) return null;
 
         const closes = data.map(p => p.close);
+        const times = data.map(p => p.time);
         const dates = data.map(p => {
             const date = new Date(p.time * 1000);
             return `${date.getMonth() + 1}/${date.getDate()}`;
         });
 
-        const ma5 = calculateSMA(closes, 5).map(v => v ?? 0);
-        const ma20 = calculateSMA(closes, 20).map(v => v ?? 0);
-        const ma60 = calculateSMA(closes, 60).map(v => v ?? 0);
+        const ma5 = calculateSMA(closes, 5).map((v, i) => v ?? closes[i]);
+        const ma20 = calculateSMA(closes, 20).map((v, i) => v ?? closes[i]);
+        const ma60 = calculateSMA(closes, 60).map((v, i) => v ?? closes[i]);
         const rsi = calculateRSI(closes, 14);
-    const macd = calculateMACD(closes);
+        const macd = calculateMACD(closes);
 
-    return { dates, rsi, macd: { macd: macd.macdLine, signal: macd.signalLine, histogram: macd.histogram }, ma5, ma20, ma60 };
+        return { times, dates, rsi, macd: { macd: macd.macdLine, signal: macd.signalLine, histogram: macd.histogram }, ma5, ma20, ma60 };
     }, [data]);
 
     const latestValues = useMemo(() => {
@@ -183,35 +185,34 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
             color: '#6366F1',
         });
 
+        // 立即填充數據 (使用真實時間 UNIX Timestamp 以對齊主圖表)
         const rsiData = indicatorData.rsi.map((v, i) => ({
-            time: i as Time,
+            time: indicatorData.times[i] as Time,
             value: v,
         }));
         rsiSeries.setData(rsiData);
 
         const macdData = indicatorData.macd.macd.map((v, i) => ({
-            time: i as Time,
+            time: indicatorData.times[i] as Time,
             value: v,
         }));
         macdLineSeries.setData(macdData);
 
         const signalData = indicatorData.macd.signal.map((v, i) => ({
-            time: i as Time,
+            time: indicatorData.times[i] as Time,
             value: v,
         }));
         signalSeries.setData(signalData);
 
         const histogramData = indicatorData.macd.histogram.map((v, i) => ({
-            time: i as Time,
+            time: indicatorData.times[i] as Time,
             value: v,
             color: v >= 0 ? 'rgba(38, 166, 154, 0.6)' : 'rgba(239, 83, 80, 0.6)',
         }));
         histogramSeries.setData(histogramData);
 
-        const rsiScale = rsiChart.priceScale('');
-        if (rsiScale) rsiScale.applyOptions({ scaleMargins: { top: 0.1, bottom: 0 } });
-        const macdScale = macdChart.priceScale('');
-        if (macdScale) macdScale.applyOptions({ scaleMargins: { top: 0.15, bottom: 0.1 } });
+        rsiChart.timeScale().fitContent();
+        macdChart.timeScale().fitContent();
 
         const handleResize = () => {
             if (rsiContainerRef.current) {
@@ -248,21 +249,19 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${
-                        rsiStatus === 'overbought'
-                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                            : rsiStatus === 'oversold'
+                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${rsiStatus === 'overbought'
+                        ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                        : rsiStatus === 'oversold'
                             ? 'bg-green-500/10 border-green-500/20 text-green-400'
                             : 'bg-white/5 border-white/10 text-gray-300'
-                    }`}
+                        }`}
                 >
-                    <div className={`p-3 rounded-xl ${
-                        rsiStatus === 'overbought'
-                            ? 'bg-red-500/20'
-                            : rsiStatus === 'oversold'
+                    <div className={`p-3 rounded-xl ${rsiStatus === 'overbought'
+                        ? 'bg-red-500/20'
+                        : rsiStatus === 'oversold'
                             ? 'bg-green-500/20'
                             : 'bg-white/10'
-                    }`}>
+                        }`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
@@ -275,15 +274,13 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
 
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${
-                        macdStatus === 'bullish'
-                            ? 'bg-green-500/10 border-green-500/20 text-green-400'
-                            : 'bg-red-500/10 border-red-500/20 text-red-400'
-                    }`}
+                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${macdStatus === 'bullish'
+                        ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                        : 'bg-red-500/10 border-red-500/20 text-red-400'
+                        }`}
                 >
-                    <div className={`p-3 rounded-xl ${
-                        macdStatus === 'bullish' ? 'bg-green-500/20' : 'bg-red-500/20'
-                    }`}>
+                    <div className={`p-3 rounded-xl ${macdStatus === 'bullish' ? 'bg-green-500/20' : 'bg-red-500/20'
+                        }`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -296,15 +293,13 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
 
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${
-                        maStatus === 'bullish'
-                            ? 'bg-green-500/10 border-green-500/20 text-green-400'
-                            : 'bg-red-500/10 border-red-500/20 text-red-400'
-                    }`}
+                    className={`rounded-2xl p-5 flex items-center gap-4 backdrop-blur-sm border ${maStatus === 'bullish'
+                        ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                        : 'bg-red-500/10 border-red-500/20 text-red-400'
+                        }`}
                 >
-                    <div className={`p-3 rounded-xl ${
-                        maStatus === 'bullish' ? 'bg-green-500/20' : 'bg-red-500/20'
-                    }`}>
+                    <div className={`p-3 rounded-xl ${maStatus === 'bullish' ? 'bg-green-500/20' : 'bg-red-500/20'
+                        }`}>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
@@ -327,7 +322,7 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
                     </svg>
                     RSI 相對強弱指標
                 </h3>
-                <div ref={rsiContainerRef} className="w-full" />
+                <div ref={rsiContainerRef} className="w-full" style={{ height }} />
 
                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                     <div className="flex items-center gap-1">
@@ -357,7 +352,7 @@ export const TechnicalIndicatorPanel: React.FC<TechnicalIndicatorPanelProps> = (
                     </svg>
                     MACD 平滑異同移動平均線
                 </h3>
-                <div ref={macdContainerRef} className="w-full" />
+                <div ref={macdContainerRef} className="w-full" style={{ height }} />
 
                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                     <div className="flex items-center gap-1">

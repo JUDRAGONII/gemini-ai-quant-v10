@@ -1,5 +1,21 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.1.3] - 2026-01-28
+### Fixed
+- **圖表渲染與時序對齊修復 (Chart & Timescale Alignment)**:
+  - **日期欄位對齊**: 解決 API 欄位從 `date` 改為 `time` 導致的 `slice()` 渲染崩潰，並擴及 `chips`, `institutional`, `margin` 等所有子頁面。
+  - **作用域與核心修復**: 解決 `KLineChart.tsx` 中 `volumeSeries` 的 ReferenceError 與 ID 映射衝突。
+  - **時序標準化**: 統一所有技術指標組件（RSI/MACD）採用與 K線圖一致的 UNIX Timestamp 時序軸。
+  - **數據流優化**: 調整 `useStockDetail` 抓取筆數至 300 點，確保 MA60 等長線指標具備足夠計算空間。
+
+## [V10.1.2] - 2026-01-28
+### Fixed
+- **Emergency: 前端 Runtime Error 修復**:
+  - **K線圖 ID 修正**: 修復 `priceScale('')` 引起的 Incorrect ID 錯誤，優化指標面板與 K 線圖之比例尺邊距配置。
+  - **殭屍進程清理**: 偵測並中止佔用 3000 端口的 PID 552 殭屍進程，解決資源加載 500 錯誤。
+  - **服務重啟**: 重啟 Next.js 並成功掛載於標準 3000 端口。
+  - **PCM 更新**: 同步更新「錯誤教訓 (ERROR_LESSONS)」與「開發日誌 (Dev Log)」。
+
 ## [V10.1.1] - 2026-01-27
 ### Added
 - **Phase 6: 財報與技術分析驗證 (Validation Phase)**:

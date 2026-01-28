@@ -35,20 +35,30 @@ describe("ScoreRadarChart 組件", () => {
         expect(screen.getByText("70 分")).toBeInTheDocument();
     });
 
-    it("TC-1303: ScoreRadarChart 評級 (A+/A/B/C/D) 應根據分數正確顯示", () => {
+    it("TC-1303: ScoreRadarChart 評級 (S/A/B/C/D) 應根據分數正確顯示", () => {
         // 70 should be A
         const { rerender } = render(<ScoreRadarChart data={mockData} symbol="TEST" />);
         expect(screen.getByText("A")).toBeInTheDocument();
 
-        // Test A+ (80+)
-        const dataAPlus = mockData.map(d => ({ ...d, score: 85 }));
-        rerender(<ScoreRadarChart data={dataAPlus} symbol="TEST" />);
-        expect(screen.getByText("A+")).toBeInTheDocument();
+        // Test S (80+)
+        const dataS = mockData.map(d => ({ ...d, score: 85 }));
+        rerender(<ScoreRadarChart data={dataS} symbol="TEST" />);
+        expect(screen.getByText("S")).toBeInTheDocument();
 
         // Test B (60-70)
         const dataB = mockData.map(d => ({ ...d, score: 65 }));
         rerender(<ScoreRadarChart data={dataB} symbol="TEST" />);
         expect(screen.getByText("B")).toBeInTheDocument();
+
+        // Test C (50-60)
+        const dataC = mockData.map(d => ({ ...d, score: 55 }));
+        rerender(<ScoreRadarChart data={dataC} symbol="TEST" />);
+        expect(screen.getByText("C")).toBeInTheDocument();
+
+        // Test D (<50)
+        const dataD = mockData.map(d => ({ ...d, score: 45 }));
+        rerender(<ScoreRadarChart data={dataD} symbol="TEST" />);
+        expect(screen.getByText("D")).toBeInTheDocument();
     });
 
     it("TC-2104: ScoreRadarChart 應處理分數為 0 的維度", () => {

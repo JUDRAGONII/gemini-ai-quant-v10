@@ -105,7 +105,13 @@ export default function StockTechnicalPage() {
         if (!data?.price_series || data.price_series.length === 0) return null;
 
         const closes = data.price_series.map((p: any) => p.close);
-        const dates = data.price_series.map((p: any) => p.date?.slice(5, 10)); // MM-DD
+        const dates = data.price_series.map((p: any) => {
+            const timeVal = p.time || p.date || Date.now() / 1000;
+            const date = new Date(typeof timeVal === 'number' ? timeVal * 1000 : timeVal);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}-${day}`;
+        });
 
         const ma5 = calculateSMA(closes, 5);
         const ma20 = calculateSMA(closes, 20);

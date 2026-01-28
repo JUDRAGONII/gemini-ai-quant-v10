@@ -95,10 +95,12 @@ export const KLineChart: React.FC<KLineChartProps> = ({
     }, []);
 
     const filterDataByPeriod = useCallback((rawData: KLinePricePoint[], period: ChartPeriod): KLinePricePoint[] => {
-        if (period === 'MAX') return rawData;
+        if (period === 'MAX' || rawData.length === 0) return rawData;
         const days = PERIOD_DAYS[period];
-        const cutoffDate = Date.now() / 1000 - days * 24 * 60 * 60;
-        return rawData.filter(d => d.time >= cutoffDate);
+        // 修正：不使用 Date.now()，而是使用數據中的最後一筆時間作為基準，避免未來/模擬數據被過濾
+        const lastDataTime = rawData[rawData.length - 1].time;
+        const cutoffTime = lastDataTime - days * 24 * 60 * 60;
+        return rawData.filter(d => d.time >= cutoffTime);
     }, []);
 
     const processedData = useMemo(() => {
@@ -174,15 +176,17 @@ export const KLineChart: React.FC<KLineChartProps> = ({
         });
         candleSeriesRef.current = candleSeries;
 
+        let volumeSeriesInstance: ISeriesApi<'Histogram'> | null = null;
         if (showVolume) {
             const volumeSeries = chart.addSeries(HistogramSeries, {
                 priceFormat: { type: 'volume' },
-                priceScaleId: '',
+                priceScaleId: 'volume', // 指定明確的比例尺 ID
             });
-            volumeSeries.priceScale().applyOptions({
+            chart.priceScale('volume').applyOptions({
                 scaleMargins: { top: 0.85, bottom: 0 },
             });
             volumeSeriesRef.current = volumeSeries;
+            volumeSeriesInstance = volumeSeries;
         }
 
         if (showMA) {
@@ -208,17 +212,7 @@ export const KLineChart: React.FC<KLineChartProps> = ({
             }
         };
 
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            chart.remove();
-        };
-    }, [showVolume, showMA, height, maPeriods]);
-
-    useEffect(() => {
-        if (!chartRef.current || !candleSeriesRef.current || processedData.length === 0) return;
-
+        // 重要：在同一個 Effect 中填充初始數據，避免 Ref 同步延遲
         const candleData = processedData.map(p => ({
             time: p.time as Time,
             open: p.open,
@@ -226,34 +220,38 @@ export const KLineChart: React.FC<KLineChartProps> = ({
             low: p.low,
             close: p.close,
         }));
+        candleSeries.setData(candleData);
 
-        candleSeriesRef.current.setData(candleData);
-
-        if (showVolume && volumeSeriesRef.current) {
+        if (showVolume && volumeSeriesInstance) {
             const volumeData = processedData.map(p => ({
                 time: p.time as Time,
                 value: p.volume || 0,
                 color: p.close >= p.open ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)',
             }));
-            volumeSeriesRef.current.setData(volumeData);
+            volumeSeriesInstance.setData(volumeData);
         }
 
         if (showMA) {
             const closes = processedData.map(p => p.close);
             maPeriods.forEach(period => {
-                if (maSeriesRefs.current[period]) {
-                    const sma = calculateSMA(closes, period);
-                    const maData = sma.map((value, i) => ({
-                        time: processedData[i].time as Time,
-                        value: value || 0,
-                    })).filter(d => d.value > 0);
-                    maSeriesRefs.current[period].setData(maData);
-                }
+                const sma = calculateSMA(closes, period);
+                const maData = sma.map((value, i) => ({
+                    time: processedData[i].time as Time,
+                    value: value || 0,
+                })).filter(d => d.value > 0);
+                maSeriesRefs.current[period].setData(maData);
             });
         }
 
-        chartRef.current?.timeScale().fitContent();
-    }, [processedData, showMA, showVolume, maPeriods, calculateSMA]);
+        chart.timeScale().fitContent();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            chart.remove();
+        };
+    }, [showVolume, showMA, height, maPeriods, processedData, calculateSMA]);
+
 
     const periods: ChartPeriod[] = ['1D', '1W', '1M', '3M', '6M', '1Y', 'MAX'];
 
@@ -272,11 +270,10 @@ export const KLineChart: React.FC<KLineChartProps> = ({
                             <button
                                 key={p}
                                 onClick={() => handlePeriodClick(p)}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                    currentPeriod === p
-                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25'
-                                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                                }`}
+                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${currentPeriod === p
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                                    }`}
                             >
                                 {p}
                             </button>

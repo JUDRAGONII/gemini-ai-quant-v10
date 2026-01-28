@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 6: 財報與技術分析驗證 (COMPLETED) -> Phase 7: AI 投資組合建議 UI
-**狀態**：✅ Phase 6 美股財報與技術分析模組已通過全量驗證與 RLS 安全測試。目前準備進入 Phase 7 AI 投資組合建議功能開發。
+**階段**：Phase 7: AI 投資組合建議 UI (PLANNING)
+**狀態**：✅ 已完成日期欄位格式化修復 (MM-DD)。解決了 API 欄位從 `date` 改為 `time` 導致的渲染崩潰。
 
 ---
 
