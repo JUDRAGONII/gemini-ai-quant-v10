@@ -83,13 +83,11 @@ describe('PortfoliosPage Integration', () => {
         render(<PortfoliosPage />);
 
         // Input name
-        const input = screen.getByPlaceholderText('投資組合名稱');
+        const input = await screen.findByPlaceholderText('投資組合名稱');
         fireEvent.change(input, { target: { value: '新組合' } });
 
         // Click create
         const createBtn = screen.getByRole('button', { name: '建立' });
-        // Debug
-        screen.debug(createBtn);
         fireEvent.click(createBtn);
 
         await waitFor(() => {
@@ -105,9 +103,8 @@ describe('PortfoliosPage Integration', () => {
 
     it('TC-1830: 空名稱建立 (按鈕禁用)', async () => {
         render(<PortfoliosPage />);
-        // Debug output
-        screen.debug();
-        const createBtn = screen.getByRole('button', { name: '建立' });
+
+        const createBtn = await screen.findByRole('button', { name: '建立' });
         expect(createBtn).toBeDisabled();
 
         const input = screen.getByPlaceholderText('投資組合名稱');

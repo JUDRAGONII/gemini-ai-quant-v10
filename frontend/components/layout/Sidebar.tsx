@@ -14,7 +14,8 @@ import {
     Cpu,
     PieChart,
     Search,
-    Sparkles
+    Sparkles,
+    Briefcase
 } from "lucide-react";
 
 /**
@@ -26,6 +27,7 @@ const MENU_ITEMS = [
     { label: "總覽 (Overview)", href: "/", icon: Home, matchExact: true },
     { label: "籌碼分析 (Chips)", href: "/chips", icon: Layers },
     { label: "市場動態 (Market)", href: "/stocks", icon: TrendingUp },
+    { label: "投資組合 (Portfolios)", href: "/portfolios", icon: Briefcase },
     { label: "宏觀指標 (Macro)", href: "/macro", icon: Activity },
     { label: "演化分析 (Evolution)", href: "/evolution", icon: BarChart3 },
     { label: "AI 搜尋 (Semantic)", href: "/ai/search", icon: Search },

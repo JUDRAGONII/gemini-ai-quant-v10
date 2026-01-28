@@ -101,9 +101,11 @@ describe('WatchlistPage', () => {
     it('TC-2412: 空白輸入時新增按鈕應禁用', async () => {
         render(<WatchlistPage />);
         // Find button that contains text "新增"
-        const addButton = screen.getByRole('button', { name: /新增/i });
-        expect(addButton).toBeInTheDocument();
-        expect(addButton).toBeDisabled();
+        await waitFor(() => {
+            const addButton = screen.getAllByRole('button').find(btn => btn.textContent?.trim().includes('新增'));
+            expect(addButton).toBeInTheDocument();
+            expect(addButton).toBeDisabled();
+        });
     });
 
     it('TC-2413: 空自選股列表提示', async () => {

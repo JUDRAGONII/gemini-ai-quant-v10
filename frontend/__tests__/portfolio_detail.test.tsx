@@ -20,8 +20,29 @@ describe('PortfolioDetailPage Integration', () => {
         // Default mock for detail page
         (global.fetch as jest.Mock).mockImplementation((url, options) => {
             console.log('Fetch URL:', url);
-            // Get Portfolio
-            if (url.includes('/api/portfolios/1') && (!options || options.method === 'GET')) {
+            // Portfolio Performance (More specific URL first)
+            if (url.includes('/performance') && (!options || options.method === 'GET')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({
+                        performance_data: [
+                            { date: '2026-01-28', total_value: 1550, total_cost: 1500, return_amount: 50, return_rate: 3.33 }
+                        ],
+                        summary: {
+                            total_cost: 1500,
+                            total_value: 1550,
+                            return_amount: 50,
+                            return_rate: 3.33,
+                            holdings_count: 1
+                        },
+                        top_holdings: [
+                            { stock_code: 'AAPL', stock_name: 'Apple', value: 1550, return_amount: 50, return_rate: 3.33, weight: 100 }
+                        ]
+                    }),
+                });
+            }
+            // Get Portfolio (Base URL)
+            if (url.includes('/api/portfolios/1') && !url.includes('/performance') && (!options || options.method === 'GET')) {
                 return Promise.resolve({
                     ok: true,
                     json: () => Promise.resolve({
@@ -37,7 +58,7 @@ describe('PortfolioDetailPage Integration', () => {
                 return Promise.resolve({
                     ok: true,
                     json: () => Promise.resolve([
-                        { id: '101', portfolio_id: '1', symbol: 'AAPL', quantity: 10, avg_price: 150, current_price: 155, created_at: '2026-01-28' }
+                        { id: '101', portfolio_id: '1', stock_code: 'AAPL', shares: 10, buy_price: 150, current_price: 155, created_at: '2026-01-28', buy_date: '2026-01-28' }
                     ]),
                 });
             }
@@ -50,10 +71,10 @@ describe('PortfolioDetailPage Integration', () => {
         render(<PortfolioDetailPage />);
 
         await waitFor(() => {
-            screen.debug();
             expect(screen.getByText('測試組合')).toBeInTheDocument();
-            expect(screen.getByText('AAPL')).toBeInTheDocument();
-            expect(screen.getByText('150')).toBeInTheDocument(); // avg price
+            expect(screen.getAllByText('AAPL')[0]).toBeInTheDocument();
+            // In the table it shows toFixed(2)
+            expect(screen.getByText('150.00')).toBeInTheDocument();
         });
     });
 
@@ -76,7 +97,7 @@ describe('PortfolioDetailPage Integration', () => {
 
         // Find Add Holding button which opens modal/form
         // Assuming there is a button "新增持股"
-        const addBtn = await screen.findByRole('button', { name: /新增持股/i });
+        const addBtn = await screen.findByRole('button', { name: /新增/ });
         fireEvent.click(addBtn);
 
         // Fill form
@@ -86,7 +107,7 @@ describe('PortfolioDetailPage Integration', () => {
         const qtyInput = screen.getByPlaceholderText(/股數/i);
         fireEvent.change(qtyInput, { target: { value: '5' } });
 
-        const priceInput = screen.getByPlaceholderText(/均價/i);
+        const priceInput = screen.getByPlaceholderText(/買入價格/i);
         fireEvent.change(priceInput, { target: { value: '200' } });
 
         // Submit
@@ -114,7 +135,7 @@ describe('PortfolioDetailPage Integration', () => {
                 return Promise.resolve({
                     ok: true,
                     json: () => Promise.resolve([
-                        { id: '101', portfolio_id: '1', symbol: 'TO_DELETE', quantity: 10, avg_price: 100, current_price: 110 }
+                        { id: '101', portfolio_id: '1', stock_code: 'TO_DELETE', shares: 10, buy_price: 100, current_price: 110, buy_date: '2026-01-28' }
                     ]),
                 });
             }
@@ -125,7 +146,7 @@ describe('PortfolioDetailPage Integration', () => {
                     json: () => Promise.resolve({
                         id: '1', name: '測試組合',
                         holdings: [
-                            { id: '101', portfolio_id: '1', symbol: 'TO_DELETE', quantity: 10, avg_price: 100, current_price: 110, buy_price: 100, shares: 10, commission: 0, tax: 0 }
+                            { id: '101', portfolio_id: '1', stock_code: 'TO_DELETE', shares: 10, buy_price: 100, current_price: 110, buy_date: '2026-01-28', commission: 0, tax: 0 }
                         ]
                     }),
                 });

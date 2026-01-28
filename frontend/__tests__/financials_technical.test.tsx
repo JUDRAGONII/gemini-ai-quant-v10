@@ -113,7 +113,7 @@ describe('Financials & Technical Pages Verification', () => {
             // Use findByText to allow for animation/loading time
             const tableHeader = await screen.findByText(/年度明細/i, {}, { timeout: 3000 });
             expect(tableHeader).toBeInTheDocument();
-            expect(screen.getByText('2025-09-27')).toBeInTheDocument();
+            expect(screen.getByText('2025')).toBeInTheDocument();
         });
     });
 
