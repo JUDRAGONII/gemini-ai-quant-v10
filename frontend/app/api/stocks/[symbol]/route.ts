@@ -48,7 +48,8 @@ export async function GET(
             .limit(1)
             .single();
 
-        // 4. 數據轉換處理 (對齊 API_SPEC_V10.md)
+        // 4. 數據轉換處理：確保時間唯一性且排序
+        const seenTimes = new Set<number>();
         const formattedSeries = (priceSeries || [])
             .map((p: Record<string, unknown>) => ({
                 time: Math.floor(new Date(p.trade_date as string).getTime() / 1000),
@@ -58,7 +59,12 @@ export async function GET(
                 close: Number(p.close_price) || 0,
                 volume: Number(p.volume) || 0,
             }))
-            .sort((a, b) => a.time - b.time); // 確保時序由舊到新
+            .filter(p => {
+                if (seenTimes.has(p.time)) return false;
+                seenTimes.add(p.time);
+                return true;
+            })
+            .sort((a, b) => a.time - b.time);
 
         return NextResponse.json({
             metadata: {

@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 4.3: 核心功能深化與金融場景補完
-**狀態**：✅ Phase 4.3 籌碼分析模組 (Chips Analysis) 已全數完成並通過 TDD 驗證。目前進入 Phase 5.1 系統整合測試階段。
+**階段**：Phase 7: AI 投資組合建議 UI (PLANNING)
+**狀態**：✅ 已完成日期欄位格式化修復 (MM-DD)。解決了 API 欄位從 `date` 改為 `time` 導致的渲染崩潰。
 
 ---
 
@@ -127,7 +127,8 @@
 | 2026-01-23 | **Phase 4.4** | 完成 18 項 TDD 測試與 RWD 適配驗證（100% Pass），正式結項。助於進入下一階段。 |
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
 | 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
-| 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4 結項，Phase 4.5 正式啟動。 |
+| 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4- [x] Phase 4.5: 圖表時間軸與日期格式對齊 (2026-01-27) - 已修正 XAxis 與 KLineChart 同步
+- [x] Phase 4.6: GitHub CI 前端建置與測試故障修復 (2026-01-28) - 已修正 Jest 測試套件全面通過
 | 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
 | 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
 | 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
@@ -135,10 +136,9 @@
 | 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
 | 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
 | 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
-| 2026-01-27 | **Feature** | **籌碼分析實作完成**：後端 API (`/chips`) 與前台圖表 (`ChipsPage`) 100% 上線。整合 Layout 分頁導航，通過 TSC 全檢。 |
-| 2026-01-27 | **Audit** | **深度代碼審查**：完成 StockDetail 與 Chips 模組的 Code Review 與技術文件化 (Log 011)。 |
-| 2026-01-27 | **TDD** | **籌碼功能驗收**：完成 TC-1101~4001 共 5 項測試案例 (100% Pass)，驗證 API 整合與 UI 狀態。 |
-| 2026-01-27 | **Infra** | **環境故障排除**：診斷並修復 Docker Engine 停止導致的 404 API 錯誤，確認 Port 8000/3000 連線正常。 |
+| 2026-01-27 | **ETL & DB** | **財報數據回補**：修正 `NaN` 寫入錯誤，實作 FMP 輪詢機制。成功同步 AAPL/AMZN 季報與年報。 |
+| 2026-01-27 | **TDD & QA** | **組件驗證**：完成 `financials_technical.test.tsx` 通過 8 項核心測試。驗證前端即時指標計算準確性與 RLS 讀取權限。 |
+| 2026-01-27 | **Archiving** | **開發歷程歸檔**：同步所有 PCM 文檔，完成 Phase 6 結項歸檔。 |
 
 
 

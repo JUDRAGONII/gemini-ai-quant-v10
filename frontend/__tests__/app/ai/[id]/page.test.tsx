@@ -37,7 +37,15 @@ jest.mock('lucide-react', () => ({
     FileText: () => <svg data-testid="icon-file-text" />,
     Tag: () => <svg data-testid="icon-tag" />,
     Share2: () => <svg data-testid="icon-share" />,
+    TrendingUp: () => <svg data-testid="icon-trending-up" />,
+    TrendingDown: () => <svg data-testid="icon-trending-down" />,
+    AlertTriangle: () => <svg data-testid="icon-alert" />,
+    CheckCircle: () => <svg data-testid="icon-check" />,
+    XCircle: () => <svg data-testid="icon-x" />,
 }));
+
+// 4. Mock ScoreRadarChart
+jest.mock('@/components/ScoreRadarChart', () => () => <div data-testid="radar-chart">Radar Chart</div>);
 
 describe('AI Report Detail Page (Integration)', () => {
 
@@ -62,8 +70,8 @@ describe('AI Report Detail Page (Integration)', () => {
         render(ui);
 
         // Assert
-        expect(screen.getByText('多空辯論分析報告')).toBeInTheDocument();
-        expect(screen.getByText('AAPL')).toBeInTheDocument();
+        expect(screen.getByText('AI 量化投資分析報告')).toBeInTheDocument();
+        expect(screen.getAllByText('AAPL')[0]).toBeInTheDocument();
         expect(screen.getByText('Summary Text')).toBeInTheDocument();
         expect(screen.getByTestId('markdown-content')).toHaveTextContent('# Analysis');
     });
@@ -77,7 +85,7 @@ describe('AI Report Detail Page (Integration)', () => {
         render(ui);
 
         // Assert
-        expect(screen.getByText('Report Not Found')).toBeInTheDocument();
-        expect(screen.getByText('Return Home')).toBeInTheDocument();
+        expect(screen.getByText('找不到報告')).toBeInTheDocument();
+        expect(screen.getByText('返回列表')).toBeInTheDocument();
     });
 });

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class FMPFetcher(BaseFetcher):
     """Financial Modeling Prep 財報擷取器 (支援 Key 輪詢)"""
     
-    BASE_URL = "https://financialmodelingprep.com/api/v3"
+    BASE_URL = "https://financialmodelingprep.com/stable"
     
     def __init__(self, client, api_key: Optional[str] = None):
         super().__init__(client, "stock_financials")
@@ -53,6 +53,8 @@ class FMPFetcher(BaseFetcher):
                 logger.warning("⚠️ FMP Rate Limit (429). Rotating key...")
                 time.sleep(30)
                 self.rotate_key()
+                # 遞迴時需要更新 apikey
+                params["apikey"] = self.api_key
                 return self._make_request(endpoint, params)
             
             response.raise_for_status()
@@ -66,23 +68,24 @@ class FMPFetcher(BaseFetcher):
             return data if isinstance(data, list) else []
             
         except requests.exceptions.HTTPError as e:
-            logger.error(f"FMP HTTP Error: {e}")
+            logger.error(f"FMP HTTP Error: {e.response.status_code} - {e.response.text}")
             return []
         except Exception as e:
             logger.error(f"FMP Request Failed: {e}")
             return []
 
-    def fetch(self, ticker: str, report_type: str = "annual", limit: int = 10) -> Dict[str, Any]:
+    def fetch(self, ticker: str, report_type: str = "annual", limit: int = 5) -> Dict[str, Any]:
         """
         獲取財報數據
         report_type: 'annual' (年報) 或 'quarterly' (季報)
         """
         period = "annual" if report_type == "annual" else "quarter"
+        params = {"symbol": ticker, "period": period, "limit": limit}
         
-        # 擷取三表數據
-        income = self._make_request(f"income-statement/{ticker}", {"period": period, "limit": limit})
-        balance = self._make_request(f"balance-sheet-statement/{ticker}", {"period": period, "limit": limit})
-        cashflow = self._make_request(f"cash-flow-statement/{ticker}", {"period": period, "limit": limit})
+        # 擷取三表數據 (新版 Stable 端點不包含 /symbol)
+        income = self._make_request("income-statement", params)
+        balance = self._make_request("balance-sheet-statement", params)
+        cashflow = self._make_request("cash-flow-statement", params)
         
         return {
             "ticker": ticker,
@@ -91,6 +94,19 @@ class FMPFetcher(BaseFetcher):
             "balance_sheet": balance,
             "cash_flow": cashflow
         }
+
+    def _clean_num(self, val: Any) -> Optional[float]:
+        """清理數值，處理 NaN 或 Infinity"""
+        if val is None:
+            return None
+        try:
+            f_val = float(val)
+            import math
+            if math.isnan(f_val) or math.isinf(f_val):
+                return None
+            return f_val
+        except (ValueError, TypeError):
+            return None
 
     def transform(self, raw_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """轉換為 stock_financials Schema"""
@@ -120,18 +136,18 @@ class FMPFetcher(BaseFetcher):
                 "fiscal_date": date_str,
                 "report_type": report_type,
                 # Income Statement
-                "revenue": inc.get("revenue"),
-                "gross_profit": inc.get("grossProfit"),
-                "operating_income": inc.get("operatingIncome"),
-                "net_income": inc.get("netIncome"),
-                "eps": inc.get("eps"),
+                "revenue": self._clean_num(inc.get("revenue")),
+                "gross_profit": self._clean_num(inc.get("grossProfit")),
+                "operating_income": self._clean_num(inc.get("operatingIncome")),
+                "net_income": self._clean_num(inc.get("netIncome")),
+                "eps": self._clean_num(inc.get("eps")),
                 # Balance Sheet
-                "total_assets": bal.get("totalAssets"),
-                "total_liabilities": bal.get("totalLiabilities"),
-                "total_equity": bal.get("totalStockholdersEquity"),
+                "total_assets": self._clean_num(bal.get("totalAssets")),
+                "total_liabilities": self._clean_num(bal.get("totalLiabilities")),
+                "total_equity": self._clean_num(bal.get("totalStockholdersEquity")),
                 # Cash Flow
-                "operating_cash_flow": cf.get("operatingCashFlow"),
-                "free_cash_flow": cf.get("freeCashFlow"),
+                "operating_cash_flow": self._clean_num(cf.get("operatingCashFlow")),
+                "free_cash_flow": self._clean_num(cf.get("freeCashFlow")),
             }
             records.append(record)
         
@@ -146,7 +162,7 @@ class FMPFetcher(BaseFetcher):
         
         for rt in report_types:
             logger.info(f"📊 Fetching {rt} financials for {ticker}...")
-            raw = self.fetch(ticker, report_type=rt, limit=kwargs.get("limit", 10))
+            raw = self.fetch(ticker, report_type=rt, limit=kwargs.get("limit", 5))
             records = self.transform(raw)
             
             if records:

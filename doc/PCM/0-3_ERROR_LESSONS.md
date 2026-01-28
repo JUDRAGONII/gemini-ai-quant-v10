@@ -354,3 +354,91 @@
 ### 預防重複犯錯的 Checkbox
 - [ ] 遇到 `fetch failed` 時，第一步先檢查目標服務 (Docker/Database) 是否活著 (`docker ps`)。
 - [ ] API Route 的 `try-catch` 區塊應區分「業務邏輯 404」與「基礎設施 500」，並在 Log 中輸出具體錯誤原因 (如 Connection Refused)。
+### 2026-01-27 Phase 5.4/6 財報回補與驗證教訓
+
+### 問題現象
+1. **Supabase 400 Error**: Python ETL 寫入財報時報錯 `"invalid input syntax for type json"`。
+2. **Jest Timeout**: 前端測試時 `useSWR` 模擬數據導致 JSDOM 渲染死循環或超時。
+
+### 底層根本原因
+1. **NaN 污染**: FMP API 的原始數據包含空值，Pandas 讀取後轉為 `NaN` (float)。Python `json.dumps` 會將其轉為非標準 JSON 的 `NaN` 字串，而 Supabase (PostgreSQL) 的 `jsonb` 欄位無法解析此非標記符。
+2. **SWR 狀態不完整**: Mock `useSWR` 時若未指定 `isValidating: false`，Recharts 或 Framer Motion 可能因不斷偵測到「驗證中」狀態而重新觸發動畫或重繪，導致 Jest 環境下的 `findBy` 操作超出預設 5s 限制。
+
+### 解決方案
+1. **數據清洗**: 在回傳 JSON 前，使用 `df.where(pd.notnull(df), None)` 將所有 `NaN` 強制轉換為標準的 `null`。
+2. **Mock 狀態補完**: 確保 `useSWR` Mock 返回完整對象：`{ data, error, isLoading: false, isValidating: false }`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] Python ETL 在 `upsert` 前必須執行 `replace({np.nan: None})` 處理。
+- [ ] 涉及動畫或圖表的 Jest 測試，優先使用 `waitFor` 配合較大的 timeout 或縮減動畫時間。
+- [ ] Supabase SDK 批量寫入時，務必檢查傳入的是物件列表 `List[dict]` 而非單個物件。
+### 2026-01-28 端口 3000 殭屍進程導致 500 錯誤
+
+### 問題現象
+- 前端頁面完全空白，瀏覽器控制台顯示 `localhost:3000` 以及 `_app.js`, `_error.js` 等核心資源皆為 **500 Internal Server Error**。
+- `npm run dev` 啟動時提示 `Port 3000 is in use, trying 3001 instead`。
+
+### 底層根本原因
+- **殭屍進程佔位 (Zombie Process)**：先前異常中斷的 Node.js 進程 (PID 552) 未能釋放 3000 端口。該進程雖處於 LISTENING 狀態，但其內部狀態已損壞，無法正確處理請求或提供靜態資源，導致所有請求回傳 500。由於用戶瀏覽器仍訪問 3000 端口，而正常的 Next.js 服務已跳轉至 3001，造成資源載入完全失效。
+
+### 解決方案
+1. 使用 `netstat -ano | findstr :3000` 找出 PID 552。
+2. 使用 `taskkill /F /PID 552` 強制中止該進程。
+3. 重啟 `npm run dev`，確保伺服器成功掛載於標準 3000 端口。
+
+### 預防重複犯錯的 Checkbox
+- [x] 遇到「Port Jump」(3000 -> 3001) 時，務必先清理 3000 端口而非順從跳轉。
+- [x] 若出現全局 500 錯誤且伴隨資源 404/500，應優先檢查端口佔用與進程狀態。
+- [x] 配合 `Ctrl + F5` 強制刷新，避免瀏覽器快取舊有的 500 報價。
+
+### 2026-01-28 K線圖 priceScale('') 導致 Incorrect ID 錯誤
+
+### 問題現象
+- 前端在進入個股詳情頁或技術分析面板時，彈出 **Unhandled Runtime Error**: `Trying to apply price scale options with incorrect ID`。
+
+### 底層根本原因
+- **無效 ID 調用**：`lightweight-charts` 在指定版本中，`priceScale(id)` 的 ID 參數不能是空字串。傳入 `''` 會被視為無效 ID 調用。
+
+### 解決方案
+1. **配置下沉**：將 `scaleMargins` 配置移入 `createChart` 的 initialization options 中。
+2. **明確 ID 定義**：對於自定義比例尺，給予明確的字串 ID（如 `'volume'`）。
+
+### 預防重複犯錯的 Checkbox
+- [x] 避免在 `useEffect` 中對匿名比例尺 (`priceScale('')`) 調用 `applyOptions`。
+- [x] 新增序列時，務必提供明確的 `priceScaleId` 或使用預設 ID。
+
+### 2026-01-28 KLineChart 變數作用域與渲染同步修復 (深度修補)
+
+### 問題現象
+- 前端在修正 ID 錯誤後，因作用域限制導致 `ReferenceError: volumeSeries is not defined`。
+- 整頁（包含總覽）因 JavaScript 崩潰而導致白屏或無法操作。
+
+### 底層根本原因
+1. **作用域滲漏**：在 `useEffect` 中將變數 `volumeSeries` 宣告於 `if` 塊內，但在塊外試圖操作其數據。
+2. **時序不一致**：指標面板圖表使用索引 (0,1,2...) 作為時間軸，導致其無法與主圖表 (UNIX Timestamp) 的渲染引擎正確共存或展示。
+
+### 解決方案
+1. **作用域提升 (Hoisting)**：在 `useEffect` 頂層定義局部變數實例，或直接同步在定義塊內完成 `setData`。
+2. **時序標準化**：統一所有圖表組件使用 API 提供之 UNIX Timestamp，確保繪測引擎邏輯對齊。
+
+### 預防重複犯錯的 Checkbox
+- [x] 禁止在 Block Scope (if/for) 之外引用內部宣告的圖表實例。
+- [x] 跨組件數據渲染前，必須確認其時間軸格式 (Timestamp vs Index) 絕對一致。
+
+### 2026-01-28 日期欄位對齊導致 slice() 報錯
+
+### 問題現象
+- 前端頁面（Chips, Institutional, Margin）崩潰或顯示為空白。
+- 報錯原因：`TypeError: Cannot read properties of undefined (reading 'slice')`。
+
+### 底層根本原因
+- **欄位未對齊**：前端預期 API 傳回 `date` 字串並使用 `slice(5)` 格式化，但 API 重構後僅傳回 `time` (UNIX Timestamp)，導致 `date` 欄位為 `undefined`。
+
+### 解決方案
+1. **統一標準**：前端全面改以 `time` 為基準。
+2. **健壯的格式化函數**：不再依賴字串切割，改用法：`new Date(time * 1000)` 後提取月與日。
+
+### 預防重複犯錯的 Checkbox
+- [x] 嚴格禁止對可能不存在的 API 欄位直接調用 `slice()`。
+- [x] 在 Recharts `XAxis` 格式化函數中，應先進行 Null Check。
+- [x] 優先使用 UNIX Timestamp 作為時序數據的交換格式。

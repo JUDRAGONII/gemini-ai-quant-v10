@@ -14,9 +14,9 @@ jest.mock("framer-motion", () => ({
     },
 }));
 
-// Mock StockChart (Canvas-based, cannot render in JSDOM)
-jest.mock("@/components/Chart/StockChart", () => ({
-    StockChart: () => <div data-testid="stock-chart">MockChart</div>,
+// Mock KLineChart (Canvas-based, cannot render in JSDOM)
+jest.mock("@/components/Chart/KLineChart", () => ({
+    KLineChart: () => <div data-testid="stock-chart">MockKLineChart</div>,
 }));
 
 // Mock lucide-react icons

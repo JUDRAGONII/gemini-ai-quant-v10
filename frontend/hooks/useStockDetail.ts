@@ -47,7 +47,7 @@ export function useStockDetail(symbol: string) {
         async function fetchDetail() {
             setLoading(true);
             try {
-                const response = await fetch(`/api/stocks/${symbol}?limit=200`);
+                const response = await fetch(`/api/stocks/${symbol}?limit=300`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch stock detail: ${response.status}`);
                 }
