@@ -507,3 +507,22 @@
 - [x] 進行大型 UI 重構（如 Glassmorphism V2）後，必須立即執行 `npm test` 進行回歸測試。
 - [x] 對於經常變動的標題文字，考慮使用 `data-testid` 取代 `getByText` 以提高測試穩定性。
 - [x] Push 代碼前，確保地端全量測試套件 passes 100%。
+
+---
+
+## 【問題現象】：Windows PowerShell 自動化指令執行失敗
+### 問題描述
+在 Windows PowerShell 環境下執行如 `git pull && git push` 的連鎖指令時，系統回報「無法辨識 && 運算子」，導致自動化工作流程中斷，消耗額外 AI 額度進行重試。
+
+### 底層根本原因
+1. **Shell 語法差異**：`&&` 是 Unix-like Shell (Bash/Zsh) 的邏輯與運算子。
+2. **PowerShell 限制**：較舊版本的 PowerShell 不支援 `&&`，改用 `;` 或 `Pipeline` 邏輯。
+
+### 解決方案
+1. **工作流優化**：在 `.agent/workflows/` 中的腳本移除 `&&`，改為分行條列指令。
+2. **環境相容性**：在指令說明中加入 Windows 特定警告。
+
+### 預防重複犯錯的 Checkbox
+- [x] 在撰寫工作流指令時，考慮跨平台相容性 (Windows vs Linux)。
+- [x] Windows 環境優先使用分行指令而非連鎖符號。
+- [x] 重要的推送指令應包含 `git pull --rebase` 前置步驟。

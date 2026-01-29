@@ -1,5 +1,22 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.2.11] - 2026-01-29
+### Added
+- **Phase 8 詳細實作計畫 (`026_Phase8_AI_Core_Backtest_Plan.md`)**:
+  - 定義 Alpha 特徵工廠規格 (50+ 維度向量化因子)。
+  - 定義 XGBoost 預測模型開發路徑 (Regressor + 超額收益預測)。
+  - 定義高性能向量化回測引擎架構 (矩陣運算 vs 步進模擬)。
+  - 規劃前端智慧回測看板 UI (Glassmorphism & Recharts 整合)。
+
+## [V10.2.10] - 2026-01-29
+### Added
+- **本地 CI 驗證工作流 (`/local-ci-v10`)**: 整合前端型別檢查 (TSC)、前端測試 (Jest) 與後端測試 (Pytest)，確保地端綠燈後才執行推送。
+
+### Updated
+- **Git 推送工作流優化 (`git_push_v10.md`)**:
+  - **強制 Rebase**: 將 `git pull --rebase` 提升至第一步，解決因遠端同步導致的推送失敗。
+  - **PowerShell 相容性**: 移除命令列中的 `&&` 分隔符，修正 PowerShell 語法報錯，實現「一次成功」目標，節省 AI 額度。
+
 ## [V10.2.9] - 2026-01-29
 ### Added
 - **Phase 7.2 文件更新與測試交付**:
