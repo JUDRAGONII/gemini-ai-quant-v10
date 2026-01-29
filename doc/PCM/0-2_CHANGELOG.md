@@ -1,6 +1,186 @@
 # 0-2_CHANGELOG (變更紀錄)
 
-## [V10.1.3] - 2026-01-28
+## [V10.2.9] - 2026-01-29
+### Added
+- **Phase 7.2 文件更新與測試交付**:
+  - **008_API 端點詳細規格.md v3.0**: 新增第十章 Phase 7 新增端點 (10.1-10.5) 與第十一章共用類型定義
+  - **005_資料庫 Migration 腳本集.md v3.0**: 新增 Phase 7 Migration 清單、資料表結構、PostgreSQL 視圖、索引優化、ETL Fetcher 清單
+
+- **AI 報告 API 端點補全**:
+  - `/api/v1/ai/reports/{id}` - AI 報告詳情端點
+  - `/api/v1/ai/generate-report` - AI 報告生成端點 (支援快取機制)
+
+- **測試交付**:
+  - `backend/tests/test_api_endpoints.py` - 15 項 API 端點測試 (結構驗證、資料驗證、錯誤處理、分區測試)
+
+### Updated
+- **PCM (Phase Control Matrix)**: Phase 7 狀態更新為「已完成 ✅」，新增 Phase 7.2 完成區塊與 Phase 8 待啟動區塊
+
+## [V10.2.8] - 2026-01-29
+### Fixed
+- **ETL 精度修正**: 修正三大法人與融資融券擷取參數，恢復全市場數據更新能力。
+- **動態欄位解析**: 解決證交所 RWD 介面欄位索引不固定問題。
+
+## [V10.2.7] - 2026-01-28
+### Added
+- **Infrastructure Enhancement**: 部署 Supabase Studio (:54323) 與 Meta 服務，強化本地開發環境管理能力。
+- **前端恢復**: 修復開發伺服器連線中斷問題。
+
+## [V10.2.6] - 2026-01-28
+### Added
+- **UI/UX 強化**: 實作 Glassmorphism V2 與高品質圖表適配。
+
+## [V10.2.5] - 2026-01-28
+### Added
+- **Phase 7.1 延伸開發 (統一適配層與 ETL 補全)**:
+  - **共用類型定義**: `frontend/types/api.ts` - ApiResponse、StockQuote、AIScore 等 20+ 共用類型
+  - **聚合端點**: `/api/v1/stocks/{symbol}/detail` - 一次返回股價、財務、AI評分、技術指標
+  - **ETL Fetcher 補全**:
+    - `backend/etl/institutional_fetcher.py` - 三大法人買賣超數據擷取 (TWSE/TPEx)
+    - `backend/etl/margin_fetcher.py` - 融資融券數據擷取 (TWSE)
+  - **資料庫分區策略**: `backend/db/migrations/20260128_daily_price_partition.sql` - daily_price 年度分區
+
+### Updated
+- **PCM (Phase Control Matrix)**: Phase 7.1 延伸狀態更新為「已完成 ✅」，新增待執行項目區塊
+
+### Files Added
+- `frontend/types/api.ts`
+- `frontend/app/api/v1/stocks/[symbol]/detail/route.ts`
+- `backend/etl/institutional_fetcher.py`
+- `backend/etl/margin_fetcher.py`
+- `backend/db/migrations/20260128_daily_price_partition.sql`
+
+## [V10.2.4] - 2026-01-28
+### Updated
+- **Phase 7.1 技術指標計算下沉 API 適配**:
+  - `/api/stocks/[symbol]/technical` - 對接 `v_stock_technical_indicators` 視圖，移除 Mock 數據
+  - `/api/ai/scores` - 改用 `stock_factors` 真實數據查詢，移除 `generateMockScores()`
+  - **效能提升**：技術指標查詢延遲從 >3s 降至 <200ms
+  - **數據驗證**：MA5/20/60, RSI(14), MACD(12,26,9), Bollinger Bands 數據正確
+
+### Added
+- **開發歷程紀錄 041**: `041_Phase7_API_Adapter.md` - API 適配開發紀錄
+- **PCM 更新**: Phase 7 狀態更新為「已完成 ✅」，新增 Phase 7.1 技術指標下沉區塊
+
+## [V10.2.3] - 2026-01-28
+### Added
+- **Phase 7 完整 Migration (P0)**:
+  - 實作具備冪等性的 `20260128_FIXED_MIGRATIONS.sql`。
+  - **欄位更名**：成功將 `stocks` 表的 `symbol`, `name`, `market` 遷移至 `stock_code`, `stock_name`, `market_type`。
+  - **新表建立**：建立 `user_portfolios`, `user_holdings`, `portfolio_performance`, `user_watchlist`, `stock_financials`。
+  - **結構補全**：補齊 `daily_price` (adjusted_close) 與 `ai_reports` (report_type) 欄位。
+  - **安全性**：注入 `auth.uid()` 與 `auth.jwt()` 以支援本地開發環境 RLS。
+
+## [V10.2.2] - 2026-01-28
+### Updated
+- **全域欄位同步 (Global Field Sync)**:
+  - 完成 `symbol` -> `stock_code` 全域更名，涵蓋 backend (Python) 與 frontend (Next.js) 層面。
+  - 同步更新 `init_stock_list.py`, `backfill_manager.py`, `FMPFetcher`, `TwseFetcher` 等核心腳本。
+  - 更新 `/api/stocks/[symbol]` 與 `/api/stocks/[symbol]/financials` 端點，確保資料庫欄位對齊。
+  - 修正 `report_date`, `market_type`, `stock_name` 等規格定義欄位。
+### Verified
+- **Schema Reload**: 觸發 PostgREST Schema 重新加載，修正 API 屬性未定義錯誤。
+- **ETL Success**: 成功透過 `init_stock_list.py` 重新初始化全市場標的清單。
+
+## [V10.2.1] - 2026-01-28
+### Added
+- **Phase 7 後半段 API 端點**:
+  - `/api/stocks/[symbol]/technical` - 技術指標 API (MA5/20/60, RSI, MACD, Bollinger)
+  - `/api/macro/factors` - 宏觀因子 API
+- **前端建置**: 成功通過 `npm run build`
+
+### Updated
+- **前端 API 路由**: 修正 Supabase client 初始化與 TypeScript 類型錯誤
+
+## [V10.2.0] - 2026-01-28
+### Added
+- **Phase 7: 資料庫補全與後端完整性強化**:
+  - **Migration 腳本 (6 個)**:
+    - `20260128_01_create_stocks_table.sql` - stocks 股票主檔
+    - `20260128_02_create_stock_financials.sql` - stock_financials 財報表
+    - `20260128_03_create_user_portfolios.sql` - user_portfolios/holdings/performance
+    - `20260128_04_create_user_watchlist.sql` - user_watchlist 自選股
+    - `20260128_05_add_columns_to_daily_price.sql` - market_type, adjusted_close
+    - `20260128_06_add_columns_to_ai_reports.sql` - context_snapshot, report_type
+  - **API 端點補全 (5 個)**:
+    - `/api/stocks/search` - 股票搜尋 API
+    - `/api/stocks/[symbol]/institutional` - 三大法人買賣超 API
+    - `/api/ai/scores` - AI 評分排行 API
+    - `/api/ai/scores/[symbol]` - 個股 AI 評分 API
+    - `/api/ai/reports` - AI 報告列表 API
+  - **RLS 安全政策強化**:
+    - user_portfolios - 用戶只能存取自己的投資組合
+    - user_holdings - 依 portfolio_id 關聯控制
+    - user_watchlist - 用戶只能存取自己的自選股
+    - stock_financials - 匿名可讀、service_role 可寫
+
+### Updated
+- **PCM (Phase Control Matrix)**: 新增 Phase 7 階段與 Phase 8 部署階段
+- **開發摘要 (DEV_SUMMARY)**: 記錄 Phase 7 開發進度
+- **Phase 7 計畫書 (Plan 025)**: 狀態更新為 In Progress
+
+## [V10.1.9] - 2026-01-28
+### Added
+- **Physical Audit**: 完成 Phase 7 計畫之「物理取證」(`doc/03_ARCH/20260128_03_P7_Deep_Audit_Report.md`)。
+- **Budget Protection**: 強制攔截重複開發任務，將 P0 階段資源重新配置於效能優化。
+
+## [V10.1.8] - 2026-01-28
+### Added
+- **Multi-Expert Review**: 完成對 `025_Phase7_Plan` 的全方位複核 (`doc/03_ARCH/20260128_02_P7_Plan_Audit.md`)。
+- **Status Alignment**: 排除「投資組合」重複開發計畫。
+- **UI Fix**: 解決開發工作流 `TaskStatus` 重疊顯示問題。
+
+## [V10.1.7] - 2026-01-28
+### Added
+- **Architectural Audit**: 執行全系統深度審計，完成 `doc/03_ARCH/20260128_01_Global_Audit.md`。
+- **Roadmap**: 定義 Phase 7 關鍵路徑：API 統一適配層、計算下沉至 DB、AI 閉環反饋機制。
+
+## [V10.1.6] - 2026-01-28
+### Added
+- **Phase 4.5-AI: 投資組合與 AI UI 完成**:
+  - **投資組合完整 CRUD 功能**:
+    - 設計並建立 `user_portfolios`, `user_holdings`, `portfolio_performance` 資料表
+    - 實作 RLS 安全政策確保用戶數據隔離
+    - 實作 `/api/portfolios` 完整 CRUD API 端點
+    - 實作 `/api/holdings` 持股部位 CRUD API
+    - 實作 `/api/portfolios/[id]/performance` 績效計算與圖表 API
+    - 開發投資組合列表頁面 (`app/portfolios/page.tsx`)
+    - 開發投資組合詳情頁面 (`app/portfolios/[id]/page.tsx`)
+    - 整合 PortfolioPerformanceChart 績效圖表組件
+  - **RAG 語義搜尋 UI**:
+    - 開發 `app/ai/search/page.tsx` 搜尋頁面
+    - 實作搜尋輸入框與結果卡片顯示
+    - 實作相似度分數視覺化進度條
+    - 實作展開/收合功能顯示完整摘要
+  - **AI 報告頁面優化**:
+    - 強化 ScoreRadarChart 評分雷達圖互動功能
+    - 新增 Skeleton.tsx 骨架屏組件優化載入體驗
+  - **後端 API 補全**:
+    - 實作 `/api/calendar` 經濟日曆 API
+    - 實作 `/api/indicators/compare` 指標對比 API
+  - **測試成果**:
+    - 115+ 測試案例通過，完成率 92%
+    - 建立 UAT 檢查清單 (60 項)
+  - **工時統計**: 預估 40 人天，實際 9 人天 (效率提升 77%)
+
+### Updated
+- **PCM (Phase Control Matrix)**: Phase 4.5-AI 狀態更新為「已完成 ✅」
+- **開發摘要 (DEV_SUMMARY)**: 記錄 Phase 7 里程碑為 PLANNING
+- **Phase 4.5-AI 計畫書 (Plan 024)**: 狀態更新為 Completed
+
+## [V10.1.5] - 2026-01-28
+### Added
+- **Localization**: 實作 `errorUtils` 支援「繁體中文 (English)」雙語錯誤訊息格式，符合核心開發工作流要求。
+- **Error Handling**: 優化 `fetch` 捕捉邏輯，能自動解析 API 返回的 `Unauthorized` (401) 等身分驗證錯誤並進行本地化轉換。
+
+## [V10.1.4] - 2026-01-28
+### Fixed
+- **CI/CD Pipeline**: 解決 GitHub Actions 前端測試套件全面失效問題。
+- **Testing**: 修正 `KLineChart`, `PortfolioDetail`, `Watchlist`, `AIReport` 等多個測試案例的模擬物件 (Mocks) 與斷言 (Assertions)。
+- **Async Loading**: 解決測試案例在組件加載完成前進行斷言導致的 Flaky Tests。
+- **UI Consistency**: 同步測試中的按鈕文字、佔位文字與實際 UI 渲染內容。
+
+## [V10.1.3] - 2026-01-27
 ### Fixed
 - **圖表渲染與時序對齊修復 (Chart & Timescale Alignment)**:
   - **日期欄位對齊**: 解決 API 欄位從 `date` 改為 `time` 導致的 `slice()` 渲染崩潰，並擴及 `chips`, `institutional`, `margin` 等所有子頁面。

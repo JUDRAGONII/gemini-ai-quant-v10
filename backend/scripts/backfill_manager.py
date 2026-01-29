@@ -62,7 +62,7 @@ class BackfillManager:
         try:
             supabase.table('backfill_status').upsert({
                 "id": job_id,
-                "current_symbol": symbol,
+                "current_symbol": symbol, # 這個欄位在 backfill_status 表中暫時保留 current_symbol 名稱或同步更改
                 "status": status,
                 "updated_at": datetime.now().isoformat()
             }).execute()
@@ -127,8 +127,8 @@ class BackfillManager:
         logger.info(f"🎬 開始回補標的行情 (總計 {len(stock_list)} 檔標的)...")
         
         for stock in stock_list:
-            symbol = stock['symbol']
-            market = stock.get('market', 'TW')
+            symbol = stock['stock_code']
+            market = stock.get('market_type', 'TW')
             
             if self.checkpoint["stocks"].get(symbol) == "completed":
                 logger.info(f"⏩ 標的 {symbol} 已完成，跳過。")
@@ -200,7 +200,7 @@ class BackfillManager:
                 # 獲取所有有效標的，並依 priority 排序 (1 最高)
                 query = supabase.table('stocks').select('*').eq('is_active', True)
                 if market:
-                    query = query.eq('market', market)
+                    query = query.eq('market_type', market)
                 
                 result = query.order('priority', desc=False).execute()
                 if result.data:
@@ -213,7 +213,7 @@ class BackfillManager:
                     time.sleep(5)
                 else:
                     logger.error("❌ 讀取資料庫失敗且已達最大重試次數。")
-                    return [{"symbol": "2330", "market": "TW", "priority": 1}]
+                    return [{"stock_code": "2330", "market_type": "TW", "priority": 1}]
         return []
 
 if __name__ == "__main__":
@@ -232,7 +232,7 @@ if __name__ == "__main__":
     if args.mode in ["all", "stocks"]:
         if args.stock:
             # 測試特定標的
-            manager.backfill_stocks([{"symbol": args.stock, "market": args.market or "TW", "priority": 1}], start_year=args.years)
+            manager.backfill_stocks([{"stock_code": args.stock, "market_type": args.market or "TW", "priority": 1}], start_year=args.years)
         else:
             stocks = manager.get_stock_list_from_db(market=args.market)
             manager.backfill_stocks(stocks, start_year=args.years)

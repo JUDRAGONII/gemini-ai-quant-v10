@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Trash2, Plus, TrendingUp, TrendingDown, Search, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { formatErrorMessage } from '@/lib/errorUtils';
 
 interface WatchlistItem {
     id: string;
@@ -35,12 +36,15 @@ export default function WatchlistPage() {
     const fetchWatchlist = useCallback(async () => {
         try {
             const response = await fetch('/api/watchlist');
-            if (!response.ok) throw new Error('Failed to fetch watchlist');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to fetch watchlist');
+            }
             const data = await response.json();
             setWatchlist(data);
         } catch (err: any) {
             console.error('Error fetching watchlist:', err);
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setLoading(false);
         }
@@ -52,7 +56,10 @@ export default function WatchlistPage() {
         const codes = watchlist.map(item => item.stock_code);
         try {
             const response = await fetch(`/api/stocks/quotes?codes=${codes.join(',')}`);
-            if (!response.ok) throw new Error('Failed to fetch quotes');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to fetch quotes');
+            }
             const data = await response.json();
             setQuotes(data);
         } catch (err: any) {
@@ -92,7 +99,7 @@ export default function WatchlistPage() {
             setSearchResult(null);
             fetchWatchlist();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setAddingStock(false);
         }
@@ -106,11 +113,14 @@ export default function WatchlistPage() {
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error('Failed to remove stock');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to remove stock');
+            }
 
             fetchWatchlist();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         }
     };
 

@@ -73,6 +73,29 @@ services:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
     depends_on: [ db, rest ]
 
+  # --- Supabase Management ---
+  meta:
+    image: supabase/postgres-meta:v0.84.2
+    container_name: supabase-meta
+    environment:
+      PG_META_DB_HOST: db
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      PG_META_PORT: 8080
+    depends_on: [ db ]
+
+  studio:
+    image: supabase/studio:latest
+    container_name: supabase-studio
+    ports:
+      - "54323:3000"
+    environment:
+      SUPABASE_URL: http://kong:8000
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+    depends_on: [ db, kong, meta ]
+
   # --- Custom AI Worker ---
   ai-worker:
     build:

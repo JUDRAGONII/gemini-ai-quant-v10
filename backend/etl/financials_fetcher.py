@@ -133,7 +133,7 @@ class FMPFetcher(BaseFetcher):
             
             record = {
                 "stock_code": ticker,
-                "fiscal_date": date_str,
+                "report_date": date_str,
                 "report_type": report_type,
                 # Income Statement
                 "revenue": self._clean_num(inc.get("revenue")),
@@ -166,7 +166,7 @@ class FMPFetcher(BaseFetcher):
             records = self.transform(raw)
             
             if records:
-                count = self.upsert(records, on_conflict="stock_code,fiscal_date,report_type")
+                count = self.upsert(records, on_conflict="stock_code,report_date,report_type")
                 total_count += count
                 logger.info(f"  ✅ {rt}: {count} records upserted")
             else:

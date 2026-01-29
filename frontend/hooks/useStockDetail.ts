@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatErrorMessage } from '@/lib/errorUtils';
 
 interface StockMetadata {
     symbol: string;
@@ -56,7 +57,7 @@ export function useStockDetail(symbol: string) {
                 setError(null);
             } catch (err: any) {
                 console.error('Fetch error:', err);
-                setError(err.message || 'Unknown error occurred');
+                setError(formatErrorMessage(err.message));
             } finally {
                 setLoading(false);
             }

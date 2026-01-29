@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Plus, Trash2, TrendingUp, TrendingDown, PieChart, Loader2, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { formatErrorMessage } from '@/lib/errorUtils';
 
 interface Portfolio {
     id: string;
@@ -27,12 +28,15 @@ export default function PortfoliosPage() {
     const fetchPortfolios = useCallback(async () => {
         try {
             const response = await fetch('/api/portfolios');
-            if (!response.ok) throw new Error('Failed to fetch portfolios');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to fetch portfolios');
+            }
             const data = await response.json();
             setPortfolios(data);
         } catch (err: any) {
             console.error('Error fetching portfolios:', err);
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setLoading(false);
         }
@@ -62,7 +66,7 @@ export default function PortfoliosPage() {
             setNewDesc('');
             fetchPortfolios();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setCreating(false);
         }
@@ -76,11 +80,14 @@ export default function PortfoliosPage() {
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error('Failed to delete portfolio');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to delete portfolio');
+            }
 
             fetchPortfolios();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         }
     };
 

@@ -442,3 +442,50 @@
 - [x] 嚴格禁止對可能不存在的 API 欄位直接調用 `slice()`。
 - [x] 在 Recharts `XAxis` 格式化函數中，應先進行 Null Check。
 - [x] 優先使用 UNIX Timestamp 作為時序數據的交換格式。
+### #24 錯誤訊息本地化與雙語化教訓 (Bilingual Error Localization)
+
+| 屬性 | 值 |
+| --- | --- |
+| 發生日期 | 2026-01-28 |
+| 影響範圍 | UX / 可維護性 |
+| 嚴重程度 | 中 (優化項) |
+
+### 問題現象
+- 使用者看到紅色警示框顯示 `Unauthorized` 或 `Failed to fetch`，雖知道出錯但不知具體含義。
+- 若直接中文化，開發者在遠端排錯時會失去底層 Error String (如 401, 500 等原始碼)，難以判讀。
+
+### 底層根因 (First Principles)
+1. **導讀斷層**：UI 錯誤訊息通常直接透傳 `err.message`。
+2. **資訊遺失**：在 fetch 時若不 `await response.json()`，則無法獲取伺服器返回的具體錯誤字串（例如後端返回的 `{ "error": "Unauthorized" }` 被 Next.js fetch 封裝成通用的 401）。
+
+### 解決方案
+1. **建立雙語工具函式**：實作 `formatErrorMessage(msg)`，將 `Unauthorized` 轉換為 `登入逾時或權限不足 (Unauthorized)`。
+2. **優化 Error Parsing**：在 `if (!response.ok)` 時，先嘗試解析 JSON 中的 `error` 欄位再 `throw`，確保 `formatErrorMessage` 拿到的是最具體的錯誤原因。
+
+### 預防重複犯錯的 Checkbox
+- [x] UI 錯誤提示應遵循 `[繁體中文] ([English (Original Message)])` 格式。
+- [x] catch 區塊統一使用 `formatErrorMessage(err.message)` 進行包裝。
+- [x] 在 `throw new Error` 之前，務必檢查是否有後端傳回的詳細錯誤訊息可用。
+
+### 2026-01-29 Phase 7.5 籌碼數據 ETL 與 API 精度教訓
+
+### 問題現象
+1. **SSL 憑證失敗**：Python `requests` 報錯 `[SSL: CERTIFICATE_VERIFY_FAILED]`，致使後端無法從證交所抓取資料。
+2. **數據量嚴重不足**：每日僅抓取到 7-8 筆資料，原以為是 API 改版，實際為參數遺漏。
+3. **欄位偏移與 404**：原有的 Margin API 接口失效回傳 404，且手動調整索引後的資料在 API 更新後出現對齊錯誤。
+
+### 底層根本原因
+1. **SSL 阻礙**：證交所部分路徑的憑證校驗在某些 Python 環境下載入不全。
+2. **隱藏參數限制**：`rwd/zh/fund/T86` 預設僅返回部分分類，需顯式指定 `selectType=ALL` 始能獲取全市場資料。
+3. **硬編碼索引 (Hardcoding)**：使用 `row[2]`, `row[3]` 存取數據。當證交所為了 RWD 調整 HTML 結構或新增欄位（如「外資自營商買進金額」）時，索引即發生偏移。
+
+### 解決方案
+1. **SSL 繞過與後端強化**：實作 `verify=False` 並加入 `urllib3.disable_warnings()` 清理日誌。
+2. **參數校準**：將 `type=DAY` 修正為 `selectType=ALL`。
+3. **動態關鍵字導航**：實作「關鍵字索引映射」機制。程式碼自動遍歷 `fields` 列表，尋找包含「證券代號」、「投信買進」等關鍵字的索引值，確保即使欄位順序更動，抓取邏輯仍具抗壓性。
+
+### 預防重複犯錯的 Checkbox
+- [x] 大量擷取前，手動用瀏覽器測試 API 返還的 JSON `count` 是否與市場實際標的數量一致。
+- [x] 禁止在 ETL 邏輯中使用硬編碼數字索引，務必動態匹配 `fields`。
+- [x] 若遭遇 SSL 憑證報錯，應先評估資料來源安全性，隨後套用 `verify=False` 作過度。
+- [x] 對於 RWD 版 API 介面，應確認是否存在傳統 `exchangeReport` 穩定接口作為備援。

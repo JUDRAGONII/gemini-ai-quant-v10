@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 7: AI 投資組合建議 UI (PLANNING)
-**狀態**：✅ 已完成日期欄位格式化修復 (MM-DD)。解決了 API 欄位從 `date` 改為 `time` 導致的渲染崩潰。
+**階段**：Phase 7: 系統優化與架構演進 (PLANNING)
+**狀態**：✅ 已完成全域架構審計 (Global Audit)。識別出計算下沉、API 統一適配層等中長期優化點。
 
 ---
 
@@ -47,7 +47,7 @@
     - [x] 依據「憲級文件」1:1 比對 Next.js 14 實作現況。
     - [x] 完成 `frontend_remaining_work.md` 更新，識別 P1 級別缺項 (K線、籌碼子頁)。
     - [x] 整合 UI/UX Pro Max 規範，規劃 Phase 4.3 視覺優化路徑。
-## [V10.0.8] - 2026-01-26
+- [x] Phase 4.7: 錯誤訊息中英雙語化優化 (2026-01-28)
 ### Added
 - **全域測試 Mock 基礎 (QA Infrastructure)**:
   - 實作基於 Proxy 的全域 `lucide-react` 圖標 Mock，自動化生成 `data-testid`。
@@ -128,7 +128,56 @@
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
 | 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
 | 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4- [x] Phase 4.5: 圖表時間軸與日期格式對齊 (2026-01-27) - 已修正 XAxis 與 KLineChart 同步
-- [x] Phase 4.6: GitHub CI 前端建置與測試故障修復 (2026-01-28) - 已修正 Jest 測試套件全面通過
+## [V10.2.8] - 2026-01-29
+### Fixed
+- **籌碼 ETL 精度修復 (Precision Fix)**:
+  - 修正 `InstitutionalFetcher` 參數（`selectType=ALL`），恢復每日萬筆級數據抓取能力。
+  - 修復 `MarginFetcher` 404 與 0 筆問題，更換為穩定端點 `MI_MARGN`。
+  - 引入「動態欄位解析」技術，解決證交所 API 欄位索引變動導致的數據偏移。
+- **數據回補全面重啟**:
+  - 啟動 2024-2026 三大法人與融資融券歷史回補任務。
+  - **狀態**: 已完成 ✅ (累計回補約 **823 萬筆** 數據，時間覆蓋至 2026-01-28)。
+
+## [V10.2.7] - 2026-01-28
+### Added
+- **Supabase Studio 本地部署 (Infrastructure)**:
+  - 整合 `supabase/studio` 與 `supabase/postgres-meta:v0.84.2` 至 Docker Compose。
+  - 開放 `54323` 端口作為地端資料庫管理儀表板。
+- **前端開發服務恢復**:
+  - 重啟 Next.js 14 開發伺服器，修復 `ERR_CONNECTION_REFUSED` 故障。
+
+## [V10.2.6] - 2026-01-28
+### Fixed
+- **前端 UI 與資產加載恢復 (UI/UX Pro Max)**:
+  - 徹底解決 `_next/static` 資源 404 故障，清理 Node 進程衝突。
+  - **視覺重構**：應用 **Glassmorphism V2** 規範，重構「市場導航儀」首頁佈局。
+  - **配置優化**：注入 `next.config.mjs` 並校準 `globals.css` 之設計語彙 (Design Tokens)。
+
+## [V10.2.5] - 2026-01-28
+### Added
+- **Phase 7.2 技術指標下沉 (P2)**:
+  - 建立 `v_stock_ma`, `v_stock_rsi`, `v_stock_macd`, `v_stock_bollinger_bands` 四大核心計算視圖。
+  - 實作 `v_stock_technical_indicators` 整合接口，支援一站式指標查詢。
+  - **效能優化**：為 `daily_price`, `stock_factors` 等表補全 5 組 B-Tree 索引，大幅降低查詢延遲。
+  - **計算邏輯**：採用 Postgres 視窗函數實現即時計算，無須額外存儲開銷。
+
+## [V10.2.4] - 2026-01-28
+### Added
+- **Phase 7 P1 優先級 Migration**:
+  - 實作 `20260128_PHASE7_P1_MIGRATIONS_FIXED.sql`。
+  - **結構衝突解決**：備份舊版 `intraday_candles` 並依據最新規格重建，支援 `candle_date` 與 `candle_time` 分離設計。
+  - **新表建立**：建立 `stock_institutional`, `stock_margin`, `economic_calendar`。
+  - **穩定性強化**：全面應用 `DROP POLICY IF EXISTS` 解決 RLS 部署衝突。
+
+## [V10.2.3] - 2026-01-28
+- [x] Phase 4.6: GitHub CI 前端建置與測試故障修復 (2026-01-28)
+- [x] Phase 4.7: 錯誤訊息中英雙語化優化 (2026-01-28)
+- [x] Phase 7: 系統全域架構審計 (2026-01-28)
+- [x] Phase 7: 實施計畫全方位複核 (2026-01-28)
+- [x] Phase 7: 深度調研取證與重複任務攔截 (2026-01-28)
+- [x] Phase 7: 資料庫遷移執行與結構對齊 (2026-01-28)
+- [x] Phase 7.1: 全域 API 與腳本欄位同步更新 (2026-01-28)
+- [x] Phase 7.2: 技術指標下沉與效能優化 (2026-01-28)
 | 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
 | 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
 | 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
@@ -139,6 +188,15 @@
 | 2026-01-27 | **ETL & DB** | **財報數據回補**：修正 `NaN` 寫入錯誤，實作 FMP 輪詢機制。成功同步 AAPL/AMZN 季報與年報。 |
 | 2026-01-27 | **TDD & QA** | **組件驗證**：完成 `financials_technical.test.tsx` 通過 8 項核心測試。驗證前端即時指標計算準確性與 RLS 讀取權限。 |
 | 2026-01-27 | **Archiving** | **開發歷程歸檔**：同步所有 PCM 文檔，完成 Phase 6 結項歸檔。 |
+| 2026-01-28 | **Quality & UX** | **雙語化優化**：完成核心頁面錯誤訊息中英雙語化 (`errorUtils`)。 |
+| 2026-01-28 | **Architect** | **全域審計**：執行 `/architect` 工作流，完成全系統架構深度掃描與優化報告 (`doc/03_ARCH/20260128_01_Global_Audit.md`)。 |
+| 2026-01-28 | **Quality** | **計畫複核**：整合四大專家模組對 Phase 7 開發計畫進行二審 (`doc/03_ARCH/20260128_02_P7_Plan_Audit.md`)。 |
+| 2026-01-28 | **Audit** | **深度調研**：物理取證驗證 V10.1.6 進度，攔截重複任務 (`doc/03_ARCH/20260128_03_P7_Deep_Audit_Report.md`)。 |
+| 2026-01-28 | **Database** | **遷移執行**：完成 `FIXED_MIGRATIONS`，對齊 `stocks` 與 `daily_price` 欄位規範，並補全用戶相關表格。 |
+| 2026-01-28 | **Sync** | **全域同步**：完成 Phase 7.1 欄位同步，更新後端 ETL 腳本與前端 API 路由。 |
+| 2026-01-28 | **Database** | **P1 遷移執行**：完成 `PHASE7_P1_MIGRATIONS_FIXED`，建立法人、融資券、分K與日曆表。 |
+| 2026-01-28 | **Performance** | **技術指標下沉**：建立 MA/RSI/MACD/BB 視圖，並補全 538 萬筆數據之核心索引。 |
+| 2026-01-28 | **UI/UX** | **前端修復**：解決資產 404 故障，重構「市場導航儀」首頁為玻璃擬態高質感風格。 |
 
 
 

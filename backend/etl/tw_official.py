@@ -93,7 +93,7 @@ class TwseFetcher(BaseFetcher):
                     continue
                     
                 records.append({
-                    "stock_id": code, # 注意: DB schema 欄位是 stock_id 還是 ticker? (V10: stock_id references stock_info)
+                    "stock_code": code, # 注意: DB schema 欄位是 stock_id 還是 ticker? (V10: 對齊 schema 為 stock_code)
                     "trade_date": today_str,
                     "pe_ratio": pe,
                     "pb_ratio": pb,

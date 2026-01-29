@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import PortfolioPerformanceChart from '@/components/Chart/PortfolioPerformanceChart';
+import { formatErrorMessage } from '@/lib/errorUtils';
 
 interface Holding {
     id: string;
@@ -93,12 +94,15 @@ export default function PortfolioDetailPage() {
 
         try {
             const response = await fetch(`/api/portfolios/${portfolioId}`);
-            if (!response.ok) throw new Error('Failed to fetch portfolio');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to fetch portfolio');
+            }
             const data = await response.json();
             setPortfolio(data);
         } catch (err: any) {
             console.error('Error fetching portfolio:', err);
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setLoading(false);
         }
@@ -110,7 +114,10 @@ export default function PortfolioDetailPage() {
         setPerfLoading(true);
         try {
             const response = await fetch(`/api/portfolios/${portfolioId}/performance?period=${period}`);
-            if (!response.ok) throw new Error('Failed to fetch performance');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to fetch performance');
+            }
             const data = await response.json();
             setPerformanceData(data.performance_data || []);
             setSummary(data.summary);
@@ -173,7 +180,7 @@ export default function PortfolioDetailPage() {
             fetchPortfolio();
             fetchPerformance();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         } finally {
             setAddingStock(false);
         }
@@ -187,12 +194,15 @@ export default function PortfolioDetailPage() {
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error('Failed to delete holding');
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Failed to delete holding');
+            }
 
             fetchPortfolio();
             fetchPerformance();
         } catch (err: any) {
-            setError(err.message);
+            setError(formatErrorMessage(err.message));
         }
     };
 

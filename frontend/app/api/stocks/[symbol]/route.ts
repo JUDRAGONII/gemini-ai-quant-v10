@@ -18,7 +18,7 @@ export async function GET(
         const { data: stockInfo, error: infoError } = await supabase
             .from('stocks')
             .select('*')
-            .eq('symbol', symbol)
+            .eq('stock_code', symbol)
             .single();
 
         if (infoError || !stockInfo) {
@@ -68,10 +68,14 @@ export async function GET(
 
         return NextResponse.json({
             metadata: {
-                symbol: stockInfo.symbol,
-                name: stockInfo.name,
-                market: stockInfo.market,
+                stock_code: stockInfo.stock_code,
+                stock_name: stockInfo.stock_name,
+                market_type: stockInfo.market_type,
                 is_active: stockInfo.is_active,
+                // 為了前端兼容性暫時保留舊欄位名稱
+                symbol: stockInfo.stock_code,
+                name: stockInfo.stock_name,
+                market: stockInfo.market_type,
             },
             summary_stats: {
                 pe_ratio: factors?.pe_ratio || null,
