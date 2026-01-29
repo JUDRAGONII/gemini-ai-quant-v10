@@ -59,23 +59,24 @@ export async function GET(
             }, { status: 404 });
         }
 
+        const r = report as any;
         const responseData = {
-            id: report.id,
-            stock_code: report.stock_code,
-            stock_name: report.stock_name,
-            report_type: report.report_type,
-            report_date: report.report_date,
-            title: report.title || `${report.stock_name} AI 投資分析報告`,
-            content: report.content,
-            summary: report.summary,
-            version: report.version || 'v1.0',
-            context_snapshot: report.context_snapshot,
-            composite_score: report.composite_score,
-            scores: report.scores ? (
-                typeof report.scores === 'string' ? JSON.parse(report.scores) : report.scores
+            id: r.id,
+            stock_code: r.stock_code,
+            stock_name: r.stock_name,
+            report_type: r.report_type,
+            report_date: r.report_date,
+            title: r.title || `${r.stock_name} AI 投資分析報告`,
+            content: r.content,
+            summary: r.summary,
+            version: r.version || 'v1.0',
+            context_snapshot: r.context_snapshot,
+            composite_score: r.composite_score,
+            scores: r.scores ? (
+                typeof r.scores === 'string' ? JSON.parse(r.scores) : r.scores
             ) : null,
-            created_at: report.created_at,
-            updated_at: report.updated_at
+            created_at: r.created_at,
+            updated_at: r.updated_at
         };
 
         return NextResponse.json({

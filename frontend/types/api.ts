@@ -228,8 +228,40 @@ export interface StockSearchResult {
 }
 
 export interface StockDetailResponse {
+    stock: {
+        stock_code: string;
+        stock_name: string;
+        market_type: string;
+        industry: string;
+        sector: string;
+        list_date: string;
+        currency: string;
+        is_active: boolean;
+    };
     quote: StockQuote | null;
     financials: StockFinancials | null;
     ai_score: AIScore | null;
-    technical_indicators: TechnicalIndicator[];
+    technical_indicators: {
+        period: {
+            start_date: string;
+            end_date: string;
+        };
+        ma: {
+            ma5: Array<{ date: string; value: number | null }>;
+            ma10: Array<{ date: string; value: number | null }>;
+            ma20: Array<{ date: string; value: number | null }>;
+            ma60: Array<{ date: string; value: number | null }>;
+            ma120: Array<{ date: string; value: number | null }>;
+        };
+        rsi: {
+            values: Array<{ date: string; value: number | null }>;
+        };
+        macd: {
+            values: Array<{ date: string; macd: number | null; signal: number | null; histogram: number | null }>;
+        };
+        bollinger: {
+            values: Array<{ date: string; upper: number | null; middle: number | null; lower: number | null }>;
+        };
+        record_count: number;
+    } | null;
 }

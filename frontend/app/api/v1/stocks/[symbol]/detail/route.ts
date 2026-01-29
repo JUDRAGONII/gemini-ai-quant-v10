@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { StockDetailResponse } from '@/types/api';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -34,8 +35,7 @@ export async function GET(
     }
 
     try {
-        const result: Record<string, unknown> = { stock_code: symbol };
-        let stockInfo: Record<string, unknown> | null = null;
+        const result: Partial<StockDetailResponse> = {};
 
         const { data: stockData, error: stockError } = await supabase
             .from('stocks')
@@ -50,16 +50,16 @@ export async function GET(
             }, { status: 404 });
         }
 
-        stockInfo = stockData;
+        const sd = stockData as any;
         result.stock = {
-            stock_code: stockData.stock_code,
-            stock_name: stockData.stock_name,
-            market_type: stockData.market_type,
-            industry: stockData.industry,
-            sector: stockData.sector,
-            list_date: stockData.list_date,
-            currency: stockData.currency,
-            is_active: stockData.is_active
+            stock_code: sd.stock_code,
+            stock_name: sd.stock_name,
+            market_type: sd.market_type,
+            industry: sd.industry,
+            sector: sd.sector,
+            list_date: sd.list_date,
+            currency: sd.currency,
+            is_active: sd.is_active
         };
 
         const { data: priceData, error: priceError } = await supabase
@@ -68,19 +68,21 @@ export async function GET(
             .eq('stock_code', symbol)
             .order('trade_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         if (!priceError && priceData) {
+            const d = priceData as any;
             result.quote = {
-                trade_date: priceData.trade_date,
-                open: priceData.open_price,
-                high: priceData.high_price,
-                low: priceData.low_price,
-                close: priceData.close_price,
-                volume: priceData.volume,
-                change_percent: priceData.change_percent,
-                adjusted_close: priceData.adjusted_close,
-                market_type: priceData.market_type
+                stock_code: symbol,
+                trade_date: d.trade_date,
+                open: d.open_price,
+                high: d.high_price,
+                low: d.low_price,
+                close: d.close_price,
+                volume: d.volume,
+                change_percent: d.change_percent,
+                adjusted_close: d.adjusted_close,
+                market_type: d.market_type
             };
         }
 
@@ -90,21 +92,23 @@ export async function GET(
             .eq('stock_code', symbol)
             .order('report_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         if (!financialError && financialData) {
+            const d = financialData as any;
             result.financials = {
-                report_type: financialData.report_type,
-                report_date: financialData.report_date,
-                fiscal_year: financialData.fiscal_year,
-                revenue: financialData.revenue,
-                net_income: financialData.net_income,
-                eps: financialData.eps,
-                pe_ratio: financialData.pe_ratio,
-                pb_ratio: financialData.pb_ratio,
-                roe: financialData.roe,
-                gross_margin: financialData.gross_margin,
-                net_margin: financialData.net_margin
+                stock_code: symbol,
+                report_type: d.report_type,
+                report_date: d.report_date,
+                fiscal_year: d.fiscal_year,
+                revenue: d.revenue,
+                net_income: d.net_income,
+                eps: d.eps,
+                pe_ratio: d.pe_ratio,
+                pb_ratio: d.pb_ratio,
+                roe: d.roe,
+                gross_margin: d.gross_margin,
+                net_margin: d.net_margin
             };
         }
 
@@ -114,20 +118,21 @@ export async function GET(
             .eq('stock_code', symbol)
             .order('trade_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         if (!factorError && factorData) {
+            const d = factorData as any;
             result.ai_score = {
-                stock_code: factorData.stock_code,
-                composite_score: factorData.composite_score,
+                stock_code: d.stock_code,
+                composite_score: d.composite_score,
                 scores: {
-                    value: factorData.value_score ?? Math.round((factorData.pe_ratio ? Math.min(100, Math.max(0, 100 - factorData.pe_ratio / 2)) : 50) * 10) / 10,
-                    growth: factorData.growth_score ?? Math.round(((factorData.revenue_growth || 0) * 50 + 50) * 10) / 10,
-                    quality: factorData.quality_score ?? Math.round((factorData.roe || 50) * 10) / 10,
-                    momentum: factorData.momentum_score ?? Math.round((factorData.momentum_1m || 50) * 10) / 10,
+                    value: d.value_score ?? 50,
+                    growth: d.growth_score ?? 50,
+                    quality: d.quality_score ?? 50,
+                    momentum: d.momentum_score ?? 50,
                     macro: 65.0
                 },
-                last_updated: factorData.trade_date
+                last_updated: d.trade_date
             };
         }
 
@@ -140,24 +145,24 @@ export async function GET(
                 .limit(technical_limit);
 
             if (!technicalError && technicalData && technicalData.length > 0) {
-                const reversedData = technicalData.reverse();
+                const reversedData = [...technicalData].reverse() as any[];
                 result.technical_indicators = {
                     period: {
                         start_date: reversedData[0]?.trade_date,
                         end_date: reversedData[reversedData.length - 1]?.trade_date
                     },
                     ma: {
-                        ma5: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.ma5 })),
-                        ma10: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.ma10 })),
-                        ma20: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.ma20 })),
-                        ma60: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.ma60 })),
-                        ma120: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.ma120 }))
+                        ma5: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma5 })),
+                        ma10: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma10 })),
+                        ma20: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma20 })),
+                        ma60: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma60 })),
+                        ma120: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma120 }))
                     },
                     rsi: {
-                        values: reversedData.map((d: Record<string, unknown>) => ({ date: d.trade_date, value: d.rsi_14 }))
+                        values: reversedData.map((d: any) => ({ date: d.trade_date, value: d.rsi_14 }))
                     },
                     macd: {
-                        values: reversedData.map((d: Record<string, unknown>) => ({
+                        values: reversedData.map((d: any) => ({
                             date: d.trade_date,
                             macd: d.macd_line,
                             signal: d.signal_line,
@@ -165,7 +170,7 @@ export async function GET(
                         }))
                     },
                     bollinger: {
-                        values: reversedData.map((d: Record<string, unknown>) => ({
+                        values: reversedData.map((d: any) => ({
                             date: d.trade_date,
                             upper: d.bb_upper,
                             middle: d.bb_middle,
@@ -179,7 +184,7 @@ export async function GET(
 
         return NextResponse.json({
             status: 'success',
-            data: result,
+            data: result as StockDetailResponse,
             timestamp: new Date().toISOString()
         });
 

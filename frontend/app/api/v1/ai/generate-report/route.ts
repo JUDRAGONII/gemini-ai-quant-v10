@@ -126,10 +126,11 @@ export async function POST(request: NextRequest) {
                 .eq('report_type', report_type)
                 .order('created_at', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle(); // 使用 maybeSingle 避免找不到報錯
 
             if (existingReport) {
-                const createdDate = new Date(existingReport.created_at);
+                const d = existingReport as any;
+                const createdDate = new Date(d.created_at);
                 const now = new Date();
                 const hoursDiff = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
 
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({
                         status: 'success',
                         data: {
-                            report_id: existingReport.id,
+                            report_id: d.id,
                             message: '已有近期報告，使用現有報告',
                             is_cached: true
                         },
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
             .eq('stock_code', stock_code)
             .order('trade_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         const { data: factors } = await supabase
             .from('stock_factors')
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
             .eq('stock_code', stock_code)
             .order('trade_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         const { data: financials } = await supabase
             .from('stock_financials')
@@ -169,7 +170,7 @@ export async function POST(request: NextRequest) {
             .eq('stock_code', stock_code)
             .order('report_date', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
         const context = {
             stock: stockInfo,
@@ -179,28 +180,30 @@ export async function POST(request: NextRequest) {
         };
 
         const content = await generateAIContent(stock_code, context);
+        const s = stockInfo as any;
+        const f = factors as any;
 
         const { data: newReport, error: insertError } = await supabase
             .from('ai_reports')
             .insert({
                 stock_code: stock_code,
-                stock_name: stockInfo.stock_name,
+                stock_name: s.stock_name,
                 report_type: report_type,
-                title: `${stockInfo.stock_name} AI 投資分析報告`,
+                title: `${s.stock_name} AI 投資分析報告`,
                 content: content,
                 summary: content.substring(0, 200) + '...',
-                composite_score: factors?.composite_score || null,
-                scores: factors ? JSON.stringify({
-                    value: factors.value_score,
-                    growth: factors.growth_score,
-                    quality: factors.quality_score,
-                    momentum: factors.momentum_score,
-                    macro: factors.macro_score
+                composite_score: f?.composite_score || null,
+                scores: f ? JSON.stringify({
+                    value: f.value_score,
+                    growth: f.growth_score,
+                    quality: f.quality_score,
+                    momentum: f.momentum_score,
+                    macro: f.macro_score
                 }) : null,
                 context_snapshot: JSON.stringify(context),
                 version: 'v1.0',
                 report_date: new Date().toISOString().split('T')[0]
-            })
+            } as any)
             .select()
             .single();
 
@@ -208,10 +211,11 @@ export async function POST(request: NextRequest) {
             throw insertError;
         }
 
+        const nr = newReport as any;
         return NextResponse.json({
             status: 'success',
             data: {
-                report_id: newReport.id,
+                report_id: nr.id,
                 stock_code: stock_code,
                 report_type: report_type,
                 generated: true,

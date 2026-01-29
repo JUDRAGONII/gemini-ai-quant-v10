@@ -11,23 +11,26 @@ import {
 } from "recharts";
 
 interface MacroChartProps {
-    title: string;
+    title?: string;
     data: any[];
     dataKey: string;
     color: string;
+    hideGrid?: boolean;
 }
 
-export default function MacroChart({ title, data, dataKey, color }: MacroChartProps) {
+export default function MacroChart({ title, data, dataKey, color, hideGrid = false }: MacroChartProps) {
     return (
         <div className="glass p-6 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold text-gray-200">{title}</h3>
-                <span className="text-xs text-gray-500 font-mono">
-                    Last {data.length} Points
-                </span>
-            </div>
+            {title && (
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-bold text-gray-200">{title}</h3>
+                    <span className="text-xs text-gray-500 font-mono">
+                        Last {data.length} Points
+                    </span>
+                </div>
+            )}
 
-            <div className="h-[200px] w-full">
+            <div className={`w-full ${title ? 'h-[200px]' : 'h-full'}`}>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data}>
                         <defs>
@@ -36,11 +39,13 @@ export default function MacroChart({ title, data, dataKey, color }: MacroChartPr
                                 <stop offset="95%" stopColor={color} stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="#333"
-                            vertical={false}
-                        />
+                        {!hideGrid && (
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#333"
+                                vertical={false}
+                            />
+                        )}
                         <XAxis
                             dataKey="reference_date"
                             hide={true} // Cleaner look for mini charts

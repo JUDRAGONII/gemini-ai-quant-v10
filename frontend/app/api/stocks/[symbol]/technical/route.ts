@@ -89,25 +89,25 @@ export async function GET(
             technicalIndicators.includes('ma120')) {
             result.indicators.ma = {
                 name: '移動平均線',
-                ma5: reversedData.map(d => ({ date: d.trade_date, value: d.ma5 })),
-                ma10: reversedData.map(d => ({ date: d.trade_date, value: d.ma10 })),
-                ma20: reversedData.map(d => ({ date: d.trade_date, value: d.ma20 })),
-                ma60: reversedData.map(d => ({ date: d.trade_date, value: d.ma60 })),
-                ma120: reversedData.map(d => ({ date: d.trade_date, value: d.ma120 }))
+                ma5: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma5 })),
+                ma10: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma10 })),
+                ma20: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma20 })),
+                ma60: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma60 })),
+                ma120: reversedData.map((d: any) => ({ date: d.trade_date, value: d.ma120 }))
             };
         }
 
         if (technicalIndicators.includes('rsi')) {
             result.indicators.rsi = {
                 name: '相對強弱指數 (14)',
-                values: reversedData.map(d => ({ date: d.trade_date, value: d.rsi_14 }))
+                values: reversedData.map((d: any) => ({ date: d.trade_date, value: d.rsi_14 }))
             };
         }
 
         if (technicalIndicators.includes('macd')) {
             result.indicators.macd = {
                 name: '平滑異同移動平均線 (12, 26, 9)',
-                values: reversedData.map(d => ({
+                values: reversedData.map((d: any) => ({
                     date: d.trade_date,
                     macd: d.macd_line,
                     signal: d.signal_line,
@@ -119,7 +119,7 @@ export async function GET(
         if (technicalIndicators.includes('bollinger')) {
             result.indicators.bollinger = {
                 name: '布林通道 (20, 2)',
-                values: reversedData.map(d => ({
+                values: reversedData.map((d: any) => ({
                     date: d.trade_date,
                     upper: d.bb_upper,
                     middle: d.bb_middle,
