@@ -489,23 +489,21 @@
 - [x] 禁止在 ETL 邏輯中使用硬編碼數字索引，務必動態匹配 `fields`。
 - [x] 若遭遇 SSL 憑證報錯，應先評估資料來源安全性，隨後套用 `verify=False` 作過度。
 - [x] 對於 RWD 版 API 介面，應確認是否存在傳統 `exchangeReport` 穩定接口作為備援。
-### 2026-01-29 Phase 7.7 GitHub CI 前端建置 (Build) 失敗教訓
+### 2026-01-29 Phase 7.8 GitHub CI Jest 測試失敗教訓
 
 ### 問題現象
-1. **GitHub Actions 報錯**：在執行 `Frontend Build Check` 時失敗，回報 81 個 TypeScript 型別錯誤。
-2. **錯誤集中點**：集中在 `app/api/v1/` 路由與 `app/page.tsx` 首頁元件。
+1. **GitHub Actions 報錯**：在執行 `RUN JEST TESTS` 時失敗，其中 `app/page.test.tsx` 出現多處斷言失敗。
+2. **錯誤訊息**：`Unable to find an element with the text: /市場概覽/i` 或找不到預期的狀態徽章。
 
 ### 底層根本原因
-1. **聚合 Endpoint 型別偏移**：新開發的 V1 API 返回的是多表聚合數據，但前端 `StockDetailResponse` 介面仍停留在舊版的單表結構（陣列型態），導致存取屬性（如 `quote`, `financials`）時報錯。
-2. **隱式 any 限制**：CI 環境的 `tsconfig.json` 開啟了嚴格模式，而代碼中在 `map` 迴圈處理數據時漏掉型別宣告，且 `supabase` 的 `single()` 回傳值被推導為 `never` 或 `unknown`。
-3. **Props 不匹配**：`MacroChart` 組件在使用時漏填了 `title` 必填項，且傳入了未定義的 `hideGrid` 屬性。
+1. **UI 文本偏移**：Phase 7 的 Rich Aesthetics 重構將原本的靜態文本（如「市場概覽」、「AI Worker」）更改為更具設計感的標籤（如「市場導航儀」、「AI Core」）。
+2. **測試案例未同步**：Jest 測試腳本仍保留舊版的硬編碼字串斷言，導致在 DOM 渲染正確但內容變更的情況下失效。
 
 ### 解決方案
-1. **對齊型別庫**：更新 `types/api.ts` 確保 `StockDetailResponse` 完美對齊 V1 API 的 JSON 結構。
-2. **強化型別斷言**：在 API Route 中使用 `const d = priceData as any` 或 `as any[]` 顯式規避 Supabase 聯表查詢時的推導困難。
-3. **組件重構 (KISS)**：修改 `MacroChart` 使其 Prop 具備預設值與選擇性，增加 UI 調用彈性。
+1. **全局文本校準**：對齊 `app/page.test.tsx` 與最新版本的 `app/page.tsx` 文本內容。
+2. **組件隔離驗證**：確保狀態徽章（StatusBadge）的標籤與 ChartWrapper 的標題完全匹配。
 
 ### 預防重複犯錯的 Checkbox
-- [x] 推送代碼前，務必在地端執行一次 `npx tsc --noEmit`。
-- [x] 對於複雜的聚合查詢（Joint Query），若 Supabase 自動推導失效，應建立專屬介面或使用型別斷言。
-- [x] 新增 API 路由時，應同時檢查 `frontend/types/api.ts` 是否同步更新結構。
+- [x] 進行大型 UI 重構（如 Glassmorphism V2）後，必須立即執行 `npm test` 進行回歸測試。
+- [x] 對於經常變動的標題文字，考慮使用 `data-testid` 取代 `getByText` 以提高測試穩定性。
+- [x] Push 代碼前，確保地端全量測試套件 passes 100%。
