@@ -41,7 +41,7 @@ def run_migration(client):
     CREATE TABLE IF NOT EXISTS stock_financials (
         id BIGSERIAL PRIMARY KEY,
         stock_code VARCHAR(20) NOT NULL,
-        fiscal_date DATE NOT NULL,
+        report_date DATE NOT NULL,
         report_type VARCHAR(10) NOT NULL CHECK (report_type IN ('annual', 'quarterly')),
         revenue NUMERIC,
         gross_profit NUMERIC,
@@ -55,11 +55,11 @@ def run_migration(client):
         free_cash_flow NUMERIC,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(stock_code, fiscal_date, report_type)
+        UNIQUE(stock_code, report_date, report_type)
     );
     
     CREATE INDEX IF NOT EXISTS idx_financials_stock_code ON stock_financials(stock_code);
-    CREATE INDEX IF NOT EXISTS idx_financials_fiscal_date ON stock_financials(fiscal_date DESC);
+    CREATE INDEX IF NOT EXISTS idx_financials_report_date ON stock_financials(report_date DESC);
     CREATE INDEX IF NOT EXISTS idx_financials_report_type ON stock_financials(report_type);
     """
     

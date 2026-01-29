@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 
 // 財報數據類型
 interface FinancialRecord {
-    fiscal_date: string;
+    report_date: string;
     report_type: string;
     revenue: number | null;
     gross_profit: number | null;
@@ -21,6 +21,8 @@ interface FinancialRecord {
     total_equity: number | null;
     operating_cash_flow: number | null;
     free_cash_flow: number | null;
+    // 兼容舊版命名 (選配)
+    fiscal_date?: string;
 }
 
 // 計算毛利率與淨利率
@@ -54,7 +56,7 @@ export async function GET(
             .select('*')
             .eq('stock_code', symbol)
             .eq('report_type', 'annual')
-            .order('fiscal_date', { ascending: false })
+            .order('report_date', { ascending: false })
             .limit(5);
 
         if (annualError) {
@@ -67,7 +69,7 @@ export async function GET(
             .select('*')
             .eq('stock_code', symbol)
             .eq('report_type', 'quarterly')
-            .order('fiscal_date', { ascending: false })
+            .order('report_date', { ascending: false })
             .limit(8);
 
         if (quarterlyError) {
@@ -81,6 +83,7 @@ export async function GET(
                 const { grossMargin, netMargin } = calculateMargins(r);
                 return {
                     ...r,
+                    fiscal_date: r.report_date, // 兼容前端
                     gross_margin: grossMargin?.toFixed(2),
                     net_margin: netMargin?.toFixed(2),
                 };

@@ -34,9 +34,9 @@ def fetch_otc_stocks():
             name = row[1].strip()
             if len(symbol) in [4, 5, 6]:
                 records.append({
-                    "symbol": symbol,
-                    "name": name,
-                    "market": "TW",
+                    "stock_code": symbol,
+                    "stock_name": name,
+                    "market_type": "TW",
                     "priority": 2, # 上櫃預設優先序
                     "is_active": True
                 })
@@ -62,9 +62,9 @@ def get_us_constituents():
     records = []
     for symbol in unique_symbols:
         records.append({
-            "symbol": symbol,
-            "name": f"US Stock: {symbol}", # 佔位名稱，後續回補會更新
-            "market": "US",
+            "stock_code": symbol,
+            "stock_name": f"US Stock: {symbol}", # 佔位名稱，後續回補會更新
+            "market_type": "US",
             "priority": 2, # 成分股優先序
             "is_active": True
         })
@@ -73,13 +73,13 @@ def get_us_constituents():
 def get_us_indices():
     """定義核心美股指數對應 ETF"""
     indices = [
-        {"symbol": "DIA", "name": "道瓊工業指數 ETF (DIA)", "priority": 1},
-        {"symbol": "SPY", "name": "標普500指數 ETF (SPY)", "priority": 1},
-        {"symbol": "QQQ", "name": "那斯達克100指數 ETF (QQQ)", "priority": 1},
-        {"symbol": "SOXX", "name": "費城半導體指數 ETF (SOXX)", "priority": 1},
+        {"stock_code": "DIA", "stock_name": "道瓊工業指數 ETF (DIA)", "priority": 1},
+        {"stock_code": "SPY", "stock_name": "標普500指數 ETF (SPY)", "priority": 1},
+        {"stock_code": "QQQ", "stock_name": "那斯達克100指數 ETF (QQQ)", "priority": 1},
+        {"stock_code": "SOXX", "stock_name": "費城半導體指數 ETF (SOXX)", "priority": 1},
     ]
     for item in indices:
-        item["market"] = "US"
+        item["market_type"] = "US"
         item["is_active"] = True
     return indices
 
@@ -99,9 +99,9 @@ def init_stocks():
                 # 權值股優先序提高 (範例: 2330, 2317)
                 priority = 1 if symbol in ['2330', '2317', '2454', '0050', '0056'] else 2
                 all_records.append({
-                    "symbol": symbol,
-                    "name": row['stock_name'].strip(),
-                    "market": "TW",
+                    "stock_code": symbol,
+                    "stock_name": row['stock_name'].strip(),
+                    "market_type": "TW",
                     "priority": priority,
                     "is_active": True
                 })
@@ -119,9 +119,9 @@ def init_stocks():
 
     # 4. 注入期交所標的 (TX, MTX, TE)
     futures = [
-        {"symbol": "TX", "name": "台指期", "market": "Taifex", "priority": 1, "is_active": True},
-        {"symbol": "MTX", "name": "小型台指", "market": "Taifex", "priority": 1, "is_active": True},
-        {"symbol": "TE", "name": "電子期", "market": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "TX", "stock_name": "台指期", "market_type": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "MTX", "stock_name": "小型台指", "market_type": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "TE", "stock_name": "電子期", "market_type": "Taifex", "priority": 1, "is_active": True},
     ]
     all_records.extend(futures)
 
@@ -132,7 +132,7 @@ def init_stocks():
             batch_size = 500
             for i in range(0, len(all_records), batch_size):
                 batch = all_records[i:i+batch_size]
-                supabase.from_('stocks').upsert(batch, on_conflict='symbol').execute()
+                supabase.from_('stocks').upsert(batch, on_conflict='stock_code').execute()
             logger.info("✅ 標的清單初始化完成。")
         except Exception as e:
             logger.error(f"❌ 存入資料庫失敗: {e}")

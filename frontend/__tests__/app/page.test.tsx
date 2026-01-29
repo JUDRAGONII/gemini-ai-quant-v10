@@ -89,8 +89,8 @@ describe('Dashboard 頁面整合測試', () => {
         const ui = await Home();
         render(ui);
 
-        expect(screen.getByText('AI Worker')).toBeInTheDocument();
-        expect(screen.getByText('Database')).toBeInTheDocument();
+        expect(screen.getByText('AI Core')).toBeInTheDocument();
+        expect(screen.getByText('Engine')).toBeInTheDocument();
     });
 
     it('宏觀數據區塊: 應渲染 3 個 MacroChart 卡片', async () => {
@@ -110,8 +110,8 @@ describe('Dashboard 頁面整合測試', () => {
         expect(charts).toHaveLength(3); // GDP, CPI, VIX
 
         // Verify specifics
-        expect(screen.getByText('GDP Growth')).toBeInTheDocument();
-        expect(screen.getByText('CPI (Inflation)')).toBeInTheDocument();
+        expect(screen.getByText('GDP Growth (QoQ)')).toBeInTheDocument();
+        expect(screen.getByText('CPI Inflation (YoY)')).toBeInTheDocument();
         expect(screen.getByText('VIX Volatility')).toBeInTheDocument();
     });
 
@@ -122,7 +122,7 @@ describe('Dashboard 頁面整合測試', () => {
         const ui = await Home();
         render(ui);
 
-        expect(screen.getByText('暫無 AI 報告生成。請檢查 ETL 排程。')).toBeInTheDocument();
+        expect(screen.getByText('正在生成今日戰術分析，請稍候...')).toBeInTheDocument();
     });
 
     it('AI 報告區塊: 若有報告應渲染 ReportCard', async () => {
@@ -151,7 +151,7 @@ describe('Dashboard 頁面整合測試', () => {
         expect(screen.getByText('AAPL')).toBeInTheDocument();
         expect(screen.getByText('Analysis Summary')).toBeInTheDocument();
         // Should NOT show placeholder
-        expect(screen.queryByText('暫無 AI 報告生成。請檢查 ETL 排程。')).not.toBeInTheDocument();
+        expect(screen.queryByText('正在生成今日戰術分析，請稍候...')).not.toBeInTheDocument();
     });
 
     it('安全性測試: Supabase 斷線應容錯', async () => {
@@ -165,11 +165,10 @@ describe('Dashboard 頁面整合測試', () => {
             const ui = await Home();
             render(ui);
 
-            // It should render "empty" state (length 0 arrays), but NOT crash.
             // Charts will receive empty data -> MacroChart handles it (checked in Unit Test) or renders 0 points.
             const charts = screen.getAllByTestId('macro-chart');
             expect(charts).toHaveLength(3);
-            expect(screen.getByText('暫無 AI 報告生成。請檢查 ETL 排程。')).toBeInTheDocument();
+            expect(screen.getByText('正在生成今日戰術分析，請稍候...')).toBeInTheDocument();
         } finally {
             consoleSpy.mockRestore();
         }
