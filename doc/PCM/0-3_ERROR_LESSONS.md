@@ -540,3 +540,22 @@
 - **【預防重複犯錯的 Checkbox】**：
     - [ ] 嚴格規範 Python 引用路徑，統一使用 `backend.lib...` 絕對路徑或 `.lib` 相對路徑。
     - [ ] 執行單元腳本前，先檢查 `__init__.py` 的副作用。
+### 2026-01-30 Windows 保留檔 `nul` 導致 Git 索引衝突
+- **【問題現象】**：執行 `git add .` 時報錯 `error: short read while indexing nul` 或 `failed to insert into database`。
+- **【底層根本原因】**：`nul` 是 Windows 的系統保留檔名（類似於 Linux 的 `/dev/null`）。若代碼中意外產生名為 `nul` 的檔案，Git 在 Windows 下無法正確讀取其內容進行雜湊計算。
+- **【解決方案】**：
+    1. 使用 `$gitignore += "nul"` 屏蔽該檔案。
+    2. 手動清理：`git status --porcelain | where { $_ -ne "?? nul" } | foreach { git add ($_.Substring(3)) }`。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 嚴禁在專案中建立名為 `nul`, `con`, `prn`, `aux` 等 Windows 保留字的檔案。
+    - [ ] 在 `.gitignore` 中預設屏蔽 `nul` 以防萬一。
+
+### 2026-01-30 MobileNav 測試字串匹配歧義
+- **【問題現象】**：`MobileNav` 測試報錯 `Found multiple elements with the text: /AI/i`。
+- **【底層根本原因】**：隨著 UI 豐富化，頁面中出現多處包含 "AI" 的文字（如 Logo 的 "AI QUANT" 與選單項 "AI 語義 (Semantic)"）。寬鬆的正則匹配會選中多個元素，導致 `getByText` 失敗。
+- **【解決方案】**：
+    1. 使用更具唯一性的識別碼：如 `expect(screen.getByRole("link", { name: /QUANT/i }))`。
+    2. 配合 `getByRole` 與 `name` 屬性精確定位。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 避免使用過於簡短的 Regex 匹配核心 UI 文本。
+    - [ ] 優先使用 `getByRole` 配合名稱或 `data-testid` 進行斷言。
