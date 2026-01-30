@@ -113,6 +113,25 @@ services:
     depends_on: [ db, kong ]
     restart: always
 
+  ai-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai-api
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_KEY: ${SERVICE_ROLE_KEY}
+      DB_CONNECTION_STRING: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./backend:/app
+    depends_on: [ db, kong ]
+    restart: always
+
   # --- Frontend Application ---
   frontend:
     build:

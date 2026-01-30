@@ -3,14 +3,16 @@
 /**
  * MobileNav - 行動端響應式導航組件
  * @description 提供頂部導航條與側邊抽屜 (Drawer)，確保 Mobile/Tablet 端的流暢體驗
- * @version 1.0.0 (Phase 4.4 Pro Max RWD)
+ * @version 1.1.0 (Phase 8 Sync)
  */
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     Menu,
     X,
+    Home,
     Activity,
     TrendingUp,
     BarChart3,
@@ -18,6 +20,9 @@ import {
     Settings,
     Cpu,
     Layers,
+    Briefcase,
+    Sparkles,
+    Search
 } from "lucide-react";
 
 interface NavLinkProps {
@@ -60,14 +65,7 @@ function NavLink({ href, icon, label, active = false, onClick }: NavLinkProps) {
  */
 export function MobileNav() {
     const [isOpen, setIsOpen] = useState(false);
-    const [currentPath, setCurrentPath] = useState("/");
-
-    // 取得當前路徑
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setCurrentPath(window.location.pathname);
-        }
-    }, []);
+    const pathname = usePathname();
 
     // 關閉 Drawer 時鎖定背景滾動
     useEffect(() => {
@@ -84,12 +82,16 @@ export function MobileNav() {
     const closeDrawer = () => setIsOpen(false);
 
     const navItems = [
-        { href: "/", icon: <Activity />, label: "總覽 (Overview)" },
+        { href: "/", icon: <Home />, label: "總覽 (Overview)" },
         { href: "/chips", icon: <Layers />, label: "籌碼分析 (Chips)" },
-        { href: "/stocks", icon: <TrendingUp />, label: "市場動態" },
-        { href: "/macro", icon: <BarChart3 />, label: "宏觀指標" },
-        { href: "/ai/ranking", icon: <FileText />, label: "決策報告" },
-        { href: "/settings", icon: <Settings />, label: "系統設定" },
+        { href: "/stocks", icon: <TrendingUp />, label: "市場動態 (Market)" },
+        { href: "/portfolios", icon: <Briefcase />, label: "投資組合 (Portfolios)" },
+        { href: "/macro", icon: <Activity />, label: "宏觀指標 (Macro)" },
+        { href: "/evolution", icon: <BarChart3 />, label: "演化分析 (Evolution)" },
+        { href: "/ai/strategy", icon: <Sparkles />, label: "智慧策略 (Strategy)" },
+        { href: "/ai/search", icon: <Search />, label: "AI 搜尋 (Semantic)" },
+        { href: "/ai/ranking", icon: <FileText />, label: "決策報告 (Reports)" },
+        { href: "/settings", icon: <Settings />, label: "系統設定 (Settings)" },
     ];
 
     return (
@@ -100,10 +102,10 @@ export function MobileNav() {
                 <div className="flex items-center justify-between px-4 py-3">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 cursor-pointer">
-                        <Cpu size={24} className="text-cyan-400" />
-                        <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                            AI QUANT
-                        </span>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+                            <Cpu size={18} className="text-white" />
+                        </div>
+                        <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">AI QUANT</span>
                     </Link>
 
                     {/* Hamburger Button */}
@@ -142,7 +144,7 @@ export function MobileNav() {
             >
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
-                    <span className="text-lg font-bold text-white">選單</span>
+                    <span className="text-lg font-bold text-white">選單 (Menu)</span>
                     <button
                         onClick={closeDrawer}
                         className="p-2 rounded-lg bg-white/5 hover:bg-white/10 
@@ -155,15 +157,15 @@ export function MobileNav() {
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="p-4 space-y-2">
+                <nav className="p-4 space-y-1 h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.href}
                             href={item.href}
                             icon={item.icon}
                             label={item.label}
-                            active={currentPath === item.href ||
-                                (item.href !== "/" && currentPath.startsWith(item.href))}
+                            active={pathname === item.href ||
+                                (item.href !== "/" && pathname.startsWith(item.href))}
                             onClick={closeDrawer}
                         />
                     ))}
@@ -171,8 +173,8 @@ export function MobileNav() {
 
                 {/* Version Info */}
                 <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <p className="text-xs text-gray-500 font-mono">
-                        AI 投資分析儀 V10.0
+                    <p className="text-[10px] text-gray-500 font-mono tracking-widest">
+                        AI QUANT PRO V10.0
                     </p>
                 </div>
             </aside>

@@ -1,8 +1,8 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 8: AI 智慧核心與策略驗證 (PLANNING)
-**狀態**：✅ 已完成 Phase 8 詳細實作計畫 (`026_Phase8_AI_Core_Backtest_Plan.md`)，涵蓋 Alpha 特徵工廠、XGBoost 模型與向量化回測引擎。
+**階段**：Phase 9: 行情即時監控與選股中心 (PLANNING)
+**狀態**：✅ Phase 8 (AI 智慧與策略驗證) 已全線完工，通過全量 TDD 驗證及導航完整性審計。目前正在啟動 Phase 9 詳細規劃。
 
 ---
 
@@ -154,6 +154,8 @@
 | 2026-01-28 | **Database** | **P1 遷移執行**：完成 `PHASE7_P1_MIGRATIONS_FIXED`，建立法人、融資券、分K與日曆表。 |
 | 2026-01-28 | **Performance** | **技術指標下沉**：建立 MA/RSI/MACD/BB 視圖，並補全 538 萬筆數據之核心索引。 |
 | 2026-01-28 | **UI/UX** | **前端修復**：解決資產 404 故障，重構「市場導航儀」首頁為玻璃擬態高質感風格。 |
+| 2026-01-30 | **Verification** | **Phase 8 全量驗收**：完成 TC-XXXX 測試，修復回測引擎 NaN 偏差與前端 Chart 導入錯誤。 |
+| 2026-01-30 | **UI/UX Audit** | **導航完整性**：同步 Sidebar/MobileNav 並補齊詳情頁返回按鍵，消除導航孤島。 |
 
 ## [V10.2.11] - 2026-01-29
 ### Fixed

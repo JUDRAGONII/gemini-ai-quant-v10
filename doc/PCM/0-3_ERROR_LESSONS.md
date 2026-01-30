@@ -526,3 +526,17 @@
 - [x] 在撰寫工作流指令時，考慮跨平台相容性 (Windows vs Linux)。
 - [x] Windows 環境優先使用分行指令而非連鎖符號。
 - [x] 重要的推送指令應包含 `git pull --rebase` 前置步驟。
+
+### 2026-01-30 PostgREST Schema Cache Issue
+- **【問題現象】**：執行 DB Migration 新增欄位後，PostgREST API 仍回傳 `PGRST204` (Column not found)，導致 Upsert 失敗。
+- **【底層根本原因】**：PostgREST 為了效能會快取資料庫 Schema，不會自動偵測 DDL 變更。單純的 Migration 執行後快取未過期。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] DDL 變更後，務必執行 `NOTIFY pgrst, 'reload schema'`。
+    - [ ] 若仍無效，必須強制重啟 `supabase-rest` 容器。
+
+### 2026-01-30 Python Package Import Issue
+- **【問題現象】**：執行 `python -m backend.etl.factor_etl` 時，引發 `backend/etl` 目錄下其他未使用的檔案 (如 `market.py`) 報錯 `ModuleNotFoundError`。
+- **【底層根本原因】**：使用 `python -m` 執行會觸發 `__init__.py`，進而載入套件內所有模組。舊有程式碼使用了錯誤的引用路徑 (如 `from lib` 而非 `from backend.lib`)。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 嚴格規範 Python 引用路徑，統一使用 `backend.lib...` 絕對路徑或 `.lib` 相對路徑。
+    - [ ] 執行單元腳本前，先檢查 `__init__.py` 的副作用。

@@ -1,5 +1,17 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.3.0] - 2026-01-30
+### Added
+- **Phase 8 AI 智慧與策略驗證 (Verification Completion)**:
+  - **後端驗證**: 通過 `test_phase8.py` 驗證 XGBoost 推理準確性與向量化回測引擎。
+  - **前端優化**: 實作 `StrategyHubPage` 之權益曲線繪製，並整合「智慧策略」入口。
+  - **導航審計**: 補齊全站「可進入、可返回」路徑，包括個股詳情頁之「返回行情中心」按鈕。
+### Fixed
+- **Vector Engine**: 修復回測首列 NaN 問題，確保權益曲線起點正確。
+- **Frontend Build**: 修正 `PortfolioPerformanceChart` 導入路徑與類型不匹配故障。
+- **Workflow**: 整合 `/gen-test-case-02` 至 Phase 8 驗收流程。
+
+
 ## [V10.2.11] - 2026-01-29
 ### Added
 - **Phase 8 詳細實作計畫 (`026_Phase8_AI_Core_Backtest_Plan.md`)**:

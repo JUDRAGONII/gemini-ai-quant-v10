@@ -1,11 +1,12 @@
 /**
- * Phase 4.4 MobileNav 響應式導航測試
- * @description 驗證 Mobile 導航組件的 RWD 行為與 A11y
- * @version 1.2.0 (Complete Coverage)
+ * Phase 8 MobileNav 響應式導航測試
+ * @description 驗證 Mobile 導航組件的 RWD 行為與 A11y (Synced with Phase 8)
+ * @version 1.3.0
  */
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
@@ -13,6 +14,16 @@ jest.mock("next/navigation", () => ({
     useRouter: () => ({
         push: jest.fn(),
     }),
+}));
+
+// Mock framer-motion
+jest.mock("framer-motion", () => ({
+    motion: {
+        header: ({ children, ...props }: any) => <header {...props}>{children}</header>,
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+        nav: ({ children, ...props }: any) => <nav {...props}>{children}</nav>,
+    },
+    AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 // Mock next/link
@@ -24,24 +35,29 @@ jest.mock("next/link", () => {
 
 // Mock lucide-react
 jest.mock("lucide-react", () => ({
-    Menu: () => <span data-testid="menu-icon">Menu</span>,
-    X: () => <span data-testid="close-icon">X</span>,
-    Activity: () => <span>Activity</span>,
-    TrendingUp: () => <span>TrendingUp</span>,
-    BarChart3: () => <span>BarChart3</span>,
-    FileText: () => <span>FileText</span>,
-    Settings: () => <span>Settings</span>,
-    Cpu: () => <span>Cpu</span>,
-    Layers: () => <span>Layers</span>,
+    Menu: (props: any) => <span {...props} data-testid="menu-icon">Menu</span>,
+    X: (props: any) => <span {...props} data-testid="close-icon">X</span>,
+    Home: (props: any) => <span {...props}>Home</span>,
+    Activity: (props: any) => <span {...props}>Activity</span>,
+    TrendingUp: (props: any) => <span {...props}>TrendingUp</span>,
+    BarChart3: (props: any) => <span {...props}>BarChart3</span>,
+    FileText: (props: any) => <span {...props}>FileText</span>,
+    Settings: (props: any) => <span {...props}>Settings</span>,
+    Cpu: (props: any) => <span {...props}>Cpu</span>,
+    Layers: (props: any) => <span {...props}>Layers</span>,
+    Briefcase: (props: any) => <span {...props}>Briefcase</span>,
+    Sparkles: (props: any) => <span {...props}>Sparkles</span>,
+    Search: (props: any) => <span {...props}>Search</span>,
 }));
 
 import { MobileNav } from "@/components/layout/MobileNav";
 
-describe("MobileNav 響應式導航 (Phase 4.4 RWD)", () => {
+describe("MobileNav 響應式導航 (Phase 8)", () => {
     describe("基礎渲染 (TC-1XXX)", () => {
         it("TC-1404: 應正確渲染頂部 Header 與漢堡按鈕", () => {
             render(<MobileNav />);
-            expect(screen.getByText(/AI QUANT/i)).toBeInTheDocument();
+            // Logo link should contain QUANT
+            expect(screen.getByRole("link", { name: /QUANT/i })).toBeInTheDocument();
             expect(screen.getByLabelText(/開啟選單/i)).toBeInTheDocument();
         });
     });
@@ -74,6 +90,7 @@ describe("MobileNav 響應式導航 (Phase 4.4 RWD)", () => {
         it("TC-4401: Drawer 內的導航連結應具有 cursor-pointer", () => {
             render(<MobileNav />);
             fireEvent.click(screen.getByLabelText(/開啟選單/i));
+            // Regex updated to handle "(Settings)" suffix
             const settingsLink = screen.getByRole("link", { name: /系統設定/i });
             expect(settingsLink).toHaveClass("cursor-pointer");
         });
@@ -82,7 +99,7 @@ describe("MobileNav 響應式導航 (Phase 4.4 RWD)", () => {
             const { container } = render(<MobileNav />);
             fireEvent.click(screen.getByLabelText(/開啟選單/i));
 
-            // 使用類名或特定的 DOM 層次來避開 spacer
+            // Select overlay by class
             const overlay = container.querySelector(".bg-black\\/60");
             if (overlay) {
                 fireEvent.click(overlay);
