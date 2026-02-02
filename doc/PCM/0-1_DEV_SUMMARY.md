@@ -1,12 +1,18 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 7: 系統優化與架構演進 (PLANNING)
-**狀態**：✅ 已完成全域架構審計 (Global Audit)。識別出計算下沉、API 統一適配層等中長期優化點。
+**階段**：Phase 9: 行情即時監控與選股中心 (PLANNING)
+**狀態**：✅ Phase 8 已完工。⚠️ 已緊急修復 GitHub CI 後端測試導入衝突。目前正在啟動 Phase 9 詳細規劃。
 
 ---
 
 ## 📝 待辦清單 (Todo List)
+
+### Priority 0: 核心品質與自動化 (Auto CI/CD) - [COMPLETED]
+- [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
+- [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，解決 PowerShell `&&` 語法衝突，達成「一次成功」目標。
+- [x] **GitHub CI 修復**: 建立 `backend/__init__.py` 並注入 `PYTHONPATH`，修復 `backend.` 套件前綴導入衝突。
+- [x] **Phase 8 詳細實體計畫**: 編號 `026` 詳盡規格文件已交付。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]
 - [x] **Market ETL 基礎模組**: 實作 `BaseFetcher` 與 Tiingo/Fugle 擷取器。
@@ -128,6 +134,37 @@
 | 2026-01-23 | **Deep Repair** | 執行 [/0-0] 修復流程：完整實作 MonitorPage 權限與排序邏輯，並重建缺少的 Schema 表格。 |
 | 2026-01-23 | **Data Backfill** | 完成宏觀數據回補 (Macro Backfill)：寫入 41,215 筆歷史數據 (1990-2026)。 |
 | 2026-01-23 | **Doc Refactor** | [EOD] 完成計畫文件歸檔 (`/doc/plans`) 與 GitHub CI 修復。Phase 4.4- [x] Phase 4.5: 圖表時間軸與日期格式對齊 (2026-01-27) - 已修正 XAxis 與 KLineChart 同步
+| 2026-01-29 | **Quality & CI** | 修復 Phase 7.8 Jest 測試失敗，建立地端驗證工作流 `/local-ci-v10` 並優化推送腳本防止額度浪費。 |
+| 2026-01-29 | **Planning** | 產出 Phase 8 詳細實作計畫 (`026_Phase8_AI_Core_Backtest_Plan.md`)，定義特徵工程與向量化回測規格。 |
+| 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
+| 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
+| 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
+ |
+| 2026-01-23 | **Data Backfill** | 實作 `backfill_manager.py` (支援斷點續傳) 並啟動台股/宏觀大規模數據回補。 |
+| 2026-01-23 | **Admin UI** | 升級 `/admin/monitor` 頁面，實作數據回補進度監控儀表板。 |
+| 2026-01-26 | **Frontend CI** | 修復 `MacroPage` 測試失敗：修正指標代碼 DRIFT、點擊 Tab 切換邏輯及文本歧義斷言。全站 15 測試全 Pass。 |
+| 2026-01-27 | **ETL & DB** | **財報數據回補**：修正 `NaN` 寫入錯誤，實作 FMP 輪詢機制。成功同步 AAPL/AMZN 季報與年報。 |
+| 2026-01-27 | **TDD & QA** | **組件驗證**：完成 `financials_technical.test.tsx` 通過 8 項核心測試。驗證前端即時指標計算準確性與 RLS 讀取權限。 |
+| 2026-01-27 | **Archiving** | **開發歷程歸檔**：同步所有 PCM 文檔，完成 Phase 6 結項歸檔。 |
+| 2026-01-28 | **Quality & UX** | **雙語化優化**：完成核心頁面錯誤訊息中英雙語化 (`errorUtils`)。 |
+| 2026-01-28 | **Architect** | **全域審計**：執行 `/architect` 工作流，完成全系統架構深度掃描與優化報告 (`doc/03_ARCH/20260128_01_Global_Audit.md`)。 |
+| 2026-01-28 | **Quality** | **計畫複核**：整合四大專家模組對 Phase 7 開發計畫進行二審 (`doc/03_ARCH/20260128_02_P7_Plan_Audit.md`)。 |
+| 2026-01-28 | **Audit** | **深度調研**：物理取證驗證 V10.1.6 進度，攔截重複任務 (`doc/03_ARCH/20260128_03_P7_Deep_Audit_Report.md`)。 |
+| 2026-01-28 | **Database** | **遷移執行**：完成 `FIXED_MIGRATIONS`，對齊 `stocks` 與 `daily_price` 欄位規範，並補全用戶相關表格。 |
+| 2026-01-28 | **Sync** | **全域同步**：完成 Phase 7.1 欄位同步，更新後端 ETL 腳本與前端 API 路由。 |
+| 2026-01-28 | **Database** | **P1 遷移執行**：完成 `PHASE7_P1_MIGRATIONS_FIXED`，建立法人、融資券、分K與日曆表。 |
+| 2026-01-28 | **Performance** | **技術指標下沉**：建立 MA/RSI/MACD/BB 視圖，並補全 538 萬筆數據之核心索引。 |
+| 2026-01-28 | **UI/UX** | **前端修復**：解決資產 404 故障，重構「市場導航儀」首頁為玻璃擬態高質感風格。 |
+| 2026-01-30 | **Verification** | **Phase 8 全量驗收**：完成 TC-XXXX 測試，修復回測引擎 NaN 偏差與前端 Chart 導入錯誤。 |
+| 2026-01-30 | **UI/UX Audit** | **導航完整性**：同步 Sidebar/MobileNav 並補齊詳情頁返回按鍵，消除導航孤島。 |
+
+## [V10.2.11] - 2026-01-29
+### Fixed
+- **籌碼 ETL 精度修復 (Precision Fix)**:
+  - 修正 `InstitutionalFetcher` 參數（`selectType=ALL`），恢復每日萬筆級數據抓取能力。
+  - 修復 `MarginFetcher` 404 與 0 筆問題，更換為穩定端點 `MI_MARGN`。
+  - 引入「動態欄位解析」技術，解決證交所 API 欄位索引變動導致的數據偏移。
+
 ## [V10.2.8] - 2026-01-29
 ### Fixed
 - **籌碼 ETL 精度修復 (Precision Fix)**:

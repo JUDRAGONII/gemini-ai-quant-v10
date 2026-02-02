@@ -9,7 +9,7 @@ import requests
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from .base_fetcher import BaseFetcher
-from lib.config import Config
+from backend.lib.config import Config
 
 logger = logging.getLogger(__name__)
 

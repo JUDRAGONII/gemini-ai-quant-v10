@@ -3,14 +3,14 @@ from prefect.settings import PREFECT_API_DATABASE_CONNECTION_TIMEOUT
 import time
 import logging
 import os
-from lib.supabase_client import get_supabase
+from backend.lib.supabase_client import get_supabase
 
 # 強制設定 Prefect Ephemeral API 超時 (解決容器資源競爭)
 os.environ["PREFECT_API_DATABASE_CONNECTION_TIMEOUT"] = "60"
-from etl import MacroFetcher, TiingoFetcher, FugleFetcher, TwseFetcher, TaifexFetcher
-from agents.evolution import EvolutionEngine
-from agents.backtest import BacktestEngine
-from agents.dialectic import DialecticAgent
+from backend.etl import MacroFetcher, TiingoFetcher, FugleFetcher, TwseFetcher, TaifexFetcher
+from backend.agents.evolution import EvolutionEngine
+from backend.agents.backtest import BacktestEngine
+from backend.agents.dialectic import DialecticAgent
 import schedule
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import os
 import argparse
 import logging
@@ -7,8 +7,8 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from etl.market import FugleFetcher
-from lib.supabase_client import get_supabase
+from backend.etl.market import FugleFetcher
+from backend.lib.supabase_client import get_supabase
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +37,7 @@ def main():
     count = fetcher.run(ticker=args.ticker, timeframe=args.timeframe)
     
     if count > 0:
-        logger.info(f"✅ Success! Upserted {count} records.")
+        logger.info(f"??Success! Upserted {count} records.")
         
         # Verify specific record
         if args.timeframe != 'D1':
@@ -50,7 +50,7 @@ def main():
             if latest.data:
                 logger.info(f"Latest Record: {latest.data[0]}")
     else:
-        logger.warning("⚠️ No records upserted. Check API Quota or Market Hours.")
+        logger.warning("?? No records upserted. Check API Quota or Market Hours.")
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import os
 import argparse
 import logging
@@ -7,8 +7,8 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from etl.tw_official import TwseFetcher
-from lib.supabase_client import get_supabase
+from backend.etl.tw_official import TwseFetcher
+from backend.lib.supabase_client import get_supabase
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ def main():
     count = fetcher.run()
     
     if count > 0:
-        logger.info(f"✅ Success! Upserted {count} records into stock_factors.")
+        logger.info(f"??Success! Upserted {count} records into stock_factors.")
         
         # Verify TSMC (2330)
         latest = client.table("stock_factors")\
@@ -39,7 +39,7 @@ def main():
         if latest.data:
             logger.info(f"TSMC (2330) Factor: {latest.data[0]}")
     else:
-        logger.warning("⚠️ No records upserted. Possibly market closed or API rate limit.")
+        logger.warning("?? No records upserted. Possibly market closed or API rate limit.")
 
 if __name__ == "__main__":
     main()

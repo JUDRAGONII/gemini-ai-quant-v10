@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules/
 __pycache__/
 *.pyc
@@ -10,3 +10,4 @@ volumes/storage/
 .next/
 dist/
 coverage/
+nul

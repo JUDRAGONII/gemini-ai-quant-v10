@@ -1,7 +1,7 @@
 /**
  * @file page.test.tsx
  * @description StockDetailPage 元件測試
- * @updated 2026-01-27 - 完全重寫以匹配實際元件實作
+ * @updated 2026-01-30 - 更新以匹配 Phase 8 新 UI (返回鈕、AI指標)
  */
 import { render, screen } from "@testing-library/react";
 import StockDetailPage from "@/app/stocks/[symbol]/page";
@@ -17,6 +17,21 @@ jest.mock("framer-motion", () => ({
 // Mock KLineChart (Canvas-based, cannot render in JSDOM)
 jest.mock("@/components/Chart/KLineChart", () => ({
     KLineChart: () => <div data-testid="stock-chart">MockKLineChart</div>,
+    ChartPeriod: "1Y",
+}));
+
+// Mock TechnicalIndicatorPanel
+jest.mock("@/components/Chart/TechnicalIndicatorPanel", () => ({
+    TechnicalIndicatorPanel: () => <div data-testid="tech-panel">MockTechnicalIndicatorPanel</div>,
+}));
+
+// Mock AIPredictionIndicator
+jest.mock("@/components/AI/AIPredictionIndicator", () => ({
+    AIPredictionIndicator: ({ alpha, winRate }: any) => (
+        <div data-testid="ai-indicator">
+            MockAIPrediction: {alpha}, {winRate}
+        </div>
+    ),
 }));
 
 // Mock lucide-react icons
@@ -25,12 +40,29 @@ jest.mock("lucide-react", () => ({
     BarChart3: () => <svg data-testid="icon-bar-chart" />,
     PieChart: () => <svg data-testid="icon-pie-chart" />,
     Activity: () => <svg data-testid="icon-activity" />,
+    ArrowLeft: () => <svg data-testid="icon-arrow-left" />,
+    Calendar: () => <svg data-testid="icon-calendar" />,
+    BrainCircuit: () => <svg data-testid="icon-brain" />,
+    AlertCircle: () => <svg data-testid="icon-alert" />,
 }));
 
-// Mock useStockDetail hook - 關鍵：返回 loading 而非 isLoading
+// Mock next/link
+jest.mock("next/link", () => {
+    return ({ children, href }: { children: React.ReactNode; href: string }) => (
+        <a href={href}>{children}</a>
+    );
+});
+
+// Mock useStockDetail hook
 const mockUseStockDetail = jest.fn();
 jest.mock("@/hooks/useStockDetail", () => ({
     useStockDetail: (...args: any[]) => mockUseStockDetail(...args),
+}));
+
+// Mock useAIPrediction hook
+const mockUseAIPrediction = jest.fn();
+jest.mock("@/hooks/useAIPrediction", () => ({
+    useAIPrediction: (...args: any[]) => mockUseAIPrediction(...args),
 }));
 
 describe("StockDetailPage 元件測試", () => {
@@ -44,10 +76,10 @@ describe("StockDetailPage 元件測試", () => {
             loading: true,
             error: null,
         });
+        mockUseAIPrediction.mockReturnValue({ data: null, loading: false });
 
         render(<StockDetailPage params={{ symbol: "2330" }} />);
 
-        // Component shows a spinner div with specific classes when loading
         const spinner = document.querySelector(".animate-spin");
         expect(spinner).toBeInTheDocument();
     });
@@ -58,6 +90,7 @@ describe("StockDetailPage 元件測試", () => {
             loading: false,
             error: "Network error",
         });
+        mockUseAIPrediction.mockReturnValue({ data: null, loading: false });
 
         render(<StockDetailPage params={{ symbol: "INVALID" }} />);
 
@@ -80,21 +113,29 @@ describe("StockDetailPage 元件測試", () => {
             loading: false,
             error: null,
         });
+        mockUseAIPrediction.mockReturnValue({
+            data: { predicted_5d_alpha: 0.05, win_rate: 0.65 },
+            loading: false
+        });
 
         render(<StockDetailPage params={{ symbol: "2330" }} />);
 
         // Chart should be rendered
         expect(screen.getByTestId("stock-chart")).toBeInTheDocument();
+        expect(screen.getByTestId("ai-indicator")).toBeInTheDocument();
 
         // Stats cards should show values
         expect(screen.getByText("本益比 (PE)")).toBeInTheDocument();
         expect(screen.getByText("20.50x")).toBeInTheDocument();
 
-        // Market info should be displayed
-        expect(screen.getByText(/TW 市場/)).toBeInTheDocument();
+        // Market info should be displayed in the Overview card
+        expect(screen.getByText(/此標的隸屬於 TW 市場/)).toBeInTheDocument();
 
-        // Action button should be present
-        expect(screen.getByText("啟動 AI 深度辯證")).toBeInTheDocument();
+        // Header should show market and symbol
+        expect(screen.getByRole("heading", { name: /TW/i })).toBeInTheDocument();
+
+        // Back button should be present
+        expect(screen.getByText("返回行情中心")).toBeInTheDocument();
     });
 
     it("TC-1604: 無資料狀態應顯示預設錯誤訊息", () => {
@@ -103,6 +144,7 @@ describe("StockDetailPage 元件測試", () => {
             loading: false,
             error: null,
         });
+        mockUseAIPrediction.mockReturnValue({ data: null, loading: false });
 
         render(<StockDetailPage params={{ symbol: "9999" }} />);
 

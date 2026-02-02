@@ -12,6 +12,7 @@ deap>=1.4.0   # 演化演算法框架
 pandas-datareader>=0.10.0
 fredapi>=0.5.0
 fugle-marketdata>=0.4.0
+xgboost>=2.0.0
 
 # AI
 google-generativeai>=0.3.0
@@ -23,3 +24,8 @@ tenacity
 python-dotenv
 psycopg2-binary
 requests
+
+# API
+fastapi>=0.100.0
+uvicorn>=0.20.0
+python-multipart

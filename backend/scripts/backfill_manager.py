@@ -1,8 +1,8 @@
-"""
-大規模數據回補管理器 (Backfill Manager)
-- 負責執行台股與宏觀指標的全量歷史數據回補
-- 支援斷點續傳 (Checkpointing)
-- 實作智慧速率限制 (Rate Limiting)
+﻿"""
+憭扯?璅⊥??鋆恣? (Backfill Manager)
+- 鞎痊?瑁??啗??閫????風?脫??鋆?
+- ?舀?琿?蝥 (Checkpointing)
+- 撖虫??箸??? (Rate Limiting)
 """
 
 import os
@@ -13,7 +13,7 @@ import argparse
 from datetime import datetime
 from typing import List, Dict, Any
 
-# 設定 Python 路徑以匯入 backend 模組
+# 閮剖? Python 頝臬?隞亙??backend 璅∠?
 import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 backend_path = os.path.join(project_root, "backend")
@@ -21,12 +21,12 @@ for path in [project_root, backend_path]:
     if path not in sys.path:
         sys.path.append(path)
 
-from lib.supabase_client import get_supabase
-from etl.twse_historical import TwseHistoricalFetcher
-from etl.macro import MacroFetcher, MACRO_METADATA
-from etl.market import TiingoFetcher, FugleFetcher
+from backend.lib.supabase_client import get_supabase
+from backend.etl.twse_historical import TwseHistoricalFetcher
+from backend.etl.macro import MacroFetcher, MACRO_METADATA
+from backend.etl.market import TiingoFetcher, FugleFetcher
 
-# 設定日誌
+# 閮剖??亥?
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -37,10 +37,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# 初始化 Supabase
+# ????Supabase
 supabase = get_supabase()
 if not supabase:
-    # 嘗試手動初始化 (針對地端開發環境)
+    # ?岫??????(???啁垢??啣?)
     from supabase import create_client
     url = os.getenv("SUPABASE_URL", "http://localhost:8000")
     key = os.getenv("SERVICE_ROLE_KEY")
@@ -58,11 +58,11 @@ class BackfillManager:
         self.macro_fetcher = MacroFetcher(supabase)
 
     def update_db_status(self, job_id: str, symbol: str, status: str = "running"):
-        """同步進度至資料庫 backfill_status 表"""
+        """?郊?脣漲?唾??澈 backfill_status 銵?""
         try:
             supabase.table('backfill_status').upsert({
                 "id": job_id,
-                "current_symbol": symbol, # 這個欄位在 backfill_status 表中暫時保留 current_symbol 名稱或同步更改
+                "current_symbol": symbol, # ??雿 backfill_status 銵其葉?急?靽? current_symbol ?迂??甇交??
                 "status": status,
                 "updated_at": datetime.now().isoformat()
             }).execute()
@@ -70,7 +70,7 @@ class BackfillManager:
             logger.error(f"Failed to update DB status for {job_id}: {e}")
 
     def _load_checkpoint(self) -> Dict[str, Any]:
-        """載入進度存檔"""
+        """頛?脣漲摮?"""
         if os.path.exists(CHECKPOINT_FILE):
             try:
                 with open(CHECKPOINT_FILE, 'r', encoding='utf-8') as f:
@@ -80,7 +80,7 @@ class BackfillManager:
         return {"stocks": {}, "macro": {}}
 
     def _save_checkpoint(self):
-        """儲存進度存檔"""
+        """?脣??脣漲摮?"""
         try:
             with open(CHECKPOINT_FILE, 'w', encoding='utf-8') as f:
                 json.dump(self.checkpoint, f, indent=4, ensure_ascii=False)
@@ -88,85 +88,85 @@ class BackfillManager:
             logger.error(f"Failed to save checkpoint: {e}")
 
     def backfill_macro(self, start_year: int = 1990):
-        """回補宏觀指標"""
-        logger.info("🎬 開始回補宏觀指標...")
+        """??摰???"""
+        logger.info("? ????摰???...")
         start_date = f"{start_year}-01-01"
         
         for code, meta in MACRO_METADATA.items():
             if self.checkpoint["macro"].get(code) == "completed":
-                logger.info(f"⏩ 指標 {code} 已完成，跳過。")
+                logger.info(f"???? {code} 撌脣???頝喲???)
                 continue
             
-            logger.info(f"🔄 正在回補指標: {code} ({meta['id']})...")
+            logger.info(f"?? 甇?????: {code} ({meta['id']})...")
             self.update_db_status("macro", code)
             try:
-                # 取得數據
+                # ???豢?
                 df = self.macro_fetcher.fetch(meta['id'], start_date)
                 records = self.macro_fetcher.transform(df, indicator_code=code, series_id=meta['id'])
                 
                 if records:
                     count = self.macro_fetcher.upsert(records, on_conflict='indicator_code,reference_date')
-                    logger.info(f"✅ {code} 回補完成: {count} 筆紀錄")
+                    logger.info(f"??{code} ??摰?: {count} 蝑???)
                 
                 self.checkpoint["macro"][code] = "completed"
                 self._save_checkpoint()
                 
-                # 避免請求過快
+                # ?踹?隢??翰
                 time.sleep(1)
                 
             except Exception as e:
-                logger.error(f"❌ 指標 {code} 回補失敗: {e}")
+                logger.error(f"???? {code} ??憭望?: {e}")
                 self.update_db_status("macro", code, status="error")
-                # 遇到 429 或網路問題時增加休眠時間
+                # ? 429 ?雯頝臬?憿?憓?隡???
                 time.sleep(10)
         
         self.update_db_status("macro", "Completed", status="finished")
 
     def backfill_stocks(self, stock_list: List[Dict[str, Any]], start_year: int = 2005):
-        """回補多市場歷史行情 (支援 TW/US)"""
-        logger.info(f"🎬 開始回補標的行情 (總計 {len(stock_list)} 檔標的)...")
+        """??憭??湔風?脰???(?舀 TW/US)"""
+        logger.info(f"? ????璅?銵? (蝮質? {len(stock_list)} 瑼???...")
         
         for stock in stock_list:
             symbol = stock['stock_code']
             market = stock.get('market_type', 'TW')
             
             if self.checkpoint["stocks"].get(symbol) == "completed":
-                logger.info(f"⏩ 標的 {symbol} 已完成，跳過。")
+                logger.info(f"??璅? {symbol} 撌脣???頝喲???)
                 continue
             
-            logger.info(f"🚀 正在處理 [{market}] : {symbol}")
+            logger.info(f"?? 甇??? [{market}] : {symbol}")
             self.update_db_status("stocks", symbol)
             
             try:
                 count = 0
                 if market == 'US':
-                    # 使用 Tiingo 回補美股
+                    # 雿輻 Tiingo ??蝢
                     start_date = f"{start_year}-01-01"
                     raw = self.tiingo_fetcher.fetch(symbol, start_date=start_date)
                     records = self.tiingo_fetcher.transform(raw)
                     count = self.tiingo_fetcher.upsert(records, on_conflict='stock_code,trade_date')
                 else:
-                    # 使用 Fugle 或 TWSE 回補台股
-                    # 優先嘗試 Fugle (支援上市櫃且效率較高)
+                    # 雿輻 Fugle ??TWSE ???啗
+                    # ?芸??岫 Fugle (?舀銝?瑹???頛?)
                     try:
                         # Fugle backfill
                         start_date = f"{start_year}-01-01"
                         count = self.fugle_fetcher.run(symbol, timeframe='D1', start_date=start_date)
                     except Exception as e:
                         logger.warning(f"Fugle fallback to TWSE for {symbol}: {e}")
-                        # Fallback to TWSE (僅支援上市)
+                        # Fallback to TWSE (??港?撣?
                         count = self.twse_fetcher.backfill(symbol, start_year)
                 
-                logger.info(f"✅ {symbol} 同步完成，入庫 {count} 筆。")
+                logger.info(f"??{symbol} ?郊摰?嚗摨?{count} 蝑?)
                 self.checkpoint["stocks"][symbol] = "completed"
                 self._save_checkpoint()
                 
-                # 基於市場別調整休眠，保護 API
+                # ?箸撣?亥矽?港???靽風 API
                 sleep_time = 3 if market == 'TW' else 1
                 time.sleep(sleep_time)
                 
             except Exception as e:
-                logger.error(f"❌ 標的 {symbol} 回補中斷: {e}")
+                logger.error(f"??璅? {symbol} ??銝剜: {e}")
                 self.update_db_status("stocks", symbol, status="error")
                 time.sleep(10)
         
@@ -174,54 +174,54 @@ class BackfillManager:
 
     def is_taiwan_stock(self, symbol: str) -> bool:
         """
-        判斷是否為台股代號
-        台股規則：
-        - 4 位純數字 (一般股票)
-        - 5 位 (包含字母，如權證/債券 ETF，如 00937B)
-        - 6 位 (包含字母，如權證)
-        - 排除美股：通常為全大寫字母 (TSLA, NVDA) 且長度較短或不符數字開頭特徵
+        ?斗?臬?箏?∩誨??
+        ?啗閬?嚗?
+        - 4 雿??詨? (銝?祈蟡?
+        - 5 雿?(?摮?嚗?甈?/?萄 ETF嚗? 00937B)
+        - 6 雿?(?摮?嚗?甈?)
+        - ?蝢嚗虜?箏憭批神摮? (TSLA, NVDA) 銝摨西??剜?銝泵?詨???孵噩
         """
         if not symbol:
             return False
             
-        # 台股特徵：長度 4-6 位，且通常以數字開頭 (例如 2330, 0050, 00937B)
-        # 美股則幾乎都是純英文字母開頭
+        # ?啗?孵噩嚗摨?4-6 雿?銝虜隞交摮???(靘? 2330, 0050, 00937B)
+        # 蝢?嗾銋?舐??望?摮??
         if len(symbol) >= 4 and len(symbol) <= 6:
-            # 如果前兩位是數字，極大概率是台股或台股衍生標的
+            # 憒??雿?詨?嚗扔憭扳???啗??∟?????
             if symbol[:2].isdigit():
                 return True
         return False
 
     def get_stock_list_from_db(self, market: str = None) -> List[Dict[str, Any]]:
-        """從資料庫獲取待回補股票清單，依優先序排序 (具備重試機制)"""
+        """敺??澈?脣?敺?鋆蟡冽??殷?靘???? (?瑕??岫璈)"""
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # 獲取所有有效標的，並依 priority 排序 (1 最高)
+                # ?脣????????銝虫? priority ?? (1 ?擃?
                 query = supabase.table('stocks').select('*').eq('is_active', True)
                 if market:
                     query = query.eq('market_type', market)
                 
                 result = query.order('priority', desc=False).execute()
                 if result.data:
-                    logger.info(f"🔍 從資料庫加載 {len(result.data)} 檔標的{' (市場: ' + market + ')' if market else ''}。")
+                    logger.info(f"?? 敺??澈?? {len(result.data)} 瑼??' (撣: ' + market + ')' if market else ''}??)
                     return result.data
                 return []
             except Exception as e:
-                logger.warning(f"⚠️ 第 {attempt + 1} 次讀取資料庫失敗: {e}")
+                logger.warning(f"?? 蝚?{attempt + 1} 甈∟????澈憭望?: {e}")
                 if attempt < max_retries - 1:
                     time.sleep(5)
                 else:
-                    logger.error("❌ 讀取資料庫失敗且已達最大重試次數。")
+                    logger.error("??霈???澈憭望?銝歇??憭折?閰行活?詻?)
                     return [{"stock_code": "2330", "market_type": "TW", "priority": 1}]
         return []
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AI 投資分析儀數據回補工具")
-    parser.add_argument("--mode", choices=["all", "macro", "stocks"], default="all", help="執行模式")
-    parser.add_argument("--stock", type=str, help="特定回補的股票代碼")
-    parser.add_argument("--market", type=str, help="過濾特定市場 (TW/US)")
-    parser.add_argument("--years", type=int, default=2010, help="回補起始年份 (預設 2010)")
+    parser = argparse.ArgumentParser(description="AI ??????豢???撌亙")
+    parser.add_argument("--mode", choices=["all", "macro", "stocks"], default="all", help="?瑁?璅∪?")
+    parser.add_argument("--stock", type=str, help="?孵????蟡其誨蝣?)
+    parser.add_argument("--market", type=str, help="?蕪?孵?撣 (TW/US)")
+    parser.add_argument("--years", type=int, default=2010, help="??韏瑕?撟港遢 (?身 2010)")
     
     args = parser.parse_args()
     manager = BackfillManager()
@@ -231,10 +231,10 @@ if __name__ == "__main__":
         
     if args.mode in ["all", "stocks"]:
         if args.stock:
-            # 測試特定標的
+            # 皜祈岫?孵?璅?
             manager.backfill_stocks([{"stock_code": args.stock, "market_type": args.market or "TW", "priority": 1}], start_year=args.years)
         else:
             stocks = manager.get_stock_list_from_db(market=args.market)
             manager.backfill_stocks(stocks, start_year=args.years)
 
-    logger.info("✨ 所有數據回補任務已依序處理完畢。")
+    logger.info("??????鋆遙?歇靘???摰??)

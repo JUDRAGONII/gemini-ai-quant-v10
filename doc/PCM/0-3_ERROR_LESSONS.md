@@ -507,3 +507,77 @@
 - [x] 進行大型 UI 重構（如 Glassmorphism V2）後，必須立即執行 `npm test` 進行回歸測試。
 - [x] 對於經常變動的標題文字，考慮使用 `data-testid` 取代 `getByText` 以提高測試穩定性。
 - [x] Push 代碼前，確保地端全量測試套件 passes 100%。
+
+---
+
+## 【問題現象】：Windows PowerShell 自動化指令執行失敗
+### 問題描述
+在 Windows PowerShell 環境下執行如 `git pull && git push` 的連鎖指令時，系統回報「無法辨識 && 運算子」，導致自動化工作流程中斷，消耗額外 AI 額度進行重試。
+
+### 底層根本原因
+1. **Shell 語法差異**：`&&` 是 Unix-like Shell (Bash/Zsh) 的邏輯與運算子。
+2. **PowerShell 限制**：較舊版本的 PowerShell 不支援 `&&`，改用 `;` 或 `Pipeline` 邏輯。
+
+### 解決方案
+1. **工作流優化**：在 `.agent/workflows/` 中的腳本移除 `&&`，改為分行條列指令。
+2. **環境相容性**：在指令說明中加入 Windows 特定警告。
+
+### 預防重複犯錯的 Checkbox
+- [x] 在撰寫工作流指令時，考慮跨平台相容性 (Windows vs Linux)。
+- [x] Windows 環境優先使用分行指令而非連鎖符號。
+- [x] 重要的推送指令應包含 `git pull --rebase` 前置步驟。
+
+### 2026-01-30 PostgREST Schema Cache Issue
+- **【問題現象】**：執行 DB Migration 新增欄位後，PostgREST API 仍回傳 `PGRST204` (Column not found)，導致 Upsert 失敗。
+- **【底層根本原因】**：PostgREST 為了效能會快取資料庫 Schema，不會自動偵測 DDL 變更。單純的 Migration 執行後快取未過期。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] DDL 變更後，務必執行 `NOTIFY pgrst, 'reload schema'`。
+    - [ ] 若仍無效，必須強制重啟 `supabase-rest` 容器。
+
+### 2026-01-30 Python Package Import Issue
+- **【問題現象】**：執行 `python -m backend.etl.factor_etl` 時，引發 `backend/etl` 目錄下其他未使用的檔案 (如 `market.py`) 報錯 `ModuleNotFoundError`。
+- **【底層根本原因】**：使用 `python -m` 執行會觸發 `__init__.py`，進而載入套件內所有模組。舊有程式碼使用了錯誤的引用路徑 (如 `from lib` 而非 `from backend.lib`)。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 嚴格規範 Python 引用路徑，統一使用 `backend.lib...` 絕對路徑或 `.lib` 相對路徑。
+    - [ ] 執行單元腳本前，先檢查 `__init__.py` 的副作用。
+### 2026-01-30 Windows 保留檔 `nul` 導致 Git 索引衝突
+- **【問題現象】**：執行 `git add .` 時報錯 `error: short read while indexing nul` 或 `failed to insert into database`。
+- **【底層根本原因】**：`nul` 是 Windows 的系統保留檔名（類似於 Linux 的 `/dev/null`）。若代碼中意外產生名為 `nul` 的檔案，Git 在 Windows 下無法正確讀取其內容進行雜湊計算。
+- **【解決方案】**：
+    1. 使用 `$gitignore += "nul"` 屏蔽該檔案。
+    2. 手動清理：`git status --porcelain | where { $_ -ne "?? nul" } | foreach { git add ($_.Substring(3)) }`。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 嚴禁在專案中建立名為 `nul`, `con`, `prn`, `aux` 等 Windows 保留字的檔案。
+    - [ ] 在 `.gitignore` 中預設屏蔽 `nul` 以防萬一。
+
+### 2026-01-30 MobileNav 測試字串匹配歧義
+- **【問題現象】**：`MobileNav` 測試報錯 `Found multiple elements with the text: /AI/i`。
+- **【底層根本原因】**：隨著 UI 豐富化，頁面中出現多處包含 "AI" 的文字（如 Logo 的 "AI QUANT" 與選單項 "AI 語義 (Semantic)"）。寬鬆的正則匹配會選中多個元素，導致 `getByText` 失敗。
+- **【解決方案】**：
+    1. 使用更具唯一性的識別碼：如 `expect(screen.getByRole("link", { name: /QUANT/i }))`。
+    2. 配合 `getByRole` 與 `name` 屬性精確定位。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 避免使用過於簡短的 Regex 匹配核心 UI 文本。
+    - [ ] 優先使用 `getByRole` 配合名稱或 `data-testid` 進行斷言。
+
+### 2026-02-02 PowerShell `Get-Content/Set-Content` 導致的編碼損壞
+- **【問題現象】**：在執行全域替換後，某些檔案（如 `dialectic.py`）出現 `SyntaxError: unterminated triple-quoted string literal`，且中文字元變為亂碼。
+- **【底層根本原因】**：PowerShell 預設的管道輸出或 `Set-Content` 在處理 UTF-8 (Multi-byte) 檔案時，若未顯式指定 `-Encoding utf8`，且原本檔案包含中文字元與特定的轉義序列，容易導致字元移位或三引號丟失。
+- **【解決方案】**：
+    1. 手動修復受損檔案的 `"""` 與中文字元。
+    2. 未來執行全域替換腳本應顯式指定 `[System.Text.Encoding]::UTF8` 或 `-Encoding utf8`。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 執行大量正規替換後，必須隨機抽檢包含中文字元的檔案。
+    - [ ] 優先使用 Python 腳本而非 PowerShell 字串替換來處理原始碼變更，以獲得更好的編碼控制。
+### 2026-02-02 GitHub CI `backend` ModuleNotFoundError
+- **【問題現象】**：GitHub Actions 在執行後端測試時報錯 `ModuleNotFoundError: No module named 'backend'`，即使代碼在本地執行 `/local-ci-v10` 時全綠通過。
+- **【底層根本原因】**：
+    1. **導入規範不對稱**: 專案全面採用 `from backend.xxx` 全域導入，但 CI 在 `backend/` 下執行且未配置 `PYTHONPATH`，導致其無法將父目錄識別為套件根目錄。
+    2. **目錄結構差異**: 本地開發環境通常具備自動路徑注入，而 Ubuntu CI 環境較為嚴苛。
+- **【解決方案】**：
+    1. 在 `backend/` 下建立 `__init__.py`。
+    2. 在 `ci_test.yml` 的測試步驟中顯式注入 `env: PYTHONPATH: ..`。
+    3. 統一測試代碼（如 `test_unit.py`）的導入規範為全域前綴。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 任何跨目錄的 Python 腳本執行，應配合 `PYTHONPATH` 確保導向專案根目錄。
+    - [ ] GitHub Actions 配置文件應與本地 `docker-compose.yml` 的 `PYTHONPATH` 配置同步檢查。

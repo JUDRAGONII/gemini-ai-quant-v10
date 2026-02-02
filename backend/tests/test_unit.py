@@ -7,7 +7,7 @@ import sys
 import os
 
 # 確保 backend 路徑在 sys.path 中
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 確保 backend 路徑在 sys.path 中 (CI 環境由 PYTHONPATH 控制)
 
 class TestConfigModule(unittest.TestCase):
     """測試 lib/config.py 的配置驗證邏輯"""
@@ -17,7 +17,7 @@ class TestConfigModule(unittest.TestCase):
         # 在 CI 環境中，Config 會使用 mock values
         # 此測試僅驗證模組能正常 import
         try:
-            from lib.config import Config
+            from backend.lib.config import Config
             # 驗證 API_TIMEOUT 預設值
             self.assertEqual(Config.API_TIMEOUT, 30)
             self.assertEqual(Config.MAX_RETRIES, 3)
@@ -31,7 +31,7 @@ class TestMacroETLLogic(unittest.TestCase):
     
     def test_macro_indicator_mapping(self):
         """驗證 MACRO_METADATA 字典結構正確"""
-        from etl.macro import MACRO_METADATA
+        from backend.etl.macro import MACRO_METADATA
         
         # 驗證必要指標存在
         self.assertIn("GDP", MACRO_METADATA)
@@ -55,7 +55,7 @@ class TestDialecticPromptStructure(unittest.TestCase):
         
         # 由於實際 prompt 在 dialectic.py 內部，這裡測試模組能正常 import
         try:
-            from agents.dialectic import DialecticAgent
+            from backend.agents.dialectic import DialecticAgent
             # 如果能成功 import，說明模組結構正確
             self.assertTrue(True)
         except ImportError as e:

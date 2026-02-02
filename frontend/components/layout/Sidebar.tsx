@@ -12,7 +12,6 @@ import {
     Settings,
     Activity,
     Cpu,
-    PieChart,
     Search,
     Sparkles,
     Briefcase
@@ -30,6 +29,7 @@ const MENU_ITEMS = [
     { label: "投資組合 (Portfolios)", href: "/portfolios", icon: Briefcase },
     { label: "宏觀指標 (Macro)", href: "/macro", icon: Activity },
     { label: "演化分析 (Evolution)", href: "/evolution", icon: BarChart3 },
+    { label: "智慧策略 (Strategy)", href: "/ai/strategy", icon: Sparkles },
     { label: "AI 搜尋 (Semantic)", href: "/ai/search", icon: Search },
     { label: "決策報告 (Reports)", href: "/ai/ranking", icon: FileText },
 ];

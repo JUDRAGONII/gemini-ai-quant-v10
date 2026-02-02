@@ -1,5 +1,45 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.3.1] - 2026-02-02
+### Fixed
+- **GitHub CI 後端測試修復 (Infrastructure)**:
+  - 建立 `backend/__init__.py` 確保 `backend` 被識別為有效 Python 套件。
+  - 修正 `test_unit.py` 測試導入規範，統一使用 `backend.` 全域前綴。
+  - 在 `ci_test.yml` 測試階段注入 `PYTHONPATH: ..`，解決遠端環境之模組解析衝突。
+  - 補全 CI 環境之 `SERVICE_ROLE_KEY` Mock 以通過專案配置驗證。
+- **後端鏈式導入修復 (Deep Import Fix)**:
+  - 統一修復 `backend/` 下所有 Python 子模組的內部絕對導入，將 `from lib` 等路徑對齊至 `from backend.lib`。
+  - 修復 `dialectic.py` 因語法損壞導致的 `SyntaxError` 與中文字元編碼問題。
+
+## [V10.3.0] - 2026-01-30
+### Added
+- **Phase 8 AI 智慧與策略驗證 (Verification Completion)**:
+  - **後端驗證**: 通過 `test_phase8.py` 驗證 XGBoost 推理準確性與向量化回測引擎。
+  - **前端優化**: 實作 `StrategyHubPage` 之權益曲線繪製，並整合「智慧策略」入口。
+  - **導航審計**: 補齊全站「可進入、可返回」路徑，包括個股詳情頁之「返回行情中心」按鈕。
+### Fixed
+- **Vector Engine**: 修復回測首列 NaN 問題，確保權益曲線起點正確。
+- **Frontend Build**: 修正 `PortfolioPerformanceChart` 導入路徑與類型不匹配故障。
+- **Workflow**: 整合 `/gen-test-case-02` 至 Phase 8 驗收流程。
+
+
+## [V10.2.11] - 2026-01-29
+### Added
+- **Phase 8 詳細實作計畫 (`026_Phase8_AI_Core_Backtest_Plan.md`)**:
+  - 定義 Alpha 特徵工廠規格 (50+ 維度向量化因子)。
+  - 定義 XGBoost 預測模型開發路徑 (Regressor + 超額收益預測)。
+  - 定義高性能向量化回測引擎架構 (矩陣運算 vs 步進模擬)。
+  - 規劃前端智慧回測看板 UI (Glassmorphism & Recharts 整合)。
+
+## [V10.2.10] - 2026-01-29
+### Added
+- **本地 CI 驗證工作流 (`/local-ci-v10`)**: 整合前端型別檢查 (TSC)、前端測試 (Jest) 與後端測試 (Pytest)，確保地端綠燈後才執行推送。
+
+### Updated
+- **Git 推送工作流優化 (`git_push_v10.md`)**:
+  - **強制 Rebase**: 將 `git pull --rebase` 提升至第一步，解決因遠端同步導致的推送失敗。
+  - **PowerShell 相容性**: 移除命令列中的 `&&` 分隔符，修正 PowerShell 語法報錯，實現「一次成功」目標，節省 AI 額度。
+
 ## [V10.2.9] - 2026-01-29
 ### Added
 - **Phase 7.2 文件更新與測試交付**:
