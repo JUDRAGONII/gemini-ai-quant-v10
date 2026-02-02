@@ -17,13 +17,15 @@
 1. **建立 Package 指標**:
    - 於 `backend/` 下建立空的 `__init__.py`。
 2. **更新測試代碼**:
-   - 修改 `backend/tests/test_unit.py`，移除舊的手動 `sys.path` 操作（因不穩定）。
+   - 修改 `backend/tests/test_unit.py`，移除舊的手動 `sys.path` 操作。
    - 統一改用 `from backend.xxx` 全域導入。
 3. **注入 PYTHONPATH**:
    - 修改 `.github/workflows/ci_test.yml`。
-   - 在執行 `pytest` 的步驟中，顯式添加 `env: PYTHONPATH: ..` (相對於 `backend` folder)。
-4. **補全 Mock**:
-   - 於 `ci_test.yml` 注入 `SERVICE_ROLE_KEY` 以通過 `Config.validate()`。
+   - 注入 `env: PYTHONPATH: ..`。
+4. **全域導入鏈修復 (Deep Import Chain Fix)**:
+   - 針對子模組內部（如 `agents/`, `etl/`）仍保有 `from lib` 等舊式導入的問題，執行全域正則替換為 `from backend.xxx`。
+5. **語法與編碼修復**:
+   - 修復 `dialectic.py` 遭受腳本誤傷產生的 `SyntaxError` (三引號閉合故障) 及中文字元亂碼。
 
 ## ✅ 驗證結果
 - **地端模擬**:
@@ -32,12 +34,12 @@
   $env:PYTHONPATH=".."
   python -m pytest tests/test_unit.py -v
   ```
-- **結果**: `3 passed in 14.08s` (100% Pass)。
+- **結果**: `3 passed in 19.25s` (100% Pass)。
 - **遠端**: 已推送至 GitHub，觸發 CI 重新執行。
 
 ## 💡 經驗教訓
 - Python 全域套件導入 (Unified Prefix) 是專案規模化的必經之路，但必須配套設置 Docker 與 CI 的路徑環境變數。
-- 始終確保 `backend/` 目錄具備 `__init__.py` 以獲得最佳兼容性。
+- PowerShell 替換腳本必須嚴格處理 UTF-8 編碼與多行字串，否則易造成二次故障。
 
 ---
 **紀錄人**: Antigravity
