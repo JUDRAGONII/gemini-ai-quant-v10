@@ -2,7 +2,7 @@
 
 ## 📌 當前里程碑 (Current Milestone)
 **階段**：Phase 9: 行情即時監控與選股中心 (PLANNING)
-**狀態**：✅ Phase 8 (AI 智慧與策略驗證) 已全線完工，通過全量 TDD 驗證及導航完整性審計。目前正在啟動 Phase 9 詳細規劃。
+**狀態**：✅ Phase 8 已完工。⚠️ 已緊急修復 GitHub CI 後端測試導入衝突。目前正在啟動 Phase 9 詳細規劃。
 
 ---
 
@@ -11,6 +11,7 @@
 ### Priority 0: 核心品質與自動化 (Auto CI/CD) - [COMPLETED]
 - [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
 - [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，解決 PowerShell `&&` 語法衝突，達成「一次成功」目標。
+- [x] **GitHub CI 修復**: 建立 `backend/__init__.py` 並注入 `PYTHONPATH`，修復 `backend.` 套件前綴導入衝突。
 - [x] **Phase 8 詳細實體計畫**: 編號 `026` 詳盡規格文件已交付。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]

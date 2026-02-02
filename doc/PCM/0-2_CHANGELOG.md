@@ -1,5 +1,13 @@
 # 0-2_CHANGELOG (變更紀錄)
 
+## [V10.3.1] - 2026-02-02
+### Fixed
+- **GitHub CI 後端測試修復 (Infrastructure)**:
+  - 建立 `backend/__init__.py` 確保 `backend` 被識別為有效 Python 套件。
+  - 修正 `test_unit.py` 測試導入規範，統一使用 `backend.` 全域前綴。
+  - 在 `ci_test.yml` 測試階段注入 `PYTHONPATH: ..`，解決遠端環境之模組解析衝突。
+  - 補全 CI 環境之 `SERVICE_ROLE_KEY` Mock 以通過專案配置驗證。
+
 ## [V10.3.0] - 2026-01-30
 ### Added
 - **Phase 8 AI 智慧與策略驗證 (Verification Completion)**:

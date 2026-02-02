@@ -559,3 +559,15 @@
 - **【預防重複犯錯的 Checkbox】**：
     - [ ] 避免使用過於簡短的 Regex 匹配核心 UI 文本。
     - [ ] 優先使用 `getByRole` 配合名稱或 `data-testid` 進行斷言。
+### 2026-02-02 GitHub CI `backend` ModuleNotFoundError
+- **【問題現象】**：GitHub Actions 在執行後端測試時報錯 `ModuleNotFoundError: No module named 'backend'`，即使代碼在本地執行 `/local-ci-v10` 時全綠通過。
+- **【底層根本原因】**：
+    1. **導入規範不對稱**: 專案全面採用 `from backend.xxx` 全域導入，但 CI 在 `backend/` 下執行且未配置 `PYTHONPATH`，導致其無法將父目錄識別為套件根目錄。
+    2. **目錄結構差異**: 本地開發環境通常具備自動路徑注入，而 Ubuntu CI 環境較為嚴苛。
+- **【解決方案】**：
+    1. 在 `backend/` 下建立 `__init__.py`。
+    2. 在 `ci_test.yml` 的測試步驟中顯式注入 `env: PYTHONPATH: ..`。
+    3. 統一測試代碼（如 `test_unit.py`）的導入規範為全域前綴。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 任何跨目錄的 Python 腳本執行，應配合 `PYTHONPATH` 確保導向專案根目錄。
+    - [ ] GitHub Actions 配置文件應與本地 `docker-compose.yml` 的 `PYTHONPATH` 配置同步檢查。
