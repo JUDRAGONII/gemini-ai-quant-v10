@@ -1,3 +1,4 @@
+from fastapi import FastAPI
 from backend.api.routers import ai, backtest
 
 app = FastAPI(

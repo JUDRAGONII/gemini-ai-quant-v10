@@ -49,6 +49,8 @@ jobs:
 
     # 5. 執行測試並生成覆蓋率報告
     - name: Run Tests with Coverage
+      env:
+        PYTHONPATH: ..
       run: |
         pytest tests/test_unit.py \
           --cov=. \
