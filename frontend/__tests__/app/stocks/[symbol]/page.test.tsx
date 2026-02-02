@@ -131,11 +131,12 @@ describe("StockDetailPage 元件測試", () => {
         // Market info should be displayed in the Overview card
         expect(screen.getByText(/此標的隸屬於 TW 市場/)).toBeInTheDocument();
 
-        // Header should show market and symbol
-        expect(screen.getByRole("heading", { name: /TW/i })).toBeInTheDocument();
+        // Header should no longer be in Page (moved to layout)
+        // Back button should no longer be in Page (moved to layout)
 
-        // Back button should be present
-        expect(screen.getByText("返回行情中心")).toBeInTheDocument();
+        // Should show the new AI Insights tip
+        expect(screen.getByText(/切換頂部/)).toBeInTheDocument();
+        expect(screen.getByText(/AI 決策報告/)).toBeInTheDocument();
     });
 
     it("TC-1604: 無資料狀態應顯示預設錯誤訊息", () => {

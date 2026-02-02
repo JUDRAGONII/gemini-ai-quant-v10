@@ -1,8 +1,9 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-**階段**：Phase 9: 行情即時監控與選股中心 (PLANNING)
-**狀態**：✅ Phase 8 已完工。⚠️ 已緊急修復 GitHub CI 後端測試導入衝突。目前正在啟動 Phase 9 詳細規劃。
+- **當進度**: Phase 9: 行情即時監控與選股中心 (核心建置中)
+- **當前里程碑**: Phase 8: AI 智慧與策略驗證 | 佈局優化、報告標籤化與導航修復 (COMPLETED)
+- **核心狀態**: 統一個股返回按鈕 (Header)，新增 AI 決策報告活頁標籤，修復跨組件導航路徑，解決 Server-side API 認證問題。
 
 ---
 
@@ -36,6 +37,11 @@
     - 重構進度條為「標的覆蓋率 (95%)」。
     - 修復 RLS 與 `anon` 執行權限。
 - [x] **Bug Fixes (2026-01-26)**:
+    - 修復 `dialectic.py` 因語法損壞導致的 `SyntaxError` 與中文字元編碼問題。
+- **智慧策略看板 UI/UX 優化 (Phase 8.5)**:
+  - 新置「返回鍵」與麵包屑導航，提升頁面跳轉易用性。
+  - 增加「預測閾值」動態說明文字，解鎖量化交易術語門檻。
+  - 實作圖表「週期過濾」功能，支持 1W/1M/3M/6M/1Y 數據切片顯示。
     - 修正 `TaifexFetcher` 遺漏導入問題。
     - 校準 FRED 指標代號 (`UMCSENT` 等)。
 - [x] **專案深度審計 (System Audit)**: 
@@ -208,10 +214,17 @@
 
 ## [V10.2.3] - 2026-01-28
 - [x] Phase 4.6: GitHub CI 前端建置與測試故障修復 (2026-01-28)
-- [x] Phase 4.7: 錯誤訊息中英雙語化優化 (2026-01-28)
-- [x] Phase 7: 系統全域架構審計 (2026-01-28)
-- [x] Phase 7: 實施計畫全方位複核 (2026-01-28)
-- [x] Phase 7: 深度調研取證與重複任務攔截 (2026-01-28)
+- [x]### Phase 8.6: 全站視覺與佈局統一 [COMPLETED]
+- [x] 建立 AI/Portfolios 模組佈局：`ai/layout.tsx`, `portfolios/layout.tsx`
+- [x] 實施雙語 UI 規範：`Sidebar.tsx` 中英分離渲染
+- [x] RWD 響應式佈局校準與行動端導航優化
+- [x] 分頁風格同步 (Strategy, Ranking, Search, Portfolio)
+
+### Phase 9: 市場監控與選股中心 (Market Monitor & Screener) [READY]
+- [ ] 市場熱力圖 (Market Heatmap) 視覺開發 [P1]
+- [ ] 選股條件篩選器 (Stock Screener) UI [P1]
+- [ ] 預警推播配置 (Alert Configuration) [P2]
+深度調研取證與重複任務攔截 (2026-01-28)
 - [x] Phase 7: 資料庫遷移執行與結構對齊 (2026-01-28)
 - [x] Phase 7.1: 全域 API 與腳本欄位同步更新 (2026-01-28)
 - [x] Phase 7.2: 技術指標下沉與效能優化 (2026-01-28)

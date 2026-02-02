@@ -4,27 +4,21 @@
 export const dynamic = 'force-dynamic';
 
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-    TrendingUp,
     BarChart3,
-    FileText,
     Trophy,
     Filter,
     RefreshCw,
-    Activity
+    Award,
+    Target,
+    FileText
 } from "lucide-react";
 import RankingTable from "@/components/RankingTable";
 import ScoreRadarChart from "@/components/ScoreRadarChart";
 import { mockRankingData, generateRankingData } from "@/data/mockRanking";
-import Sidebar from "@/components/layout/Sidebar";
-import { MobileNav } from "@/components/layout";
-
-/**
- * AI 評分排行頁面
- * 展示量化因子評分排行榜與個股雷達圖
- */
+import { GlassCard } from "@/components/ui/GlassCard";
+import { motion } from "framer-motion";
 
 // 統計卡片組件
 const StatCard = ({
@@ -38,12 +32,12 @@ const StatCard = ({
     icon: React.ElementType;
     color: string;
 }) => (
-    <div className="glass p-5 rounded-xl border border-white/10">
+    <div className="glass p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all">
         <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-400">{label}</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{label}</span>
             <Icon size={18} className={color} />
         </div>
-        <span className={`text-2xl font-bold ${color}`}>{value}</span>
+        <span className={`text-3xl font-black ${color} tracking-tighter`}>{value}</span>
     </div>
 );
 
@@ -87,192 +81,103 @@ export default function RankingPage() {
     // 雷達圖數據
     const radarData = selectedStock
         ? [
-            {
-                dimension: "價值",
-                fullMark: 100,
-                score: selectedStock.valueScore,
-            },
-            {
-                dimension: "成長",
-                fullMark: 100,
-                score: selectedStock.growthScore,
-            },
-            {
-                dimension: "動能",
-                fullMark: 100,
-                score: selectedStock.momentumScore,
-            },
-            {
-                dimension: "品質",
-                fullMark: 100,
-                score: selectedStock.qualityScore,
-            },
-            {
-                dimension: "籌碼",
-                fullMark: 100,
-                score: selectedStock.chipScore,
-            },
+            { dimension: "價值", fullMark: 100, score: selectedStock.valueScore },
+            { dimension: "成長", fullMark: 100, score: selectedStock.growthScore },
+            { dimension: "動能", fullMark: 100, score: selectedStock.momentumScore },
+            { dimension: "品質", fullMark: 100, score: selectedStock.qualityScore },
+            { dimension: "籌碼", fullMark: 100, score: selectedStock.chipScore },
         ]
         : [];
 
     return (
-        <div className="min-h-screen bg-slate-950 text-gray-100 font-sans selection:bg-cyan-500/30">
-            {/* Mobile Navigation (Sticky Top + Drawer) */}
-            <MobileNav />
+        <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Header Section */}
+            <section className="flex flex-col gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
+                            智慧排名決策 <span className="text-sm font-medium text-amber-500/60 uppercase tracking-widest ml-2">AI Quantitative Ranking</span>
+                        </h1>
+                        <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
+                            <Target className="w-4 h-4 mr-2 text-amber-400" />
+                            基於多維度 AI 評分模型與即時行情，篩選全市場最佳投資標的
+                            <span className="text-[10px] opacity-30 ml-2 uppercase font-mono italic">Strategic Scoring Engine v2.0</span>
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        className="flex items-center gap-2 px-6 py-3 bg-amber-500/10 text-amber-400 rounded-xl hover:bg-amber-500/20 transition-all disabled:opacity-50 cursor-pointer border border-amber-500/20 font-bold active:scale-95 shadow-lg shadow-amber-500/5 text-sm"
+                    >
+                        <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+                        {isRefreshing ? "刷新中..." : "重新評分 RE-RANK"}
+                    </button>
+                </div>
+            </section>
 
-            {/* Sidebar (Unified) */}
-            <div className="hidden lg:block">
-                <Sidebar />
+            {/* 統計卡片 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard label="開發平均分 AVG" value={stats.avgScore} icon={BarChart3} color="text-amber-400" />
+                <StatCard label="高分標的 HIGH" value={stats.highScoreCount} icon={Trophy} color="text-emerald-400" />
+                <StatCard label="強勢品種 BULL" value={stats.positiveChangeCount} icon={Award} color="text-green-400" />
+                <StatCard label="全庫標的 TOTAL" value={stats.totalCount} icon={Filter} color="text-blue-400" />
             </div>
 
-            <div className="flex">
-                {/* Main Content */}
-                <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-                    {/* 頁面標題與狀態欄 */}
-                    <header className="flex justify-between items-start mb-8">
-                        <div>
-                            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent flex items-center gap-3">
-                                <Trophy size={32} className="text-amber-400" />
-                                AI 評分排行榜
-                            </h1>
-                            <p className="text-gray-400 mt-2">
-                                基於量化因子的多維度智能評分
-                            </p>
+            {/* 主要內容網格 */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* 排行表格 */}
+                <div className="lg:col-span-3">
+                    <GlassCard className="!rounded-[2.5rem] overflow-hidden border-white/5">
+                        <div className="p-6 border-b border-white/5 bg-white/[0.01]">
+                            <h2 className="text-xl font-bold flex items-center gap-3">
+                                <FileText className="w-5 h-5 text-indigo-400" />
+                                評分排行榜 <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">Global Ranking</span>
+                            </h2>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex space-x-4">
-                                <StatusBadge label="AI Worker" status="online" />
-                                <StatusBadge label="Database" status="online" />
-                            </div>
-                            <button
-                                onClick={handleRefresh}
-                                disabled={isRefreshing}
-                                className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors disabled:opacity-50 cursor-pointer border border-amber-500/30"
-                            >
-                                <RefreshCw
-                                    size={16}
-                                    className={isRefreshing ? "animate-spin" : ""}
-                                />
-                                {isRefreshing ? "刷新中..." : "刷新評分"}
-                            </button>
-                        </div>
-                    </header>
-
-                    {/* 統計卡片 */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                        <StatCard
-                            label="平均評分"
-                            value={stats.avgScore}
-                            icon={BarChart3}
-                            color="text-amber-400"
+                        <RankingTable
+                            data={rankingData}
+                            pageSize={10}
+                            onRowClick={(item) => setSelectedStock(item)}
                         />
-                        <StatCard
-                            label="高分股 (≥70)"
-                            value={stats.highScoreCount}
-                            icon={Trophy}
-                            color="text-emerald-400"
-                        />
-                        <StatCard
-                            label="上漲標的"
-                            value={stats.positiveChangeCount}
-                            icon={TrendingUp}
-                            color="text-green-400"
-                        />
-                        <StatCard
-                            label="分析標的數"
-                            value={stats.totalCount}
-                            icon={Filter}
-                            color="text-blue-400"
-                        />
-                    </div>
+                    </GlassCard>
+                </div>
 
-                    {/* 主要內容網格 */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        {/* 排行表格 (佔 3 欄) */}
-                        <div className="lg:col-span-3">
-                            <RankingTable
-                                data={rankingData}
-                                pageSize={10}
-                                onRowClick={(item) => setSelectedStock(item)}
-                            />
-                        </div>
-
-                        {/* 側邊：選中股票的雷達圖 */}
-                        <div className="space-y-6">
-                            {selectedStock && (
-                                <>
-                                    <ScoreRadarChart
-                                        symbol={selectedStock.symbol}
-                                        data={radarData}
-                                        size={250}
-                                    />
-                                    <Link
-                                        href={`/stocks/${selectedStock.symbol}`}
-                                    >
-                                        <button className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all cursor-pointer shadow-lg shadow-orange-500/20">
-                                            查看 {selectedStock.symbol} 詳情
-                                        </button>
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* 說明區塊 */}
-                    <div className="mt-8 glass p-6 rounded-xl border border-white/10">
-                        <h3 className="text-lg font-semibold text-gray-200 mb-3">
-                            評分維度說明
+                {/* 側邊：雷達圖 */}
+                <div className="space-y-6">
+                    <GlassCard className="p-6 !rounded-[2rem] border-amber-500/10 bg-amber-500/[0.02]">
+                        <h3 className="text-lg font-bold text-white mb-6 flex items-center justify-between">
+                            標的透視 <span className="text-[10px] text-amber-500 uppercase tracking-widest">Detail</span>
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                            <div>
-                                <span className="text-amber-400 font-semibold">
-                                    價值
-                                </span>
-                                <p className="text-gray-500">
-                                    PE、PB、股息率
-                                </p>
+                        {selectedStock && (
+                            <div className="space-y-6">
+                                <div className="text-center">
+                                    <span className="text-2xl font-black text-white">{selectedStock.name}</span>
+                                    <p className="text-amber-400 font-mono text-sm">{selectedStock.symbol}</p>
+                                </div>
+                                <ScoreRadarChart
+                                    symbol={selectedStock.symbol}
+                                    data={radarData}
+                                    customScore={selectedStock.compositeScore}
+                                />
+                                <div className="pt-4">
+                                    <button
+                                        onClick={() => router.push(`/stocks/${selectedStock.symbol}/report`)}
+                                        className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <FileText size={16} />
+                                        查看 AI 投資報告
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <span className="text-emerald-400 font-semibold">
-                                    成長
-                                </span>
-                                <p className="text-gray-500">
-                                    營收、EPS 增長率
-                                </p>
-                            </div>
-                            <div>
-                                <span className="text-blue-400 font-semibold">
-                                    動能
-                                </span>
-                                <p className="text-gray-500">
-                                    短期價格趨勢
-                                </p>
-                            </div>
-                            <div>
-                                <span className="text-purple-400 font-semibold">
-                                    品質
-                                </span>
-                                <p className="text-gray-500">
-                                    ROE、負債比率
-                                </p>
-                            </div>
-                            <div>
-                                <span className="text-rose-400 font-semibold">
-                                    籌碼
-                                </span>
-                                <p className="text-gray-500">
-                                    法人買賣超、主力動向
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+                        )}
+                    </GlassCard>
+                </div>
             </div>
         </div>
     );
 }
 
-// --- Helper Components ---
+// --- StatusBadge Helper (Not used in new layout but kept for ref if needed) ---
 function StatusBadge({ label, status }: { label: string, status: 'online' | 'offline' }) {
     return (
         <div className="glass px-3 py-1.5 rounded-full flex items-center space-x-2 border border-white/10">

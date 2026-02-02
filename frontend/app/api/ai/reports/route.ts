@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.INTERNAL_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 let supabase: any = null;
@@ -13,12 +13,31 @@ if (supabaseUrl && supabaseKey) {
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const stockCode = searchParams.get('stock_code');
-        const reportType = searchParams.get('report_type') || 'daily';
+        const stockCode = searchParams.get('stock_code') || searchParams.get('symbol');
+        const reportType = searchParams.get('report_type');
+        const latest = searchParams.get('latest') === 'true';
         const page = parseInt(searchParams.get('page') || '1');
         const perPage = parseInt(searchParams.get('per_page') || '20');
 
         const offset = (page - 1) * perPage;
+
+        if (latest && stockCode) {
+            // 獲取最新的一份完整報告
+            const { data: latestReport, error: latestError } = await supabase
+                .from('ai_reports')
+                .select('*')
+                .eq('stock_code', stockCode)
+                .order('report_date', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (latestError) {
+                console.error('[API Error] ai/reports latest query:', latestError);
+                return NextResponse.json(null); // 或者返回模擬數據
+            }
+
+            return NextResponse.json(latestReport);
+        }
 
         let query = supabase
             .from('ai_reports')
@@ -100,7 +119,7 @@ function generateMockReports(stockCode: string | null, count: number) {
             { code: '2317', name: '鴻海' },
             { code: '2303', name: '聯電' },
             { code: '2379', name: '技嘉' }
-          ];
+        ];
 
     return stocks.slice(0, count).map((stock, index) => ({
         id: `uuid-${Date.now()}-${index}`,

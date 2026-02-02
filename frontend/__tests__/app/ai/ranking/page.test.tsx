@@ -38,14 +38,14 @@ describe("RankingPage 整合測試", () => {
     it("TC-1701: /ai/ranking 應正確渲染排行榜", () => {
         render(<RankingPage />);
         expect(screen.getByTestId("ranking-table")).toBeInTheDocument();
-        expect(screen.getByText("AI 評分排行榜")).toBeInTheDocument();
+        expect(screen.getByText(/評分排行榜/)).toBeInTheDocument();
     });
 
     it("TC-1702: 刷新評分按鈕應更新數據", async () => {
         jest.useFakeTimers();
         render(<RankingPage />);
 
-        const refreshBtn = screen.getByText("刷新評分");
+        const refreshBtn = screen.getByText(/重新評分/);
         fireEvent.click(refreshBtn);
 
         expect(screen.getByText("刷新中...")).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("RankingPage 整合測試", () => {
         jest.advanceTimersByTime(800);
 
         await waitFor(() => {
-            expect(screen.getByText("刷新評分")).toBeInTheDocument();
+            expect(screen.getByText(/重新評分/)).toBeInTheDocument();
         });
 
         jest.useRealTimers();
