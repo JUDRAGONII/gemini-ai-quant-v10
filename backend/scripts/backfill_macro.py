@@ -1,10 +1,10 @@
-import sys
+﻿import sys
 import os
 
 # Add parent directory to path to allow importing modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from etl.macro import MacroFetcher
+from backend.etl.macro import MacroFetcher
 import logging
 
 # Configure Logging

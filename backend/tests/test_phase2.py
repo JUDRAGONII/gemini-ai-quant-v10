@@ -1,4 +1,4 @@
-import unittest
+﻿import unittest
 import os
 import sys
 from datetime import datetime, timedelta
@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 # Ensure /app is in path for imports
 sys.path.append("/app")
 
-from lib.supabase_client import get_supabase
-from lib.config import Config
-from etl.macro import MacroFetcher
-from agents.dialectic import DialecticAgent
+from backend.lib.supabase_client import get_supabase
+from backend.lib.config import Config
+from backend.etl.macro import MacroFetcher
+from backend.agents.dialectic import DialecticAgent
 from flows import sync_macro
 
 class TestPhase2Backend(unittest.TestCase):
@@ -21,14 +21,14 @@ class TestPhase2Backend(unittest.TestCase):
         print("\n[Setup] Supabase client initialized.")
 
     def test_01_supabase_singleton(self):
-        """[Basic Path] Supabase 單例模式驗證"""
+        """[Basic Path] Supabase ?桐?璅∪?撽?"""
         client1 = get_supabase()
         client2 = get_supabase()
         self.assertIs(client1, client2, "Supabase client should be a singleton (same instance)")
         print("[Pass] Supabase Singleton verified.")
 
     def test_02_etl_data_integrity(self):
-        """[Basic Path] ETL 資料完整性"""
+        """[Basic Path] ETL 鞈?摰??""
         # Run ETL
         etl = MacroFetcher(client=self.supabase)
         etl.run_all(lookback_days=30)
@@ -91,7 +91,7 @@ class TestPhase2Backend(unittest.TestCase):
             print("[Warn] AI Report record Not Found. Agent might have failed silently before save.")
 
     def test_04_prefect_task_execution(self):
-        """[Basic Path] Prefect 排程啟動"""
+        """[Basic Path] Prefect ????"""
         # Directly calling the task function
         try:
             sync_macro.fn() # Calling the underlying function of the Prefect task

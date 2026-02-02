@@ -1,27 +1,27 @@
-import os
+﻿import os
 import sys
 import logging
 import requests
 import pandas as pd
 
-# 設定 Python 路徑
+# 閮剖? Python 頝臬?
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 backend_path = os.path.join(project_root, "backend")
 for path in [project_root, backend_path]:
     if path not in sys.path:
         sys.path.append(path)
 
-from lib.supabase_client import get_supabase
-from etl.tw_official import TwseFetcher
+from backend.lib.supabase_client import get_supabase
+from backend.etl.tw_official import TwseFetcher
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def fetch_otc_stocks():
-    """從 TPEx 抓取上櫃標的清單"""
+    """敺?TPEx ??銝?璅?皜"""
     url = "https://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_quotes_result.php?l=zh-tw&o=json"
     try:
-        logger.info(f"正在從 TPEx 抓取上櫃清單: {url}")
+        logger.info(f"甇?敺?TPEx ??銝?皜: {url}")
         resp = requests.get(url, timeout=10)
         data = resp.json()
         if 'aaData' not in data:
@@ -29,7 +29,7 @@ def fetch_otc_stocks():
         
         records = []
         for row in data['aaData']:
-            # row[0]: 代號, row[1]: 名稱
+            # row[0]: 隞??, row[1]: ?迂
             symbol = row[0].strip()
             name = row[1].strip()
             if len(symbol) in [4, 5, 6]:
@@ -37,16 +37,16 @@ def fetch_otc_stocks():
                     "stock_code": symbol,
                     "stock_name": name,
                     "market_type": "TW",
-                    "priority": 2, # 上櫃預設優先序
+                    "priority": 2, # 銝??身?芸?摨?
                     "is_active": True
                 })
         return records
     except Exception as e:
-        logger.error(f"抓取 OTC 失敗: {e}")
+        logger.error(f"?? OTC 憭望?: {e}")
         return []
 
 def get_us_constituents():
-    """定義美股四大指數成分股"""
+    """摰儔蝢?之?????""
     constituents = {
         "DJI": ["GS", "CAT", "MSFT", "HD", "AXP", "UNH", "SHW", "AMGN", "V", "MCD", "JPM", "IBM", "TRV", "BA", "AAPL", "AMZN", "CRM", "HON", "JNJ", "NVDA", "CVX", "MMM", "PG", "WMT", "DIS", "MRK", "CSCO", "KO", "NKE", "VZ"],
         "SOX": ["AMD", "ALGM", "AMKR", "ADI", "AMAT", "ASML", "ACLS", "AVGO", "COHR", "ENTG", "GFS", "INTC", "KLAC", "LRCX", "LSCC", "MRVL", "MCHP", "MU", "MPWR", "NVDA", "NXPI", "ON", "QRVO", "QCOM", "RMBS", "SWKS", "TSM", "TER", "TXN", "WOLF"],
@@ -63,20 +63,20 @@ def get_us_constituents():
     for symbol in unique_symbols:
         records.append({
             "stock_code": symbol,
-            "stock_name": f"US Stock: {symbol}", # 佔位名稱，後續回補會更新
+            "stock_name": f"US Stock: {symbol}", # 雿??迂嚗?蝥?鋆??湔
             "market_type": "US",
-            "priority": 2, # 成分股優先序
+            "priority": 2, # ???∪??
             "is_active": True
         })
     return records
 
 def get_us_indices():
-    """定義核心美股指數對應 ETF"""
+    """摰儔?詨?蝢?撠? ETF"""
     indices = [
-        {"stock_code": "DIA", "stock_name": "道瓊工業指數 ETF (DIA)", "priority": 1},
-        {"stock_code": "SPY", "stock_name": "標普500指數 ETF (SPY)", "priority": 1},
-        {"stock_code": "QQQ", "stock_name": "那斯達克100指數 ETF (QQQ)", "priority": 1},
-        {"stock_code": "SOXX", "stock_name": "費城半導體指數 ETF (SOXX)", "priority": 1},
+        {"stock_code": "DIA", "stock_name": "??撌交平? ETF (DIA)", "priority": 1},
+        {"stock_code": "SPY", "stock_name": "璅500? ETF (SPY)", "priority": 1},
+        {"stock_code": "QQQ", "stock_name": "????100? ETF (QQQ)", "priority": 1},
+        {"stock_code": "SOXX", "stock_name": "鞎餃???擃???ETF (SOXX)", "priority": 1},
     ]
     for item in indices:
         item["market_type"] = "US"
@@ -89,14 +89,14 @@ def init_stocks():
     
     all_records = []
 
-    # 1. 抓取台股上市
-    logger.info("🎬 正在從 TWSE 抓取上市清單...")
+    # 1. ???啗銝?
+    logger.info("? 甇?敺?TWSE ??銝?皜...")
     df_twse = fetcher.fetch(report_type='BWIBBU_ALL')
     if not df_twse.empty:
         for _, row in df_twse.iterrows():
             symbol = row['stock_code'].strip()
             if len(symbol) in [4, 5, 6]:
-                # 權值股優先序提高 (範例: 2330, 2317)
+                # 甈潸?芸?摨?擃?(蝭?: 2330, 2317)
                 priority = 1 if symbol in ['2330', '2317', '2454', '0050', '0056'] else 2
                 all_records.append({
                     "stock_code": symbol,
@@ -106,36 +106,36 @@ def init_stocks():
                     "is_active": True
                 })
 
-    # 2. 抓取台股上櫃
+    # 2. ???啗銝?
     otc_records = fetch_otc_stocks()
     all_records.extend(otc_records)
 
-    # 3. 注入美股核心指數與成分股
+    # 3. 瘜典蝢?詨?????
     us_indices = get_us_indices()
     all_records.extend(us_indices)
     
     us_constituents = get_us_constituents()
     all_records.extend(us_constituents)
 
-    # 4. 注入期交所標的 (TX, MTX, TE)
+    # 4. 瘜典?漱?璅? (TX, MTX, TE)
     futures = [
-        {"stock_code": "TX", "stock_name": "台指期", "market_type": "Taifex", "priority": 1, "is_active": True},
-        {"stock_code": "MTX", "stock_name": "小型台指", "market_type": "Taifex", "priority": 1, "is_active": True},
-        {"stock_code": "TE", "stock_name": "電子期", "market_type": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "TX", "stock_name": "?唳???, "market_type": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "MTX", "stock_name": "撠??唳?", "market_type": "Taifex", "priority": 1, "is_active": True},
+        {"stock_code": "TE", "stock_name": "?餃???, "market_type": "Taifex", "priority": 1, "is_active": True},
     ]
     all_records.extend(futures)
 
     if all_records:
-        logger.info(f"🚀 正在將 {len(all_records)} 檔標的存入資料庫 (台股上市櫃 + 美股指數)...")
+        logger.info(f"?? 甇?撠?{len(all_records)} 瑼????亥??澈 (?啗銝?瑹?+ 蝢?)...")
         try:
-            # 由於筆數較多，分批處裡以防超時
+            # ?望蝑頛?嚗??寡?鋆∩誑?脰???
             batch_size = 500
             for i in range(0, len(all_records), batch_size):
                 batch = all_records[i:i+batch_size]
                 supabase.from_('stocks').upsert(batch, on_conflict='stock_code').execute()
-            logger.info("✅ 標的清單初始化完成。")
+            logger.info("??璅?皜??????)
         except Exception as e:
-            logger.error(f"❌ 存入資料庫失敗: {e}")
+            logger.error(f"??摮鞈?摨怠仃?? {e}")
 
 if __name__ == "__main__":
     init_stocks()

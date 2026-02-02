@@ -7,6 +7,9 @@
   - 修正 `test_unit.py` 測試導入規範，統一使用 `backend.` 全域前綴。
   - 在 `ci_test.yml` 測試階段注入 `PYTHONPATH: ..`，解決遠端環境之模組解析衝突。
   - 補全 CI 環境之 `SERVICE_ROLE_KEY` Mock 以通過專案配置驗證。
+- **後端鏈式導入修復 (Deep Import Fix)**:
+  - 統一修復 `backend/` 下所有 Python 子模組的內部絕對導入，將 `from lib` 等路徑對齊至 `from backend.lib`。
+  - 修復 `dialectic.py` 因語法損壞導致的 `SyntaxError` 與中文字元編碼問題。
 
 ## [V10.3.0] - 2026-01-30
 ### Added

@@ -1,0 +1,34 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.11, pytest-9.0.2, pluggy-1.6.0 -- C:\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\GV72\Desktop\私人事務\APP\AI投資分析儀V10.0\backend
+plugins: asyncio-1.3.0, cov-7.0.0, anyio-4.10.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 3 items
+
+tests/test_unit.py::TestConfigModule::test_config_env_fallback PASSED    [ 33%]
+tests/test_unit.py::TestMacroETLLogic::test_macro_indicator_mapping PASSED [ 66%]
+tests/test_unit.py::TestDialecticPromptStructure::test_prompt_contains_required_roles FAILED [100%]
+
+================================== FAILURES ===================================
+______ TestDialecticPromptStructure.test_prompt_contains_required_roles _______
+
+self = <backend.tests.test_unit.TestDialecticPromptStructure testMethod=test_prompt_contains_required_roles>
+
+    def test_prompt_contains_required_roles(self):
+        """辯論提示詞應包含多空角色定義"""
+        # 模擬提示詞模板中應有的關鍵字
+        required_keywords = ["Bull", "Bear", "Analyst"]
+    
+        # 由於實際 prompt 在 dialectic.py 內部，這裡測試模組能正常 import
+        try:
+>           from backend.agents.dialectic import DialecticAgent
+E             File "C:\Users\GV72\Desktop\私人事務\APP\AI投資分析儀V10.0\backend\agents\dialectic.py", line 63
+E               """
+E               ^
+E           SyntaxError: unterminated triple-quoted string literal (detected at line 86)
+
+tests\test_unit.py:58: SyntaxError
+=========================== short test summary info ===========================
+FAILED tests/test_unit.py::TestDialecticPromptStructure::test_prompt_contains_required_roles
+======================== 1 failed, 2 passed in 13.77s =========================

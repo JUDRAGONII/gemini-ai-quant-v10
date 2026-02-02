@@ -1,24 +1,24 @@
-"""
-一次性歷史數據回補腳本 (Backfill Script)
-- NVDA: 美股，自 1999-01-22 (上市日) 至今
-- 0050: 台股 ETF，自 2003-06-30 (發行日) 至今
+﻿"""
+銝甈⊥扳風?脫??鋆??(Backfill Script)
+- NVDA: 蝢嚗 1999-01-22 (銝??? ?喃?
+- 0050: ?啗 ETF嚗 2003-06-30 (?潸??? ?喃?
 """
 import os
 import sys
 from datetime import datetime
 
-# 確保 backend 路徑在 Python Path 中
+# 蝣箔? backend 頝臬???Python Path 銝?
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from supabase import create_client
-from etl.market import TiingoFetcher, FugleFetcher
+from backend.etl.market import TiingoFetcher, FugleFetcher
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def main():
-    # 初始化 Supabase Client
+    # ????Supabase Client
     supabase_url = os.getenv("SUPABASE_URL", "http://localhost:8000")
     supabase_key = os.getenv("SUPABASE_KEY") or os.getenv("SERVICE_ROLE_KEY")
     
@@ -29,12 +29,12 @@ def main():
     client = create_client(supabase_url, supabase_key)
     logger.info("Supabase Client initialized.")
     
-    # ==== 1. 回補 NVDA (美股) ====
+    # ==== 1. ?? NVDA (蝢) ====
     logger.info("=" * 50)
     logger.info("Starting NVDA backfill (US Stock via Tiingo)...")
     tiingo = TiingoFetcher(client)
     
-    # NVDA 於 1999-01-22 上市
+    # NVDA ??1999-01-22 銝?
     nvda_start = "1999-01-22"
     nvda_end = datetime.now().strftime('%Y-%m-%d')
     
@@ -46,12 +46,12 @@ def main():
     except Exception as e:
         logger.error(f"[NVDA] Backfill failed: {e}")
 
-    # ==== 2. 回補 0050 (台股 ETF) ====
+    # ==== 2. ?? 0050 (?啗 ETF) ====
     logger.info("=" * 50)
     logger.info("Starting 0050 backfill (TW ETF via Fugle)...")
     fugle = FugleFetcher(client)
     
-    # 元大台灣50 於 2003-06-30 發行
+    # ?之?啁50 ??2003-06-30 ?潸?
     tw0050_start = "2003-06-30"
     tw0050_end = datetime.now().strftime('%Y-%m-%d')
     

@@ -1,6 +1,6 @@
-from lib.supabase_client import get_supabase
-from lib.llm import get_llm
-from lib.config import Config
+﻿from backend.lib.supabase_client import get_supabase
+from backend.lib.llm import get_llm
+from backend.lib.config import Config
 from datetime import datetime
 
 class DialecticAgent:

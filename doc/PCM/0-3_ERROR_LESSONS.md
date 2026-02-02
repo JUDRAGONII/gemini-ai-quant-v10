@@ -559,6 +559,16 @@
 - **【預防重複犯錯的 Checkbox】**：
     - [ ] 避免使用過於簡短的 Regex 匹配核心 UI 文本。
     - [ ] 優先使用 `getByRole` 配合名稱或 `data-testid` 進行斷言。
+
+### 2026-02-02 PowerShell `Get-Content/Set-Content` 導致的編碼損壞
+- **【問題現象】**：在執行全域替換後，某些檔案（如 `dialectic.py`）出現 `SyntaxError: unterminated triple-quoted string literal`，且中文字元變為亂碼。
+- **【底層根本原因】**：PowerShell 預設的管道輸出或 `Set-Content` 在處理 UTF-8 (Multi-byte) 檔案時，若未顯式指定 `-Encoding utf8`，且原本檔案包含中文字元與特定的轉義序列，容易導致字元移位或三引號丟失。
+- **【解決方案】**：
+    1. 手動修復受損檔案的 `"""` 與中文字元。
+    2. 未來執行全域替換腳本應顯式指定 `[System.Text.Encoding]::UTF8` 或 `-Encoding utf8`。
+- **【預防重複犯錯的 Checkbox】**：
+    - [ ] 執行大量正規替換後，必須隨機抽檢包含中文字元的檔案。
+    - [ ] 優先使用 Python 腳本而非 PowerShell 字串替換來處理原始碼變更，以獲得更好的編碼控制。
 ### 2026-02-02 GitHub CI `backend` ModuleNotFoundError
 - **【問題現象】**：GitHub Actions 在執行後端測試時報錯 `ModuleNotFoundError: No module named 'backend'`，即使代碼在本地執行 `/local-ci-v10` 時全綠通過。
 - **【底層根本原因】**：

@@ -1,5 +1,5 @@
-import google.generativeai as genai
-from lib.config import Config
+﻿import google.generativeai as genai
+from backend.lib.config import Config
 
 class GeminiClient:
     def __init__(self):
