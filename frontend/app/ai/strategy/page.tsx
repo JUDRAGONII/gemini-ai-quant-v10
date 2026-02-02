@@ -62,20 +62,25 @@ export default function StrategyHubPage() {
                     </ProButton>
                     <div className="h-px w-8 bg-gradient-to-r from-white/10 to-transparent" />
                     <nav className="text-[10px] font-bold uppercase text-gray-600 tracking-widest flex items-center gap-2">
-                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>HOME</span>
+                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>
+                            首頁 <span className="text-[8px] opacity-50">Home</span>
+                        </span>
                         <span>/</span>
-                        <span className="text-indigo-500/80">STRATEGY HUB</span>
+                        <span className="text-indigo-500/80">
+                            智慧策略 <span className="text-[8px] opacity-70">Strategy Hub</span>
+                        </span>
                     </nav>
                 </div>
 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter">
-                            智慧策略看板 <span className="text-indigo-500">Strategy Hub</span>
+                            智慧策略看板 <span className="text-sm font-medium text-indigo-500/60 uppercase tracking-widest ml-2">Strategy Hub</span>
                         </h1>
-                        <p className="text-gray-400 mt-2 flex items-center text-sm">
+                        <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
                             <ShieldCheck className="w-4 h-4 mr-2 text-indigo-400" />
                             基於 AI 預測核心與全向量化回測引擎的策略驗證中心
+                            <span className="text-[10px] opacity-30 ml-2 uppercase font-mono italic">Powered by AI Quantitative Engine v2.0</span>
                         </p>
                     </div>
                 </div>

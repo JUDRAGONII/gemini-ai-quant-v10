@@ -204,41 +204,6 @@ export default function RankingPage() {
                                     <ScoreRadarChart
                                         symbol={selectedStock.symbol}
                                         data={radarData}
-                                        size={250}
-                                    />
-                                    <Link
-                                        href={`/stocks/${selectedStock.symbol}`}
-                                    >
-                                        <button className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all cursor-pointer shadow-lg shadow-orange-500/20">
-                                            查看 {selectedStock.symbol} 詳情
-                                        </button>
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* 說明區塊 */}
-                    <div className="mt-8 glass p-6 rounded-xl border border-white/10">
-                        <h3 className="text-lg font-semibold text-gray-200 mb-3">
-                            評分維度說明
-                        </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                            <div>
-                                <span className="text-amber-400 font-semibold">
-                                    價值
-                                </span>
-                                <p className="text-gray-500">
-                                    PE、PB、股息率
-                                </p>
-                            </div>
-                            <div>
-                                <span className="text-emerald-400 font-semibold">
-                                    成長
-                                </span>
-                                <p className="text-gray-500">
-                                    營收、EPS 增長率
-                                </p>
                             </div>
                             <div>
                                 <span className="text-blue-400 font-semibold">

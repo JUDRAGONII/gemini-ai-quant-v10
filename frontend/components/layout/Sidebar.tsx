@@ -23,15 +23,15 @@ import {
  */
 
 const MENU_ITEMS = [
-    { label: "總覽 (Overview)", href: "/", icon: Home, matchExact: true },
+    { label: "首頁面板 (Overview)", href: "/", icon: Home, matchExact: true },
     { label: "籌碼分析 (Chips)", href: "/chips", icon: Layers },
     { label: "市場動態 (Market)", href: "/stocks", icon: TrendingUp },
     { label: "投資組合 (Portfolios)", href: "/portfolios", icon: Briefcase },
     { label: "宏觀指標 (Macro)", href: "/macro", icon: Activity },
     { label: "演化分析 (Evolution)", href: "/evolution", icon: BarChart3 },
     { label: "智慧策略 (Strategy)", href: "/ai/strategy", icon: Sparkles },
-    { label: "AI 搜尋 (Semantic)", href: "/ai/search", icon: Search },
-    { label: "決策報告 (Reports)", href: "/ai/ranking", icon: FileText },
+    { label: "AI 搜尋 (Search)", href: "/ai/search", icon: Search },
+    { label: "智慧排名 (Ranking)", href: "/ai/ranking", icon: FileText },
 ];
 
 function NavItem({
@@ -61,7 +61,14 @@ function NavItem({
                     className={`transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"
                         }`}
                 />
-                <span className="font-medium tracking-wide">{item.label}</span>
+                <div className="flex flex-col">
+                    <span className="font-bold tracking-tight text-sm">
+                        {item.label.split(' (')[0]}
+                    </span>
+                    <span className="text-[9px] uppercase opacity-40 font-mono tracking-widest -mt-1">
+                        {item.label.split(' (')[1]?.replace(')', '')}
+                    </span>
+                </div>
 
                 {/* Hover Glow Effect */}
                 {!isActive && (

@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, TrendingUp, Sparkles, Clock, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Search, Loader2, TrendingUp, Sparkles, Clock, ChevronDown, ChevronUp, X, ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ProButton } from '@/components/UI/ProButton';
 
 interface SearchResult {
     id: string;
@@ -37,7 +39,7 @@ export default function AISearchPage() {
         if (saved) {
             try {
                 setRecentSearches(JSON.parse(saved));
-            } catch {}
+            } catch { }
         }
     }, []);
 
@@ -114,86 +116,125 @@ export default function AISearchPage() {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            <div>
-                <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                    <Sparkles className="w-6 h-6 text-amber-400" />
-                    AI 語義搜尋
-                </h1>
-                <p className="text-gray-400">使用自然語言搜尋 AI 投資報告知識庫</p>
-            </div>
+        <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Header Section */}
+            <section className="flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                    <ProButton
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => router.back()}
+                        className="!rounded-full w-10 h-10 p-0 flex items-center justify-center border-white/5 bg-white/5 hover:bg-white/10"
+                    >
+                        <ChevronLeft className="w-5 h-5 text-gray-400" />
+                    </ProButton>
+                    <div className="h-px w-8 bg-gradient-to-r from-white/10 to-transparent" />
+                    <nav className="text-[10px] font-bold uppercase text-gray-600 tracking-widest flex items-center gap-2">
+                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>
+                            首頁 <span className="text-[8px] opacity-50">Home</span>
+                        </span>
+                        <span>/</span>
+                        <span className="text-indigo-500/80">
+                            語義搜尋 <span className="text-[8px] opacity-70">AI Search</span>
+                        </span>
+                    </nav>
+                </div>
+
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
+                            AI 語義搜尋中心 <span className="text-sm font-medium text-amber-500/60 uppercase tracking-widest ml-2">Semantic Knowledge Hub</span>
+                        </h1>
+                        <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
+                            <Sparkles className="w-4 h-4 mr-2 text-amber-400" />
+                            使用自然語言搜尋 AI 投資報告與市場大數據知識庫
+                            <span className="text-[10px] opacity-30 ml-2 uppercase font-mono italic">Knowledge RAG Pro v2.1</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
+                className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-md relative overflow-hidden group shadow-2xl shadow-indigo-500/5"
             >
-                <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                    <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => {
-                            setQuery(e.target.value);
-                            setShowRecent(true);
-                        }}
-                        onKeyDown={handleKeyDown}
-                        onFocus={() => setShowRecent(true)}
-                        placeholder="輸入問題或關鍵字，例如：半導體產業展望、台積電基本面"
-                        className="w-full pl-12 pr-24 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 text-lg"
-                    />
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                        {query && (
-                            <button
-                                onClick={() => setQuery('')}
-                                className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        )}
-                        <button
-                            onClick={handleSearch}
-                            disabled={!query.trim() || loading}
-                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
-                        >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                            搜尋
-                        </button>
-                    </div>
-                </div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] -mr-48 -mt-48 transition-all duration-1000 group-focus-within:bg-indigo-500/10" />
 
-                {showRecent && recentSearches.length > 0 && !query && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute z-10 mt-2 w-full bg-gray-900 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
-                    >
-                        <div className="p-3 border-b border-white/10 flex justify-between items-center">
-                            <span className="text-sm text-gray-400 flex items-center gap-2">
-                                <Clock className="w-4 h-4" />
-                                最近搜尋
-                            </span>
+                <div className="relative z-10 space-y-4">
+                    <label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">
+                        全域檢索 <span className="text-[8px] opacity-40 ml-1">Universal Search</span>
+                    </label>
+                    <div className="relative">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400/50" />
+                        <input
+                            type="text"
+                            value={query}
+                            onChange={(e) => {
+                                setQuery(e.target.value);
+                                setShowRecent(true);
+                            }}
+                            onKeyDown={handleKeyDown}
+                            onFocus={() => setShowRecent(true)}
+                            placeholder="請輸入問題，例如：半導體產業未來的成長動能為何？"
+                            className="w-full pl-14 pr-32 py-5 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-lg font-medium"
+                        />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            {query && (
+                                <button
+                                    onClick={() => setQuery('')}
+                                    className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
                             <button
-                                onClick={clearRecentSearches}
-                                className="text-xs text-gray-500 hover:text-white transition-colors"
+                                onClick={handleSearch}
+                                disabled={!query.trim() || loading}
+                                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all disabled:opacity-50 flex items-center gap-2 active:scale-95 shadow-lg shadow-indigo-600/20"
                             >
-                                清除
+                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                                    <>
+                                        <Search className="w-4 h-4" />
+                                        搜尋 <span className="text-[10px] font-normal opacity-70">SEARCH</span>
+                                    </>
+                                )}
                             </button>
                         </div>
-                        <div className="max-h-64 overflow-y-auto">
-                            {recentSearches.map((search, index) => (
+                    </div>
+
+                    {showRecent && recentSearches.length > 0 && !query && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute z-10 mt-2 w-full bg-gray-900 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
+                        >
+                            <div className="p-3 border-b border-white/10 flex justify-between items-center">
+                                <span className="text-sm text-gray-400 flex items-center gap-2">
+                                    <Clock className="w-4 h-4" />
+                                    最近搜尋
+                                </span>
                                 <button
-                                    key={index}
-                                    onClick={() => handleRecentClick(search.query)}
-                                    className="w-full px-4 py-3 text-left text-white hover:bg-white/5 transition-colors flex items-center gap-2"
+                                    onClick={clearRecentSearches}
+                                    className="text-xs text-gray-500 hover:text-white transition-colors"
                                 >
-                                    <Clock className="w-4 h-4 text-gray-600" />
-                                    <span>{search.query}</span>
+                                    清除
                                 </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                            </div>
+                            <div className="max-h-64 overflow-y-auto">
+                                {recentSearches.map((search, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleRecentClick(search.query)}
+                                        className="w-full px-4 py-3 text-left text-white hover:bg-white/5 transition-colors flex items-center gap-2"
+                                    >
+                                        <Clock className="w-4 h-4 text-gray-600" />
+                                        <span>{search.query}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
             </motion.div>
 
             {error && (
