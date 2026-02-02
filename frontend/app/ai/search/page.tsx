@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, TrendingUp, Sparkles, Clock, ChevronDown, ChevronUp, X, ChevronLeft } from 'lucide-react';
+import { Search, Loader2, Sparkles, Clock, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ProButton } from '@/components/UI/ProButton';
 
 interface SearchResult {
     id: string;
@@ -25,6 +24,7 @@ interface RecentSearch {
 const MAX_RECENT_SEARCHES = 10;
 
 export default function AISearchPage() {
+    const router = useRouter(); // Though not explicitly used for navigation here yet
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [loading, setLoading] = useState(false);
@@ -119,27 +119,6 @@ export default function AISearchPage() {
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Section */}
             <section className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                    <ProButton
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => router.back()}
-                        className="!rounded-full w-10 h-10 p-0 flex items-center justify-center border-white/5 bg-white/5 hover:bg-white/10"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-gray-400" />
-                    </ProButton>
-                    <div className="h-px w-8 bg-gradient-to-r from-white/10 to-transparent" />
-                    <nav className="text-[10px] font-bold uppercase text-gray-600 tracking-widest flex items-center gap-2">
-                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>
-                            首頁 <span className="text-[8px] opacity-50">Home</span>
-                        </span>
-                        <span>/</span>
-                        <span className="text-indigo-500/80">
-                            語義搜尋 <span className="text-[8px] opacity-70">AI Search</span>
-                        </span>
-                    </nav>
-                </div>
-
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
@@ -235,6 +214,7 @@ export default function AISearchPage() {
                             </div>
                         </motion.div>
                     )}
+                </div>
             </motion.div>
 
             {error && (

@@ -1,9 +1,9 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-- **當前進度**: Phase 9: 行情即時監控與選股中心 (核心建置中)
-- **當前里程碑**: MS3: Cognition (智慧認知階段) - Phase 9
-- **狀態**: GitHub CI 通過 / 智慧策略看板 UI 拋光完成
+- **當進度**: Phase 9: 行情即時監控與選股中心 (核心建置中)
+- **當前里程碑**: Phase 8: AI 智慧與策略驗證 | 佈局優化、報告標籤化與導航修復 (COMPLETED)
+- **核心狀態**: 統一個股返回按鈕 (Header)，新增 AI 決策報告活頁標籤，修復跨組件導航路徑，解決 Server-side API 認證問題。
 
 ---
 
@@ -214,10 +214,17 @@
 
 ## [V10.2.3] - 2026-01-28
 - [x] Phase 4.6: GitHub CI 前端建置與測試故障修復 (2026-01-28)
-- [x] Phase 4.7: 錯誤訊息中英雙語化優化 (2026-01-28)
-- [x] Phase 7: 系統全域架構審計 (2026-01-28)
-- [x] Phase 7: 實施計畫全方位複核 (2026-01-28)
-- [x] Phase 7: 深度調研取證與重複任務攔截 (2026-01-28)
+- [x]### Phase 8.6: 全站視覺與佈局統一 [COMPLETED]
+- [x] 建立 AI/Portfolios 模組佈局：`ai/layout.tsx`, `portfolios/layout.tsx`
+- [x] 實施雙語 UI 規範：`Sidebar.tsx` 中英分離渲染
+- [x] RWD 響應式佈局校準與行動端導航優化
+- [x] 分頁風格同步 (Strategy, Ranking, Search, Portfolio)
+
+### Phase 9: 市場監控與選股中心 (Market Monitor & Screener) [READY]
+- [ ] 市場熱力圖 (Market Heatmap) 視覺開發 [P1]
+- [ ] 選股條件篩選器 (Stock Screener) UI [P1]
+- [ ] 預警推播配置 (Alert Configuration) [P2]
+深度調研取證與重複任務攔截 (2026-01-28)
 - [x] Phase 7: 資料庫遷移執行與結構對齊 (2026-01-28)
 - [x] Phase 7.1: 全域 API 與腳本欄位同步更新 (2026-01-28)
 - [x] Phase 7.2: 技術指標下沉與效能優化 (2026-01-28)

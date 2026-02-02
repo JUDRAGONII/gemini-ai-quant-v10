@@ -1,5 +1,18 @@
 # CHANGELOG (變更紀錄)
 
+## [V10.3.3] - 2026-02-02
+### Added
+- **AI 決策報告分頁標籤化 (Phase 8.7 Completion)**:
+  - 實作 `stocks/[symbol]/report` 獨立頁面，整合 markdown 渲染與評分雷達圖。
+  - 在 `StockDetailLayout` 注入導航標籤，實現資訊一站式集成。
+- **自動化測試強化**:
+  - 實作 `stock_optimization.test.tsx` 覆蓋佈局變更與數據同步驗證。
+  - 修復 `portfolio_crud.test.tsx` 與 `ranking/page.test.tsx` 之 UI 文字回歸問題，確保全站 100% 綠燈。
+
+### Fixed
+- **Infrastructure**: 修正 Server-side Fetch 因缺少封裝內網 API 權限導致的報告載入失敗，已通過 Docker 注入 `SERVICE_ROLE_KEY` 並優化 `INTERNAL_SUPABASE_URL`。
+- **TypeScript**: 修復排行榜組件之屬性名稱大小寫不匹配與 `name` 屬性讀取錯誤。
+
 ## [V10.3.2] - 2026-02-02
 ### Fixed
 - **智慧策略看板 UI/UX 優化**:

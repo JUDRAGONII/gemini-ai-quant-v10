@@ -234,7 +234,7 @@ export default function SettingsPage() {
                                 }
                             }}
                         >
-                            AI 投資分析儀 V10.0 • Phase 4.4 Pro Max
+                            AI 投資分析儀 V10.0
                         </p>
                         <p className="text-xs mt-1">
                             最後更新: {new Date(settings.lastUpdated).toLocaleString("zh-TW")}

@@ -1,202 +1,216 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useBacktest } from '@/hooks/useBacktest';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ShieldCheck, Target, Search, Loader2, BrainCircuit, TrendingUp, Info, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AIPredictionIndicator } from '@/components/AI/AIPredictionIndicator';
 import { StrategyMetricsGrid } from '@/components/AI/StrategyMetricsGrid';
-import { Search, Play, Settings2, LineChart, ShieldCheck, AlertCircle, ChevronLeft } from 'lucide-react';
 import PortfolioPerformanceChart from '@/components/Chart/PortfolioPerformanceChart';
-import { ProButton } from '@/components/UI/ProButton';
+import { useBacktest } from '@/hooks/useBacktest';
+import { useAIPrediction } from '@/hooks/useAIPrediction';
+
+const BASE_CAPITAL = 1000000;
 
 export default function StrategyHubPage() {
-    const router = useRouter();
     const [symbol, setSymbol] = useState('2330');
-    const [threshold, setThreshold] = useState(0.005);
+    const [inputSymbol, setInputSymbol] = useState('2330');
     const [period, setPeriod] = useState('1Y');
-    const { data, loading, error, runBacktest } = useBacktest();
+    const [threshold, setThreshold] = useState(0.005); // 0.5% default
 
-    const handleRun = () => {
-        if (symbol) runBacktest(symbol, threshold);
+    const { data: backtestData, loading: backtestLoading, error: backtestError, runBacktest } = useBacktest();
+    const { data: predictionData, loading: predictionLoading } = useAIPrediction(symbol);
+
+    useEffect(() => {
+        runBacktest(symbol, threshold);
+    }, [symbol]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (inputSymbol.trim()) {
+            setSymbol(inputSymbol.toUpperCase().trim());
+        }
     };
 
-    // 根據週期過濾圖表數據 (Filtering logic)
-    const filteredEquityData = useMemo(() => {
-        if (!data?.charts?.equity) return [];
+    const handleThresholdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setThreshold(parseFloat(e.target.value));
+    };
 
-        const allData = data.charts.equity.map(p => ({
-            date: p.date,
-            total_value: p.value * 100, // Normalized to 100 base
-            total_cost: 100,
-            return_amount: (p.value - 1) * 100,
-            return_rate: (p.value - 1) * 100
-        }));
+    const triggerBacktest = () => {
+        runBacktest(symbol, threshold);
+    };
 
-        const now = new Date();
-        let cutoff = new Date();
+    // Transform and normalize data
+    const chartData = useMemo(() => {
+        if (!backtestData?.charts?.equity) return [];
+        return backtestData.charts.equity.map(point => {
+            const total_value = point.value * BASE_CAPITAL;
+            return {
+                date: point.date,
+                total_value,
+                total_cost: BASE_CAPITAL,
+                return_amount: total_value - BASE_CAPITAL,
+                return_rate: (point.value - 1) * 100
+            };
+        });
+    }, [backtestData]);
 
-        switch (period) {
-            case '1W': cutoff.setDate(now.getDate() - 7); break;
-            case '1M': cutoff.setMonth(now.getMonth() - 1); break;
-            case '3M': cutoff.setMonth(now.getMonth() - 3); break;
-            case '6M': cutoff.setMonth(now.getMonth() - 6); break;
-            case '1Y': cutoff.setFullYear(now.getFullYear() - 1); break;
-            default: return allData;
-        }
+    // Apply period filtering
+    const filteredChartData = useMemo(() => {
+        if (!chartData.length) return [];
+        if (period === '1Y') return chartData;
 
-        return allData.filter(d => new Date(d.date) >= cutoff);
-    }, [data, period]);
+        const lastPoint = chartData[chartData.length - 1];
+        const lastDate = new Date(lastPoint.date);
+        let cutoff = new Date(lastDate);
+
+        if (period === '1W') cutoff.setDate(cutoff.getDate() - 7);
+        else if (period === '1M') cutoff.setMonth(cutoff.getMonth() - 1);
+        else if (period === '3M') cutoff.setMonth(cutoff.getMonth() - 3);
+        else if (period === '6M') cutoff.setMonth(cutoff.getMonth() - 6);
+
+        return chartData.filter(d => new Date(d.date) >= cutoff);
+    }, [chartData, period]);
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Section */}
             <section className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                    <ProButton
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => router.back()}
-                        className="!rounded-full w-10 h-10 p-0 flex items-center justify-center border-white/5 bg-white/5 hover:bg-white/10"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-gray-400" />
-                    </ProButton>
-                    <div className="h-px w-8 bg-gradient-to-r from-white/10 to-transparent" />
-                    <nav className="text-[10px] font-bold uppercase text-gray-600 tracking-widest flex items-center gap-2">
-                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>
-                            首頁 <span className="text-[8px] opacity-50">Home</span>
-                        </span>
-                        <span>/</span>
-                        <span className="text-indigo-500/80">
-                            智慧策略 <span className="text-[8px] opacity-70">Strategy Hub</span>
-                        </span>
-                    </nav>
-                </div>
-
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter">
-                            智慧策略看板 <span className="text-sm font-medium text-indigo-500/60 uppercase tracking-widest ml-2">Strategy Hub</span>
+                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
+                            智慧策略看板 <span className="text-sm font-medium text-emerald-500/60 uppercase tracking-widest ml-2">Strategy Hub</span>
                         </h1>
                         <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
-                            <ShieldCheck className="w-4 h-4 mr-2 text-indigo-400" />
+                            <ShieldCheck className="w-4 h-4 mr-2 text-emerald-400" />
                             基於 AI 預測核心與全向量化回測引擎的策略驗證中心
-                            <span className="text-[10px] opacity-30 ml-2 uppercase font-mono italic">Powered by AI Quantitative Engine v2.0</span>
                         </p>
                     </div>
+
+                    <form onSubmit={handleSearch} className="relative w-full md:w-64 group">
+                        <input
+                            type="text"
+                            value={inputSymbol}
+                            onChange={(e) => setInputSymbol(e.target.value)}
+                            placeholder="輸入股票代號 (如: 2330)"
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-white font-bold placeholder-gray-600 transition-all"
+                        />
+                        <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                            <Search className="w-5 h-5" />
+                        </button>
+                    </form>
                 </div>
             </section>
 
-            {/* Control Panel */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md flex flex-col md:flex-row items-center gap-6">
-                    <div className="flex-1 w-full space-y-2">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 ml-1">標的搜尋 (Symbol)</label>
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                            <input
-                                type="text"
-                                value={symbol}
-                                onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-                                placeholder="輸入代碼 (如: 2330)"
-                                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-white font-mono"
-                            />
-                        </div>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* AI Forecast Card */}
+                <div className="lg:col-span-1">
+                    <AIPredictionIndicator
+                        alpha={predictionData?.predicted_5d_alpha || 0}
+                        winRate={predictionData?.win_rate || 0}
+                        loading={predictionLoading}
+                    />
+                </div>
 
-                    <div className="w-full md:w-48 space-y-2">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 ml-1 flex items-center justify-between">
-                            預測閾值
-                            <span className="text-[8px] text-indigo-400 lowercase italic opacity-60">threshold</span>
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="number"
-                                step="0.001"
-                                value={threshold}
-                                onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                                className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-white font-mono"
-                            />
-                            <div className="absolute -bottom-6 left-1 text-[9px] text-gray-500 whitespace-nowrap">
-                                漲幅預測 &gt; {(threshold * 100).toFixed(1)}% 時執行買入
+                {/* Strategy Config & Status */}
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-8 backdrop-blur-md relative overflow-hidden group">
+                    <div className="relative z-10 space-y-6">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-inner">
+                                <BrainCircuit className="w-8 h-8 text-emerald-400" />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1 block">當前分析標的 ACTIVE ASSET</span>
+                                <h2 className="text-3xl font-black text-white">{symbol} <span className="text-sm font-medium text-gray-500 ml-2">分析引擎已就緒</span></h2>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-white/5">
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm font-bold text-gray-200 flex items-center gap-2">
+                                        策略 Alpha 閾值: <span className="text-emerald-400 font-mono">{(threshold * 100).toFixed(1)}%</span>
+                                    </label>
+                                    <div className="group/info relative">
+                                        <Info className="w-4 h-4 text-gray-500 cursor-help" />
+                                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 p-3 bg-gray-900 border border-white/20 rounded-xl text-[10px] text-gray-300 opacity-0 group-hover/info:opacity-100 transition-opacity z-20 pointer-events-none shadow-2xl">
+                                            此閾值定義了 AI 觸發買入信號的最小預測收益率。較高的閾值意味著更嚴謹的篩選，反之則更激進。
+                                        </div>
+                                    </div>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0.001"
+                                    max="0.05"
+                                    step="0.001"
+                                    value={threshold}
+                                    onChange={handleThresholdChange}
+                                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                                />
+                                <div className="flex justify-between text-[10px] text-gray-500 font-mono">
+                                    <span>0.1% (激進)</span>
+                                    <span>5.0% (極保守)</span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col justify-end">
+                                <button
+                                    onClick={triggerBacktest}
+                                    disabled={backtestLoading}
+                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:cursor-not-allowed text-black font-black rounded-2xl transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                                >
+                                    {backtestLoading ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        <Zap className="w-5 h-5 fill-current" />
+                                    )}
+                                    執行回測分析 RUN BACKTEST
+                                </button>
                             </div>
                         </div>
                     </div>
-
-                    <button
-                        onClick={handleRun}
-                        disabled={loading}
-                        className="w-full md:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95 flex items-center justify-center disabled:opacity-50"
-                    >
-                        {loading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <>
-                                <Play className="w-4 h-4 mr-2 fill-current" />
-                                執行回測
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 rounded-3xl p-6 flex items-center justify-between group overflow-hidden relative">
-                    <div className="space-y-1 relative z-10">
-                        <p className="text-[10px] font-bold uppercase text-indigo-300">系統狀態</p>
-                        <h4 className="text-xl font-bold text-white">AI Engine v2.0</h4>
-                        <p className="text-xs text-indigo-200/60 font-medium">全向量演算架構已就緒</p>
-                    </div>
-                    <div className="p-4 bg-white/10 rounded-2xl relative z-10 border border-white/5">
-                        <Settings2 className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-500" />
-                    </div>
-                    {/* Decal */}
-                    <LineChart className="absolute -right-8 -bottom-8 w-32 h-32 text-white/5 -rotate-12" />
                 </div>
             </div>
 
-            {error && (
-                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-sm flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    錯誤: {error}
+            {/* Performance Chart Section */}
+            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-md">
+                <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+                    <h2 className="text-xl font-bold flex items-center gap-3 text-white">
+                        <TrendingUp className="w-5 h-5 text-emerald-400" />
+                        策略績效回測 <span className="text-xs font-medium text-gray-500 uppercase tracking-widest font-mono">Backtest Results</span>
+                    </h2>
                 </div>
-            )}
-
-            {/* Results Section */}
-            {data && (
-                <div className="space-y-6">
-                    <StrategyMetricsGrid metrics={data.metrics} />
-
-                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-md relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 blur-[100px] -mr-32 -mt-32" />
-                        <div className="flex justify-between items-center mb-6 relative z-10">
-                            <h3 className="text-lg font-bold flex items-center">
-                                <LineChart className="w-5 h-5 mr-4 text-indigo-400" /> 策略權益曲線 (Equity Curve)
-                            </h3>
-                            <div className="flex gap-2 text-[10px] font-mono">
-                                <span className="flex items-center px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse" />
-                                    NET EQUITY
-                                </span>
-                            </div>
+                <div className="p-8">
+                    {backtestLoading && !backtestData ? (
+                        <div className="h-[400px] flex items-center justify-center">
+                            <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
                         </div>
-                        <div className="h-[400px] w-full relative z-10">
-                            <PortfolioPerformanceChart
-                                data={filteredEquityData}
-                                period={period}
-                                onPeriodChange={setPeriod}
-                            />
+                    ) : backtestError ? (
+                        <div className="h-[400px] flex items-center justify-center text-rose-400 font-medium">
+                            {backtestError}
                         </div>
-                    </div>
+                    ) : (
+                        <PortfolioPerformanceChart
+                            data={filteredChartData}
+                            height={400}
+                            period={period}
+                            onPeriodChange={setPeriod}
+                        />
+                    )}
                 </div>
-            )}
+            </div>
 
-            {!data && !loading && (
-                <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.02]">
-                    <div className="p-6 bg-white/5 rounded-full mb-4 border border-white/5">
-                        <LineChart className="w-12 h-12 text-gray-700" />
-                    </div>
-                    <p className="text-gray-500 font-medium text-lg tracking-tight">尚未執行策略驗證</p>
-                    <p className="text-gray-600 text-sm mt-1">輸入股票代碼並調整閾值，點擊執行獲取 AI 預策報告</p>
-                </div>
-            )}
+            {/* Metrics Section */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2 ml-4">
+                    <Target className="w-4 h-4" />
+                    策略關鍵指標 KPI METRICS
+                </h3>
+                <AnimatePresence mode="wait">
+                    {backtestData && (
+                        <StrategyMetricsGrid metrics={backtestData.metrics} />
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useStockDetail } from '@/hooks/useStockDetail';
-import { ArrowLeft, TrendingUp, BarChart3, PieChart, Layers, Activity } from 'lucide-react';
+import { ArrowLeft, TrendingUp, BarChart3, PieChart, Layers, Activity, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function StockDetailLayout({
@@ -20,6 +20,7 @@ export default function StockDetailLayout({
     // Tabs Configuration
     const tabs = [
         { name: '總覽', path: `/stocks/${params.symbol}`, icon: <Activity className="w-4 h-4" /> },
+        { name: 'AI 決策報告', path: `/stocks/${params.symbol}/report`, icon: <FileText className="w-4 h-4" /> },
         { name: '籌碼分析', path: `/stocks/${params.symbol}/chips`, icon: <Layers className="w-4 h-4" /> },
         { name: '財務報表', path: `/stocks/${params.symbol}/financials`, icon: <PieChart className="w-4 h-4" /> },
         { name: '技術分析', path: `/stocks/${params.symbol}/technical`, icon: <BarChart3 className="w-4 h-4" /> },
@@ -33,9 +34,13 @@ export default function StockDetailLayout({
 
                 {/* 1. Shared Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div className="space-y-1">
-                        <Link href="/stocks" className="text-sm text-gray-400 hover:text-indigo-400 flex items-center transition-colors">
-                            <ArrowLeft className="w-4 h-4 mr-1" /> 行情搜尋
+                    <div className="space-y-2">
+                        <Link
+                            href="/stocks"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-all group"
+                        >
+                            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                            返回行情中心
                         </Link>
                         <div className="flex items-baseline gap-3">
                             {data ? (

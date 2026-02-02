@@ -41,25 +41,7 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {/* 頂部導航與返回按鈕 */}
-            <div className="flex items-center justify-between">
-                <Link
-                    href="/stocks"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all group"
-                >
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-medium">返回行情中心</span>
-                </Link>
-                <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-end">
-                        <h2 className="text-xl font-bold text-white">{metadata.market}</h2>
-                        <span className="text-[10px] text-gray-500 font-mono tracking-widest">{params.symbol}</span>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                        <TrendingUp size={20} className="text-indigo-400" />
-                    </div>
-                </div>
-            </div>
+            {/* 頂部導航已移至 Layout */}
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-3 space-y-6">
@@ -146,10 +128,13 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
                         suffix="%"
                     />
 
-                    {/* 操作按鈕 */}
-                    <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
-                        啟動 AI 深度辯證
-                    </button>
+                    {/* 操作提示 */}
+                    <div className="p-5 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
+                        <p className="text-[10px] text-amber-500/60 uppercase tracking-widest mb-1 italic">Pro Insight</p>
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                            切換頂部 <span className="text-amber-400/80">AI 決策報告</span> 標籤以獲取 Gemini 生成的深度辯證分析。
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

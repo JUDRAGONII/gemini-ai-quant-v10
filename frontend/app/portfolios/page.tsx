@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, TrendingUp, TrendingDown, PieChart, Loader2, Wallet, ChevronLeft, Briefcase, PlusCircle } from 'lucide-react';
+import { Trash2, PieChart, Loader2, Wallet, Briefcase, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatErrorMessage } from '@/lib/errorUtils';
-import { ProButton } from '@/components/UI/ProButton';
 
 interface Portfolio {
     id: string;
@@ -18,7 +17,7 @@ interface Portfolio {
 }
 
 export default function PortfoliosPage() {
-    const router = useRouter();
+    const router = useRouter(); // Though not explicitly used for push here yet
     const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
     const [loading, setLoading] = useState(true);
     const [creating, setCreating] = useState(false);
@@ -104,27 +103,6 @@ export default function PortfoliosPage() {
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Section */}
             <section className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                    <ProButton
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => router.back()}
-                        className="!rounded-full w-10 h-10 p-0 flex items-center justify-center border-white/5 bg-white/5 hover:bg-white/10"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-gray-400" />
-                    </ProButton>
-                    <div className="h-px w-8 bg-gradient-to-r from-white/10 to-transparent" />
-                    <nav className="text-[10px] font-bold uppercase text-gray-600 tracking-widest flex items-center gap-2">
-                        <span className="hover:text-gray-400 cursor-pointer" onClick={() => router.push('/')}>
-                            首頁 <span className="text-[8px] opacity-50">Home</span>
-                        </span>
-                        <span>/</span>
-                        <span className="text-indigo-500/80">
-                            投資組合 <span className="text-[8px] opacity-70">Portfolios</span>
-                        </span>
-                    </nav>
-                </div>
-
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter">
@@ -265,6 +243,7 @@ export default function PortfoliosPage() {
 
                                     <button
                                         onClick={() => handleDelete(portfolio.id)}
+                                        aria-label={`刪除 ${portfolio.name}`}
                                         className="ml-4 p-3 text-gray-600 hover:text-rose-400 hover:bg-rose-500/10 rounded-2xl transition-all opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0"
                                     >
                                         <Trash2 className="w-5 h-5" />

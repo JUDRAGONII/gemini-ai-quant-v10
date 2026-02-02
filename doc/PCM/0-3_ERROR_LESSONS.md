@@ -581,3 +581,28 @@
 - **【預防重複犯錯的 Checkbox】**：
     - [ ] 任何跨目錄的 Python 腳本執行，應配合 `PYTHONPATH` 確保導向專案根目錄。
     - [ ] GitHub Actions 配置文件應與本地 `docker-compose.yml` 的 `PYTHONPATH` 配置同步檢查。
+### 2026-02-02 Phase 8.7 佈局與 AI 報告整合教訓
+
+### 問題現象
+1. **Runtime Error**: `ReferenceError: FileText is not defined` 在渲染個股詳請頁時發生。
+2. **API 404 (Server Side)**: 在 `report/page.tsx` (Server Component) 中呼叫 `/api/ai/reports` 時回傳 404 或連線失敗。
+3. **TypeScript Error**: 排行榜頁面報錯 `Property 'stockName' does not exist`。
+4. **Test Failure**: `GlassCard` 導入路徑在 Linux (Docker) 環境下因大小寫敏感 (Case-sensitive) 導致找不到模組。
+
+### 底層根本原因
+1. **手誤失配**: 複製代碼時漏掉 Lucide 圖標導入。
+2. **環境變數隔離**: Server Component 執行於 Node.js 環境，若未配置 `INTERNAL_SUPABASE_URL` 與 `SERVICE_ROLE_KEY` (或 Docker 未傳遞)，且請求指向了不正確的 Localhost，會導致聯網失敗。
+3. **Mock 與 Reality 脫節**: Mock 資料使用的是 `stockName`，但正式介面 (Interface) 定義為 `name`。
+4. **大小寫敏感度**: Windows 檔案系統不區分大小寫，但 Docker (Linux) 嚴格區分。`components/ui/glasscard` 與 `GlassCard` 不等價。
+
+### 解決方案
+1. 補齊 `FileText` 導入。
+2. 在 `docker-compose.yml` 注入 `SUPABASE_SERVICE_ROLE_KEY` 並在 API 路由中優先使用內部 URL。
+3. 統一屬性名稱為 `name`。
+4. 修正導入路徑大小寫。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 跨環境 (Win -> Linux) 開發時，必須確保 `import` 路徑的大小寫與檔案名稱 100% 一致。
+- [ ] Server Component 的外部請求必須具備環境變數感知能力。
+- [ ] 執行 `/local-ci-v10` 驗證時，若 Jest 通過但 TSC 失敗，絕對不可忽略型別錯誤。
+- [ ] 修改共用組件文字或結構後，應主動搜尋並更新受影響的舊有測試 (Regression Fix)。

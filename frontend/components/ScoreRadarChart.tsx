@@ -25,6 +25,7 @@ interface ScoreRadarChartProps {
     showLegend?: boolean;
     showAnimation?: boolean;
     comparisonData?: ScoreData[];
+    customScore?: number; // Optional weighted score from parent
 }
 
 const DIMENSION_COLORS: Record<string, string> = {
@@ -43,6 +44,7 @@ export default function ScoreRadarChart({
     showLegend = true,
     showAnimation = true,
     comparisonData,
+    customScore,
 }: ScoreRadarChartProps) {
     const [isAnimating, setIsAnimating] = useState(true);
     const [hoveredDimension, setHoveredDimension] = useState<string | null>(null);
@@ -54,10 +56,11 @@ export default function ScoreRadarChart({
         }
     }, [showAnimation]);
 
-    const avgScore =
-        data.length > 0
+    const displayScore = customScore !== undefined
+        ? customScore
+        : (data.length > 0
             ? Math.round(data.reduce((sum, d) => sum + d.score, 0) / data.length)
-            : 0;
+            : 0);
 
     const getGrade = (score: number) => {
         if (score >= 80) return { label: "S", color: "#10B981", bg: "bg-green-500/20" };
@@ -67,7 +70,7 @@ export default function ScoreRadarChart({
         return { label: "D", color: "#EF4444", bg: "bg-red-500/20" };
     };
 
-    const grade = getGrade(avgScore);
+    const grade = getGrade(displayScore);
 
     const chartData = data.map((d, i) => ({
         ...d,
@@ -78,12 +81,12 @@ export default function ScoreRadarChart({
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             const dataPoint = payload[0].payload as ScoreData & { comparison?: number };
-            
+
             return (
                 <div className="glass p-3 rounded-lg border border-white/20 text-sm min-w-[140px]">
                     <div className="flex items-center gap-2 mb-2">
-                        <div 
-                            className="w-3 h-3 rounded-full" 
+                        <div
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: color }}
                         />
                         <span className="text-gray-400">{dataPoint.dimension}</span>
@@ -123,7 +126,7 @@ export default function ScoreRadarChart({
                     <span className="text-2xl font-bold" style={{ color: grade.color }}>
                         {grade.label}
                     </span>
-                    <p className="text-xs text-gray-500">{avgScore} 分</p>
+                    <p className="text-xs text-gray-500">{displayScore} 分</p>
                 </div>
             </div>
 
@@ -173,14 +176,14 @@ export default function ScoreRadarChart({
                     {data.map((d) => {
                         const score = d.score;
                         const barWidth = score;
-                        
+
                         return (
                             <div
                                 key={d.dimension}
                                 className="transition-all hover:scale-105"
                             >
                                 <div className="flex justify-between items-center mb-1">
-                                    <span 
+                                    <span
                                         className="text-xs text-gray-400"
                                         style={{ color: DIMENSION_COLORS[d.dimension] }}
                                     >

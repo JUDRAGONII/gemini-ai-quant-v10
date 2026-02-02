@@ -61,7 +61,7 @@ describe('PortfoliosPage Integration', () => {
             expect(screen.getByText('AI 成長組合')).toBeInTheDocument();
             expect(screen.getByText('穩定配息')).toBeInTheDocument();
             // Use getAllByText if '預設' appears multiple times or use more specific selector
-            expect(screen.getByText('預設')).toBeInTheDocument();
+            expect(screen.getByText(/DEFAULT/i)).toBeInTheDocument();
         });
     });
 
@@ -83,11 +83,11 @@ describe('PortfoliosPage Integration', () => {
         render(<PortfoliosPage />);
 
         // Input name
-        const input = await screen.findByPlaceholderText('投資組合名稱');
+        const input = await screen.findByPlaceholderText(/組合名稱/);
         fireEvent.change(input, { target: { value: '新組合' } });
 
         // Click create
-        const createBtn = screen.getByRole('button', { name: '建立' });
+        const createBtn = screen.getByRole('button', { name: /建立/ });
         fireEvent.click(createBtn);
 
         await waitFor(() => {
@@ -104,10 +104,10 @@ describe('PortfoliosPage Integration', () => {
     it('TC-1830: 空名稱建立 (按鈕禁用)', async () => {
         render(<PortfoliosPage />);
 
-        const createBtn = await screen.findByRole('button', { name: '建立' });
+        const createBtn = await screen.findByRole('button', { name: /建立/ });
         expect(createBtn).toBeDisabled();
 
-        const input = screen.getByPlaceholderText('投資組合名稱');
+        const input = screen.getByPlaceholderText(/組合名稱/);
         fireEvent.change(input, { target: { value: '   ' } }); // Only spaces
         expect(createBtn).toBeDisabled();
     });
