@@ -49,7 +49,7 @@ class MacroFetcher(BaseFetcher):
     """美國宏觀經濟指標擷取器 (FRED)"""
 
     def __init__(self, client, api_key: Optional[str] = None):
-        super().__init__(client, "macro_indicators")
+        super().__init__(client, "macro_indicators", provider="fred")
         self.api_key = api_key or Config.FRED_API_KEY
         self.fred = Fred(api_key=self.api_key) if self.api_key else None
 
@@ -101,12 +101,22 @@ class MacroFetcher(BaseFetcher):
         start_date = (datetime.now() - timedelta(days=lookback_days)).strftime('%Y-%m-%d')
         logger.info(f"Starting All Macro Sync from {start_date}")
         
+        # 1. 配額檢查
+        if self.provider:
+            self.quota_service.increment_usage(self.provider)
+
         total_upserted = 0
-        for code, meta in MACRO_METADATA.items():
-            logger.info(f"Syncing {code} ({meta['id']})...")
-            df = self.fetch(meta['id'], start_date)
-            records = self.transform(df, indicator_code=code, series_id=meta['id'])
-            total_upserted += self.upsert(records, on_conflict='indicator_code,reference_date')
-            
-        logger.info(f"Macro Sync Completed. Total records: {total_upserted}")
-        return total_upserted
+        try:
+            for code, meta in MACRO_METADATA.items():
+                logger.info(f"Syncing {code} ({meta['id']})...")
+                df = self.fetch(meta['id'], start_date)
+                records = self.transform(df, indicator_code=code, series_id=meta['id'])
+                total_upserted += self.upsert(records, on_conflict='indicator_code,reference_date')
+                
+            logger.info(f"Macro Sync Completed. Total records: {total_upserted}")
+            return total_upserted
+        except Exception as e:
+            if self.provider:
+                self.quota_service.record_error(self.provider, str(e))
+            logger.error(f"Macro Sync Failed: {e}")
+            return 0

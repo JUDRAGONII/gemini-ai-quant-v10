@@ -145,14 +145,6 @@
 - [ ] 測試 Overlay 交互時，優先使用精準的類名或 `data-testid`。
 - [ ] 驗證 LocalStorage 持久化時，使用 `JSON.parse` 進行對象層級的比對。
 - [ ] Mock 第三方組件時，確保常用的 HTML 屬性（如 `className`, `id`）被正確傳遞。
-148: 
-149: ### 2026-01-23 端口衝突與 Next.js 資源缺失教訓
-150: 
-151: ### 問題現象
-152: - **Port Jump**: Next.js 提示端口 3000 被佔用，自動跳轉至 3001。
-153: - **Hydration/404 Error**: 頁面載入異常，瀏覽器 Console 出現大量 `main-app.js` 或分塊檔案 404 錯誤。
-154: 
-155: ### 底層根本原因
 156: - **殭屍進程佔位**: 前次異常結束的 Node.js 進程（如 PID 3176）未釋放 3000 端口。
 157: - **緩存失同步**: Next.js 的編譯產物 (`.next`) 可能包含基於原端口的靜態引用。當服務器跳轉端口後，若瀏覽器仍試圖請求舊端口的資源，或 HMR 更新無法正確對接，會導致白屏或資源缺失。
 158: 
@@ -606,3 +598,25 @@
 - [ ] Server Component 的外部請求必須具備環境變數感知能力。
 - [ ] 執行 `/local-ci-v10` 驗證時，若 Jest 通過但 TSC 失敗，絕對不可忽略型別錯誤。
 - [ ] 修改共用組件文字或結構後，應主動搜尋並更新受影響的舊有測試 (Regression Fix)。
+### 2026-02-03 Phase 9 全面性測試與 Mock 策略教訓
+
+### 問題現象
+1. **TypeError: 'int' object is not awaitable**: 在後端測試中呼叫 Mock 的 `QuotaService.increment_usage` 時報錯。
+2. **Unable to find element with text: 台積電**: 前端測試 `ScreenerView` 時，雖然資料已渲染但在表格中找不到文字。
+3. **Framer Motion 渲染延遲**: `AlertToast` 的測試因動畫延遲導致 `expect` 斷言在元素出現前就執行。
+
+### 底層根本原因
+1. **同步/非同步 Mock 失配**: 原本 `QuotaService` 的部分方法為同步實作，但在測試中誤用了 `await`。且 Supabase 的鏈式呼叫 (`.table().select()...`) 若 Mock 不完整，會返回 `None` 或非預期物件。
+2. **欄位名不一致 (Field Mismatch)**: Mock 數據使用了 `{ stock_name: '台積電' }`，但元件與介面實作要求的是 `{ name: '台積電' }`。此外，`getByText` 在處理被 HTML 標籤（如 `span`）分割的文字時會失敗。
+3. **動畫狀態競爭**: `AnimatePresence` 與 `motion.div` 在 JSDOM 環境下會與 Jest 的時序產生競爭，導出斷言失敗。
+
+### 解決方案
+1. **校準 Mock 介面**: 確保後端 Mock 的 `return_value` 類型與實作精確對齊。對 Supabase 鏈式呼叫使用多層 Mock。
+2. **寬鬆斷言與數據對齊**: 修正 Mock 數據欄位名為 `name`。在測試中使用 Regex (`/台積電/`) 以應對 HTML 文字拆分。
+3. **全面 Hook Mocking**: 針對複雜組件（如 `AlertBadge`），直接 Mock `useAlerts` Hook 的回傳值，避開 SWR 與 Realtime 的非同步複雜性。同時 Mock `framer-motion` 以同步方式渲染。
+
+### 預防重複犯錯的 Checkbox
+- [x] 修改後端 Mock 前，先確認該方法的 `def` 是否為 `async`。
+- [x] 前端測試渲染問題優先檢查 Mock 資料欄位是否與 `interface` 100% 同步。
+- [x] 遇到動畫組件導致的測試不穩定，應優先在 `jest.setup.js` 或單獨測試中 Mock `framer-motion`。
+- [x] 涉及 SWR 的組件測試，必須手動清理 `SWRConfig` 緩存或直接 Mock Hook。

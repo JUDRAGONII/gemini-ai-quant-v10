@@ -15,14 +15,19 @@ class BaseFetcher(ABC):
     提供統一的 Upsert 邏輯與重試機制。
     """
 
-    def __init__(self, client: Client, table_name: str):
+    def __init__(self, client: Client, table_name: str, provider: Optional[str] = None):
         self.client = client
         self.table_name = table_name
+        self.provider = provider
+        # 延遲匯入以避免循環依賴
+        from backend.services.quota_service import QuotaService
+        self.quota_service = QuotaService()
 
     @abstractmethod
-    def fetch(self, **kwargs) -> Any:
+    async def fetch(self, **kwargs) -> Any:
         """從外部 API 獲取原始數據 (需由子類別實作)"""
         pass
+
 
     @abstractmethod
     def transform(self, raw_data: Any) -> List[Dict[str, Any]]:
@@ -72,11 +77,32 @@ class BaseFetcher(ABC):
         """執行完整 ETL 流程"""
         try:
             logger.info(f"Starting ETL for {self.table_name}...")
-            raw = self.fetch(**kwargs)
+            
+            # 1. 配額檢查與遞增
+            if self.provider:
+                self.quota_service.increment_usage(self.provider)
+                
+            # 2. 數據擷取與轉換
+            # 注意: 子類別的 fetch 可能是 async，但這裡暫以 sync 呼叫
+            # 若子類別 fetch 為 async，則需在此處理 (如使用 asyncio.run)
+            import asyncio
+            import inspect
+            
+            if inspect.iscoroutinefunction(self.fetch):
+                raw = asyncio.run(self.fetch(**kwargs))
+            else:
+                raw = self.fetch(**kwargs)
+                
             records = self.transform(raw)
+            
+            # 3. 數據寫入
             count = self.upsert(records, on_conflict=on_conflict)
             logger.info(f"ETL completed for {self.table_name}. Total: {count}")
             return count
         except Exception as e:
+            # 錯誤記錄
+            if self.provider:
+                self.quota_service.record_error(self.provider, str(e))
             logger.error(f"ETL failed for {self.table_name}: {str(e)}")
             return 0
+

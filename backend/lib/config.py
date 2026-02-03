@@ -10,7 +10,7 @@ class Config:
     
     # Supabase
     SUPABASE_URL = os.getenv("SUPABASE_URL", "http://kong:8000")
-    SERVICE_ROLE_KEY = os.getenv("SERVICE_ROLE_KEY")
+    SERVICE_ROLE_KEY = os.getenv("SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")
     
     # APIs
     FRED_API_KEY = os.getenv("FRED_API_KEY_1") or os.getenv("FRED_API_KEY")

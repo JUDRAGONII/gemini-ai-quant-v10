@@ -15,7 +15,7 @@ class TiingoFetcher(BaseFetcher):
     BASE_URL = "https://api.tiingo.com/tiingo/daily/{ticker}/prices"
 
     def __init__(self, client, api_key: Optional[str] = None):
-        super().__init__(client, "daily_price")
+        super().__init__(client, "daily_price", provider="tiingo")
         self.api_key_index = 0
         self.api_key = api_key or Config.get_tiingo_key(self.api_key_index)
 
@@ -93,7 +93,7 @@ class FugleFetcher(BaseFetcher):
     """Fugle 台股行情擷取器 (支援日 K 與分 K)"""
     
     def __init__(self, client, api_key: Optional[str] = None):
-        super().__init__(client, "daily_price") # 預設寫入 daily_price, 分K需切換 table
+        super().__init__(client, "daily_price", provider="fugle") # 預設寫入 daily_price, 分K需切換 table
         self.api_key = api_key or Config.FUGLE_API_KEY
         try:
             from fugle_marketdata import RestClient
@@ -204,7 +204,12 @@ class FugleFetcher(BaseFetcher):
         try:
             logger.info(f"Starting Fugle ETL for {ticker} ({timeframe})...")
             
+            # 1. 配額檢查與遞增
+            if self.provider:
+                self.quota_service.increment_usage(self.provider)
+
             start_date = kwargs.get('start_date')
+            # ... (其餘邏輯保持不變)
             end_date = kwargs.get('end_date') or datetime.now().strftime('%Y-%m-%d')
             
             total_count = 0
@@ -247,8 +252,12 @@ class FugleFetcher(BaseFetcher):
             return total_count
 
         except Exception as e:
+            # 錯誤記錄
+            if self.provider:
+                self.quota_service.record_error(self.provider, str(e))
             logger.error(f"Fugle ETL failed for {ticker}: {e}")
             return 0
+
         finally:
             self.table_name = original_table # 還原
 

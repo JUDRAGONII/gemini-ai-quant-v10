@@ -24,8 +24,10 @@ tenacity
 python-dotenv
 psycopg2-binary
 requests
+redis>=5.0.0  # Redis 快取客戶端
 
 # API
 fastapi>=0.100.0
 uvicorn>=0.20.0
 python-multipart
+

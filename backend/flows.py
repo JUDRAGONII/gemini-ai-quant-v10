@@ -11,7 +11,9 @@ from backend.etl import MacroFetcher, TiingoFetcher, FugleFetcher, TwseFetcher, 
 from backend.agents.evolution import EvolutionEngine
 from backend.agents.backtest import BacktestEngine
 from backend.agents.dialectic import DialecticAgent
+from backend.workers.market_relay_worker import MarketRelayWorker
 import schedule
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -50,16 +52,28 @@ def run_evolution():
     # engine.run(backtest_engine)
     pass
 
+@task(name="Run Quota-Balanced Market Relay", retries=1)
+def sync_relay():
+    logger.info("--- [Task] Sync Market Relay (Quota-Balanced) ---")
+    client = get_supabase()
+    worker = MarketRelayWorker(client)
+    # 執行單次刷新，週期由 Scheduler 控制
+    asyncio.run(worker.run_once())
+
 @flow(name="Daily V10 Quantitative Pipeline")
 def daily_pipeline():
     sync_macro()
     sync_market()
+    sync_relay()
     run_evolution()
 
 def run_scheduler():
     logger.info("Starting V10.0 Orchestration Scheduler...")
     # 每天早上八點執行
     schedule.every().day.at("08:00").do(daily_pipeline)
+    
+    # 每 30 分鐘執行一次行情中繼 (對齊 Phase 9 計畫)
+    schedule.every(30).minutes.do(sync_relay)
     
     # 啟動時執行一次驗證
     daily_pipeline()

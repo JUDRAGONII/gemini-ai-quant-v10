@@ -16,9 +16,9 @@
 
 ### 核心任務
 1.  **AI 選股引擎 (AI Screener)**: 實作支持「技術面 + 籌碼面 + AI 預測」三位一體的交叉篩選器。
-2.  **實時報價中繼 (Real-time Relay)**: 建立高性能的報價快取機制，支持全市場標的的即時（或秒級）更新。
+2.  **效能平衡報價中繼 (Quota-Balanced Market Relay)**: 建立具備配額感知的報價機制，預設每 30 分鐘更新一次全市場行情。
 3.  **市場熱力圖 (Market Heatmap)**: 實作視覺化全市場資金流向的 Treemap。
-4.  **智慧監控看板 (Market Bento)**: 提供 Bento Grid 風格的市場概覽，含即時異動紀錄。
+4.  **智慧監控看板 (Market Bento)**: 提供 Bento Grid 風格的市場概覽，含異動紀錄。
 
 ---
 
@@ -29,10 +29,12 @@
 *   **動態 SQL**: 使用 SQLAlchemy/SQL 構建器動態組合過濾條件。
 *   **核心欄位**: `stock_factors.factors_all` (JSONB) 將是篩選的核心。
 
-### 2.2 實時報價方案 (Real-time Strategy)
-*   **短期方案 (Speed-to-Market)**: 使用 Python 背景 Worker 每 30-60 秒調用 Fugle API 回補全市場報價至 Redis。
-*   **長期方案 (Scalability)**: 對接 Fugle WebSocket 獲取即時串流數據。
-*   **API 接口**: `/api/v1/market/quotes` (返回記憶體快取的報價)。
+### 2.2 行情更新方案 (Market Update Strategy)
+*   **智慧節流機制**: 建立 `QuotaManager` 監控 API Key 池 (Fugle, Tiingo) 剩餘配額。
+*   **分層更新頻率**: 
+    - *熱門標的 (自選股)*: 每 15 分鐘更新。
+    - *全市場標的*: 每 30-60 分鐘執行一次「滾動式回補」，確保不耗盡免費配額。
+*   **快取策略**: 使用 Redis 存儲最新行情快照，供選股引擎與前端即時讀取。
 
 ---
 
