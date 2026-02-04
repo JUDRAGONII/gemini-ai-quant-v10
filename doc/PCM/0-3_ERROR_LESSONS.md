@@ -620,8 +620,7 @@
 - [x] 前端測試渲染問題優先檢查 Mock 資料欄位是否與 `interface` 100% 同步。
 - [x] 遇到動畫組件導致的測試不穩定，應優先在 `jest.setup.js` 或單獨測試中 Mock `framer-motion`。
 - [x] 涉及 SWR 的組件測試，必須手動清理 `SWRConfig` 緩存或直接 Mock Hook。
-
-### 2026-02-04 ai-worker 數據精度錯誤 (Out of range float values)
+## [V10.3.10] - 2026-02-04 ai-worker 數據精度錯誤 (Out of range float values)
 
 ### 問題現象
 - **現象**：`ai-worker` 報錯 `[market_quotes] Upsert failed: Out of range float values are not JSON compliant`。
@@ -680,3 +679,22 @@
 - [ ] 模擬 Supabase Client 時，應確保 Mock 對象具備全功能的鏈式呼叫能力（包含 Realtime 與 Auth 方法）。
 - [ ] 變更側邊欄選單或路由時，必須同步執行全站整合測試以抓取斷言失效。
 - [ ] 在 `Sidebar` 或關鍵導航元素添加 `data-testid` 標記。
+### 2026-02-04 Docker 匿名卷快取導致模組遺失 (Volume Cache Inconsistency)
+
+### 問題現象
+- **現象**: 前端容器啟動後報測 `Module not found: Can't resolve 'swr'`，即使 `package.json` 中已定義且 Image 已重建。
+- **後果**: 前端開發環境癱瘓，無法正常渲染。
+
+### 底層根本原因
+- **匿名卷持久化**: `docker-compose.yml` 中定義了 `/app/node_modules` 作為匿名磁碟卷，旨在防止宿主機 `node_modules` 覆蓋容器內部依賴。
+- **快取失效**: 當新依賴（如 `swr`）加入 `package.json` 並在 `Dockerfile` 的 `RUN npm install` 階段安裝後，若執行 `docker-compose up` 時該匿名卷已存在，Docker 會優先掛載現有的（且不含新模組的）磁碟卷，導致新安裝的模組在運行時被舊快取「屏蔽」。
+
+### 解決方案
+1. **本地同步**: 在宿主機執行 `npm install` 確保 `package-lock.json` 最新。
+2. **強制刷新**: 執行 `docker-compose up -d --renew-anon-volumes frontend`。該旗標會強制刪除並重新建立匿名磁碟卷，從而將 Image 中最新的 `node_modules` 內容拉入磁碟卷。
+3. **優化**: 加入 `.dockerignore` 避免宿主機的大型二進位檔案干擾建置過程。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 凡涉及 `package.json` 依賴新增/刪除，重新啟動容器時必須使用 `--renew-anon-volumes`。
+- [ ] 定期執行 `docker system prune` 清理無效的匿名磁碟卷。
+- [ ] 確保 `.dockerignore` 包含 `node_modules` 與 `.next` 以防止 Context 過大。
