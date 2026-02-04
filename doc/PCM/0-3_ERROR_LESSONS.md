@@ -145,14 +145,6 @@
 - [ ] 測試 Overlay 交互時，優先使用精準的類名或 `data-testid`。
 - [ ] 驗證 LocalStorage 持久化時，使用 `JSON.parse` 進行對象層級的比對。
 - [ ] Mock 第三方組件時，確保常用的 HTML 屬性（如 `className`, `id`）被正確傳遞。
-148: 
-149: ### 2026-01-23 端口衝突與 Next.js 資源缺失教訓
-150: 
-151: ### 問題現象
-152: - **Port Jump**: Next.js 提示端口 3000 被佔用，自動跳轉至 3001。
-153: - **Hydration/404 Error**: 頁面載入異常，瀏覽器 Console 出現大量 `main-app.js` 或分塊檔案 404 錯誤。
-154: 
-155: ### 底層根本原因
 156: - **殭屍進程佔位**: 前次異常結束的 Node.js 進程（如 PID 3176）未釋放 3000 端口。
 157: - **緩存失同步**: Next.js 的編譯產物 (`.next`) 可能包含基於原端口的靜態引用。當服務器跳轉端口後，若瀏覽器仍試圖請求舊端口的資源，或 HMR 更新無法正確對接，會導致白屏或資源缺失。
 158: 
@@ -606,3 +598,85 @@
 - [ ] Server Component 的外部請求必須具備環境變數感知能力。
 - [ ] 執行 `/local-ci-v10` 驗證時，若 Jest 通過但 TSC 失敗，絕對不可忽略型別錯誤。
 - [ ] 修改共用組件文字或結構後，應主動搜尋並更新受影響的舊有測試 (Regression Fix)。
+### 2026-02-03 Phase 9 全面性測試與 Mock 策略教訓
+
+### 問題現象
+1. **TypeError: 'int' object is not awaitable**: 在後端測試中呼叫 Mock 的 `QuotaService.increment_usage` 時報錯。
+2. **Unable to find element with text: 台積電**: 前端測試 `ScreenerView` 時，雖然資料已渲染但在表格中找不到文字。
+3. **Framer Motion 渲染延遲**: `AlertToast` 的測試因動畫延遲導致 `expect` 斷言在元素出現前就執行。
+
+### 底層根本原因
+1. **同步/非同步 Mock 失配**: 原本 `QuotaService` 的部分方法為同步實作，但在測試中誤用了 `await`。且 Supabase 的鏈式呼叫 (`.table().select()...`) 若 Mock 不完整，會返回 `None` 或非預期物件。
+2. **欄位名不一致 (Field Mismatch)**: Mock 數據使用了 `{ stock_name: '台積電' }`，但元件與介面實作要求的是 `{ name: '台積電' }`。此外，`getByText` 在處理被 HTML 標籤（如 `span`）分割的文字時會失敗。
+3. **動畫狀態競爭**: `AnimatePresence` 與 `motion.div` 在 JSDOM 環境下會與 Jest 的時序產生競爭，導出斷言失敗。
+
+### 解決方案
+1. **校準 Mock 介面**: 確保後端 Mock 的 `return_value` 類型與實作精確對齊。對 Supabase 鏈式呼叫使用多層 Mock。
+2. **寬鬆斷言與數據對齊**: 修正 Mock 數據欄位名為 `name`。在測試中使用 Regex (`/台積電/`) 以應對 HTML 文字拆分。
+3. **全面 Hook Mocking**: 針對複雜組件（如 `AlertBadge`），直接 Mock `useAlerts` Hook 的回傳值，避開 SWR 與 Realtime 的非同步複雜性。同時 Mock `framer-motion` 以同步方式渲染。
+
+### 預防重複犯錯的 Checkbox
+- [x] 修改後端 Mock 前，先確認該方法的 `def` 是否為 `async`。
+- [x] 前端測試渲染問題優先檢查 Mock 資料欄位是否與 `interface` 100% 同步。
+- [x] 遇到動畫組件導致的測試不穩定，應優先在 `jest.setup.js` 或單獨測試中 Mock `framer-motion`。
+- [x] 涉及 SWR 的組件測試，必須手動清理 `SWRConfig` 緩存或直接 Mock Hook。
+
+### 2026-02-04 ai-worker 數據精度錯誤 (Out of range float values)
+
+### 問題現象
+- **現象**：`ai-worker` 報錯 `[market_quotes] Upsert failed: Out of range float values are not JSON compliant`。
+- **後果**：行情中繼任務失敗，無法更新市場數據。
+
+### 底層根本原因
+- **JSON 序列化限制**：API 回傳的數據中包含 `NaN` 或 `Infinity` (可能因開盤價為 0 或漲跌幅計算分母只有 0)。Python 的 `json` 模組預設不支持這些數值，導致序列化失敗。
+- **Pandas 行為**：`BaseFetcher` 中使用 Pandas 進行去重，Pandas 會將 `None` 轉換為 `NaN` (float)，進一步加劇了 JSON 不兼容問題。
+
+### 解決方案
+1. **源頭淨化**：在 `MarketRelayWorker.transform` 中引入 `sanitize_val` 函式，使用 `math.isnan/isinf` 過濾異常數值，將其轉回 `None`。
+2. **中間層防護**：在 `BaseFetcher.upsert` 中，於 Pandas 操作後使用 `.where(pd.notnull(df), None)` 執行二次清洗，確保 `to_dict` 生成標準 JSON。
+
+### 預防重複犯錯的 Checkbox
+- [x] 處理外部 API 金融數據（如 Price, Change%）時，必須預設其可能包含 `NaN` 或 `Infinite`。
+- [x] 在將 Pandas DataFrame 轉換為 JSON/Dict 前，務必執行 `None` 替換 (`where(pd.notnull(), None)`)。
+- [x] 使用 `json.dumps` 或 Supabase Client 寫入前，應確保數值轉化為標準 JSON。
+
+## [2026-02-04] 前端生產建置失敗 (Next.js Client Component & TS Type)
+
+### 錯誤現象
+在 GitHub CI 的 `npm run build` 階段發生以下錯誤：
+1. `Error: Hooks can only be used in a browser environment`：`AlertToastContainer.tsx` 未標記為 Client Component。
+2. `TS2345: Argument of type 'string[]' is not assignable to parameter of type 'keyof ...'`：`useHeatmap.ts` 中 SWR 的 array key 類型推斷失敗。
+
+### 底層根本原因
+- **Next.js App Router 限制**：Next.js 13/14+ 預設所有組件為 Server Component。若組件內使用了 `useEffect` 或 `useSWR` 等 Hook，必須顯式標註 `"use client";`，否則在生產建置（預渲染）時會報錯。
+- **TypeScript 嚴格檢查**：SWR 的 array key 被推斷為 `string[]` 時，若 fetcher 函數對 key 的參數有特定的物件鍵值 (keyof) 要求，會因類型不匹配而報錯。
+
+### 解決方案
+1. **指令補齊**：在所有包含 Hooks 的互動式 UI 組件頂部加入 `"use client";`。
+2. **類型斷言**：在 `useSWR` 的 array key 中，將參數顯式斷言或定義型別，例如 `[ 'cache-key', arg1 as SpecificType ]`，確保滿足 fetcher 簽名。
+
+### 預防重複犯錯的 Checkbox
+- [x] 建立包含 `useEffect`, `useState`, `useSWR` 的組件時，首行必檢核是否存在 `"use client";`。
+- [x] `useSWR` 使用陣列作為 Key 時，應確保其成員類型與 fetcher 參數定義完全一致。
+- [x] 在推送至 GitHub 前，本地應先執行 `npm run build` 進行全量編譯檢查。
+### 2026-02-04 前端整合測試與 UI 不同步 (Test-UI Drift & Mock Incomplete)
+
+### 問題現象
+- **FAIL**: `npm test` 在 `__tests__/app/page.test.tsx` 失敗，無法找到「總覽 (Overview)」標籤。
+- **TypeError**: `_supabase.supabase.channel is not a function`，導致多項測試崩潰。
+
+### 底層根本原因
+1. **字串拆分渲染**: `Sidebar.tsx` 將選單標籤（如 `總覽 (Overview)`）拆分為中英兩個 `span`。原本的 `getByText('總覽 (Overview)')` 因 DOM 中文字被 HTML 標籤分割而無法匹配。
+2. **選單名稱更新**: 側邊欄將「總覽」改為「首頁面板」，但測試案例仍沿用舊名稱。
+3. **Mock 缺失**: `page.tsx` 引用了包含 `useAlerts` 的組件，該 Hook 內部執行了 Supabase Realtime 訂閱（`.channel().on().subscribe()`）。測試檔案中的局部 Mock 僅模擬了 `.from().select()`，缺少 Realtime 鏈式方法，引發 `TypeError`。
+
+### 解決方案
+1. **鬆散匹配斷言**: 改為搜尋拆分後的純中文字標籤（如 `expect(screen.getAllByText('首頁面板')[0]).toBeInTheDocument()`）。
+2. **同步選單標籤**: 更新測試案例以匹配最新的 `MENU_ITEMS`（首頁面板、智慧排名）。
+3. **完善鏈式 Mock**: 在 `mockSupabaseChain` 中補足 `channel`, `on`, `subscribe`, `removeChannel` 等方法。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 測試組件標籤時，若該組件會對字串進行自定義解析或拆分渲染，斷言應聚焦於不可分割的子字串。
+- [ ] 模擬 Supabase Client 時，應確保 Mock 對象具備全功能的鏈式呼叫能力（包含 Realtime 與 Auth 方法）。
+- [ ] 變更側邊欄選單或路由時，必須同步執行全站整合測試以抓取斷言失效。
+- [ ] 在 `Sidebar` 或關鍵導航元素添加 `data-testid` 標記。

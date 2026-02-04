@@ -30,24 +30,34 @@ const mockSelect = jest.fn();
 const mockEq = jest.fn();
 const mockOrder = jest.fn();
 const mockLimit = jest.fn();
+const mockSubscribe = jest.fn(() => ({ unsubscribe: jest.fn() }));
+const mockOn = jest.fn();
+const mockChannel = jest.fn();
 
 // Chainable Mock Implementation
-const mockSupabaseChain = {
+const mockSupabaseChain: any = {
     select: mockSelect,
     eq: mockEq,
     order: mockOrder,
     limit: mockLimit,
+    channel: mockChannel,
+    on: mockOn,
+    subscribe: mockSubscribe,
 };
 
 mockSelect.mockReturnValue(mockSupabaseChain);
 mockEq.mockReturnValue(mockSupabaseChain);
 mockOrder.mockReturnValue(mockSupabaseChain);
+mockChannel.mockReturnValue(mockSupabaseChain);
+mockOn.mockReturnValue(mockSupabaseChain);
 // limit is the end of the chain in our specific usage, returning { data, error }
 mockLimit.mockResolvedValue({ data: [], error: null });
 
 jest.mock('@/lib/supabase', () => ({
     supabase: {
-        from: jest.fn(() => mockSupabaseChain)
+        from: jest.fn(() => mockSupabaseChain),
+        channel: jest.fn(() => mockSupabaseChain),
+        removeChannel: jest.fn()
     }
 }));
 
@@ -65,13 +75,13 @@ describe('Dashboard 頁面整合測試', () => {
         const ui = await Home();
         render(ui);
 
-        // Assert
-        expect(screen.getAllByText('總覽 (Overview)')[0]).toBeInTheDocument();
-        expect(screen.getAllByText('籌碼分析 (Chips)')[0]).toBeInTheDocument();
-        expect(screen.getAllByText('市場動態 (Market)')[0]).toBeInTheDocument();
-        expect(screen.getAllByText('演化分析 (Evolution)')[0]).toBeInTheDocument();
-        expect(screen.getAllByText('決策報告 (Reports)')[0]).toBeInTheDocument();
-        expect(screen.getAllByText('系統設定 (Settings)')[0]).toBeInTheDocument();
+        // Assert: 字串在 Sidebar 中會被拆分渲染，所以我們只搜尋中文字部分
+        expect(screen.getAllByText('首頁面板')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('籌碼分析')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('市場動態')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('演化分析')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('智慧排名')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('系統設定')[0]).toBeInTheDocument();
         expect(screen.getAllByTestId('icon-cpu')[0]).toBeInTheDocument(); // Logo icon
     });
 
@@ -80,7 +90,8 @@ describe('Dashboard 頁面整合測試', () => {
         const ui = await Home();
         render(ui);
 
-        const chipsLink = screen.getAllByText('籌碼分析 (Chips)')[0].closest('a');
+        // 搜尋拆分後的標籤，並定位其父層 Link
+        const chipsLink = screen.getAllByText('籌碼分析')[0].closest('a');
         expect(chipsLink).toHaveAttribute('href', '/chips');
     });
 

@@ -16,6 +16,7 @@ import {
     Sparkles,
     Briefcase
 } from "lucide-react";
+import { AlertBadge } from "../Market/AlertBadge";
 
 /**
  * 統一側邊欄組件 (Unified Sidebar)
@@ -85,19 +86,24 @@ export default function Sidebar() {
     return (
         <aside className="fixed left-0 top-0 bottom-0 w-64 glass border-r border-white/5 p-5 flex flex-col z-40 bg-[#0a0a0a]/50 backdrop-blur-xl">
             {/* Logo Section */}
-            <div className="flex items-center gap-3 px-2 mb-10 mt-2">
-                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <Cpu size={24} className="text-white" />
-                    <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
+            <div className="flex items-center justify-between px-2 mb-10 mt-2">
+                <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <Cpu size={24} className="text-white" data-testid="icon-cpu" />
+                        <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-bold bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text text-transparent tracking-wider">
+                            AI QUANT
+                        </h1>
+                        <p className="text-[10px] text-cyan-500/60 font-mono tracking-widest uppercase">
+                            Pro V10.0
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text text-transparent tracking-wider">
-                        AI QUANT
-                    </h1>
-                    <p className="text-[10px] text-cyan-500/60 font-mono tracking-widest uppercase">
-                        Pro V10.0
-                    </p>
-                </div>
+
+                {/* 警示中心入口 */}
+                <AlertBadge />
             </div>
 
             {/* Navigation */}

@@ -1,4 +1,53 @@
-# CHANGELOG (變更紀錄)
+# 變更紀錄 (CHANGELOG)
+
+## [V10.3.10] - 2026-02-04
+### Added
+- **文檔更新**: 建立開發日誌 `074`，記錄 Phase 10 部署準備。
+- **CI 驗證**: 準備推送代碼以觸發 GitHub Actions 全量測試。
+
+### Fixed
+- **前端 CI 失敗**: 
+    - 為 `AlertToastContainer` 加入 `"use client";` 修正 Server Component 限制。
+    - 修正 `useHeatmap` 中的 TypeScript 類型斷言 (TS2345)。
+- **變更摘要**: 更新 `0-1_DEV_SUMMARY.md` 推動進度至 Phase 11 監控階段。
+
+## [V10.3.9] - 2026-02-04
+### Fixed
+- **後端日誌**: 為 `logging.basicConfig` 加入 `force=True`，修復 ai-worker 日誌被其他套件覆蓋的問題。
+- **代碼清理**: 移除 `worker_entry.py` 與 `alert_scanner_worker.py` 中的調試用 `print`。
+
+## [V10.3.8] - 2026-02-04
+### Fixed
+- [Frontend] 修復 `AlertToastContainer.tsx` 缺少 `"use client";` 指令導致的建置失敗。
+- [Frontend] 修復 `useHeatmap.ts` 中 SWR fetcher 的 TypeScript TS2345 類型錯誤。
+- [CI/CD] 通過本地 `npm run build` 驗證，解決 GitHub CI 前端編譯阻塞問題。
+
+## [V10.3.8] - 2026-02-04
+### Added
+- [Phase 9.6] 實作「完全自動化調度器整合 (Automated Scheduler Integration)」。
+- [Backend] 建立 `worker_entry.py` 作為統一 Worker 進入點，併發執行 `AlertScanner` (Async) 與 `Scheduler` (Async Loop)。
+- [Infrastructure] 配置 `ai-worker` 強制日誌輸出 (`force=True`) 並持久化至文件，解決三方庫日誌黑洞問題。
+- [Verification] 通過 Redis 模擬訊息流動驗證「行情-掃描-警示」完整閉環。
+
+## [V10.3.7] - 2026-02-03
+
+## [V10.3.6] - 2026-02-03
+### Added
+- [Phase 9.5] 實作「市場異動警示與通知引擎 (Market Alerts & Notification Engine)」。
+- [Backend] 實作 `AlertService` 具備多維度條件掃描與 Redis 去重防抖。
+- [Backend] 建立 `AlertScannerWorker` 異步監聽行情更新事件。
+- [Backend] 完成 `market_alerts` 資料表、RLS 政策與 Realtime 廣播配置。
+- [Frontend] 實作 `AlertToast`, `AlertPanel`, `AlertBadge` 全方位即時通知體系。
+- [Frontend] 整合 `useAlerts` Hook 實現毫秒級 Supabase Realtime 推送響應。
+
+## [V10.3.5] - 2026-02-03
+
+## [V10.3.4] - 2026-02-03
+### Changed
+- **Phase 9 實作計畫校準 (Planning)**:
+  - 調整「實時報價中繼」方案：改為「效能平衡報價中繼 (Quota-Balanced Market Relay)」。
+  - 引入「配額感知」機制，將全市場更新頻率降低至 30 分鐘/次，優先保障自選股 (15 分鐘/次)。
+  - 適配免費 API KEY 池 (Fugle, Tiingo) 之 RPM/RPD 限制，確保系統穩定性。
 
 ## [V10.3.3] - 2026-02-02
 ### Added
@@ -124,6 +173,12 @@
 
 ## [V10.2.3] - 2026-01-28
 ### Added
+- **Phase 9.4: API 配額管理系統** (2026-02-03)
+  - 實作 Redis + PostgreSQL 混合架構，支援高頻 API 配額計數。
+  - 建立 `/admin/quota` 監控中心，視覺化多提供者 (Fugle, Tiingo, FRED) 健康狀態。
+  - 整合 `BaseFetcher` 自動追蹤機制，支援異常連續錯誤自動冷卻功能。
+- **Phase 9.2: 市場數據中繼站** (2026-02-03)
+  - 完成行情數據中繼機制，整合至 ETL 管線。
 - **Phase 7 完整 Migration (P0)**:
   - 實作具備冪等性的 `20260128_FIXED_MIGRATIONS.sql`。
   - **欄位更名**：成功將 `stocks` 表的 `symbol`, `name`, `market` 遷移至 `stock_code`, `stock_name`, `market_type`。

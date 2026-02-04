@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: 'AI Quantitative Investment Analyzer',
 }
 
+import { AlertToastContainer } from '@/components/Market/AlertToastContainer'
+
 export default function RootLayout({
   children,
 }: {
@@ -24,6 +26,7 @@ export default function RootLayout({
       <body className="antialiased bg-black overflow-x-hidden selection:bg-cyan-500/30">
         <SettingsProvider>
           {children}
+          <AlertToastContainer />
         </SettingsProvider>
       </body>
     </html>

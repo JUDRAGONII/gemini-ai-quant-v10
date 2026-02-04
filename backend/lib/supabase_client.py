@@ -16,7 +16,7 @@ class SupabaseSingleton:
             with cls._lock:
                 if cls._instance is None:
                     url = os.getenv("SUPABASE_URL", "http://kong:8000")
-                    key = os.getenv("SERVICE_ROLE_KEY")
+                    key = os.getenv("SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")
                     
                     if not url or not key:
                         raise ValueError("Missing SUPABASE_URL or SERVICE_ROLE_KEY environment variables")

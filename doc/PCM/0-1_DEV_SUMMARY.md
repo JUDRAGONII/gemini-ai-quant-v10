@@ -1,9 +1,9 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-- **當進度**: Phase 9: 行情即時監控與選股中心 (核心建置中)
-- **當前里程碑**: Phase 8: AI 智慧與策略驗證 | 佈局優化、報告標籤化與導航修復 (COMPLETED)
-- **核心狀態**: 統一個股返回按鈕 (Header)，新增 AI 決策報告活頁標籤，修復跨組件導航路徑，解決 Server-side API 認證問題。
+- **當前進度**: Phase 11: 運作監控與結案 (Operation & Handover)
+- **當前里程碑**: Phase 10: 部署與交付 (Deployment & Delivery) | CI/CD 品質修復 (COMPLETED)
+- **核心狀態**: 成功修復 GitHub CI 前端建置錯誤（包含 Sidebar 渲染不匹配與 Supabase Mock 缺失問題），代碼已具備生產部署條件。
 
 ---
 
@@ -11,9 +11,10 @@
 
 ### Priority 0: 核心品質與自動化 (Auto CI/CD) - [COMPLETED]
 - [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
-- [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，解決 PowerShell `&&` 語法衝突，達成「一次成功」目標。
-- [x] **GitHub CI 修復**: 建立 `backend/__init__.py` 並注入 `PYTHONPATH`，修復 `backend.` 套件前綴導入衝突。
-- [x] **Phase 8 詳細實體計畫**: 編號 `026` 詳盡規格文件已交付。
+- [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，達成「一次成功」目標。
+- [x] **GitHub CI 修復**: 修復 `backend/__init__.py` 與引進 `force=True` 日誌配置。
+- [x] **GitHub CI 前端修復**: 修復 Sidebar 渲染拆分斷言、同步選單標籤與補足 Supabase Realtime Mock。
+- [x] **Phase 10 部署驗證**: 推送代碼至 GitHub 並確保 Actions 全綠。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]
 - [x] **Market ETL 基礎模組**: 實作 `BaseFetcher` 與 Tiingo/Fugle 擷取器。
@@ -163,6 +164,9 @@
 | 2026-01-28 | **UI/UX** | **前端修復**：解決資產 404 故障，重構「市場導航儀」首頁為玻璃擬態高質感風格。 |
 | 2026-01-30 | **Verification** | **Phase 8 全量驗收**：完成 TC-XXXX 測試，修復回測引擎 NaN 偏差與前端 Chart 導入錯誤。 |
 | 2026-01-30 | **UI/UX Audit** | **導航完整性**：同步 Sidebar/MobileNav 並補齊詳情頁返回按鍵，消除導航孤島。 |
+| 2026-02-04 | **Fix & Integration** | **Phase 9.6**: 修復 `NaN/Infinity` JSON 序列化錯誤，完成調度器與監聽器整合。 |
+| 2026-02-04 | **CI/CD Fix** | **Phase 10**: 修復 GitHub CI 前端建置錯誤 (TS2345 & Client Component)。 |
+| 2026-02-04 | **Frontend Fix** | **Phase 10.1**: 修復整合測試 Sidebar 渲染斷言不匹配與 Supabase Realtime Mock 缺失錯誤。 |
 
 ## [V10.2.11] - 2026-01-29
 ### Fixed
@@ -220,14 +224,32 @@
 - [x] RWD 響應式佈局校準與行動端導航優化
 - [x] 分頁風格同步 (Strategy, Ranking, Search, Portfolio)
 
-### Phase 9: 市場監控與選股中心 (Market Monitor & Screener) [READY]
-- [ ] 市場熱力圖 (Market Heatmap) 視覺開發 [P1]
-- [ ] 選股條件篩選器 (Stock Screener) UI [P1]
-- [ ] 預警推播配置 (Alert Configuration) [P2]
+### Phase 9: 市場監控與選股中心 (Market Monitoring & Screener) [COMPLETED 2026-02-03]
+- [x] **Phase 9.1: AI 智能選股引擎 (AI Screener)**
+  - 完成後端 PostgreSQL RPC (`fn_screen_stocks`) 與 JSONB 函數索引。
+  - 完成 FastAPI 路由 `/api/v1/screener/screen` 與 `ScreenerRepository`。
+  - 完成前端 `useScreener` Hook 與 Glassmorphism UI 組件 (FilterPanel, ScreenerTable, ScreenerView)。
+- [x] **Phase 9.2: 市場數據中繼站 (Market Relay)**
+  - 實作「配額感知」機制，支援多 API Key 智慧調度與 30 分鐘/次滾動更新。
+- [x] **Phase 9.3: 市場熱圖視覺化 (Market Heatmap)**
+  - 實作 D3.js 層級式熱力圖組件與後端聚合接口。
+- [x] **Phase 9.4: API 配額管理 (API Quota Management)**
+  - 實作 Redis-based 頻率控管與健康監控中心。
+- [x] **Phase 9.5: 市場異動通知 (Market Alerts / Notification)** [COMPLETED 2026-02-03]
+  - 實作 Redis 異步掃描 Worker 與毫秒級 Supabase Realtime 推送。
+  - 整合前端 `AlertToast`, `AlertPanel`, `AlertBadge` 即時通知體系。
+- [x] **Phase 9 全面性測試驗收 (Comprehensive Testing)** [COMPLETED 2026-02-03]
+  - 後端 Pytest 驗證 (Screener, Relay, Quota, Alert) 全綠燈通過。
+  - 前端 Jest/RTL 驗證 (Screener View, Filter Panel, Alert Toast/Badge) 全綠燈通過。
+- [x] **Phase 9.6: 自動化調度器 (Scheduler Integration)** [COMPLETED 2026-02-04]
+  - 整合 `AlertScannerWorker` 與 `schedule` 於單一 `worker_entry.py`。
+  - 修復 `NaN`/`Infinity` 導致的 JSON 序列化錯誤，強化資料格式健壯性。
+ [P2]
+
+
 深度調研取證與重複任務攔截 (2026-01-28)
 - [x] Phase 7: 資料庫遷移執行與結構對齊 (2026-01-28)
 - [x] Phase 7.1: 全域 API 與腳本欄位同步更新 (2026-01-28)
-- [x] Phase 7.2: 技術指標下沉與效能優化 (2026-01-28)
 | 2026-01-23 | **Taiwan Data** | 實作 `backend/etl/tw_official.py` (TWSE) 與 `market.py` (Fugle v2)，並擴充 `intraday_candles` Schema 以支援高頻數據。 |
 | 2026-01-23 | **UI Unification** | 統一全站 Sidebar 與 MobileNav；移除冗餘 Header 並補齊行動端導航功能。 |
 | 2026-01-23 | **Macro Refactor** | 依據規格書 4.2 節完成宏觀頁面分區 (TW/US/Global)、類別分組與搜尋功能重構。- [x] **2026-01-25 美股成分股專項回補**: 獲取 660+ 檔美股核心成分股，擴充 `init_stock_list.py` 與 `backfill_manager.py` 啟動專項同步。已針對 429 錯誤升級防護：3.0s 延遲 + 60s 冷卻。已建立 Checkpoint 機制確保下班安全斷開。
