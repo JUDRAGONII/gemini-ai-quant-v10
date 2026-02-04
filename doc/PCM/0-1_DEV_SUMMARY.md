@@ -18,6 +18,7 @@
 - [x] **Docker 優化**: 引入 `.dockerignore` 排除 `node_modules` 與 `.next`，建置效率提升 50%。
 - [x] **宏觀數據品質修復**: 過濾 IMF 未來預測數據，清除 8 筆異常記錄。
 - [x] **數據監控中心 UI 改造**: 擴展至 9 分類卡片，實作色彩主題與「待補」狀態。
+- [x] **前端測試驗證**: 完成數據監控中心 18 個測試案例 (Jest)，Local CI 驗證通過。
 - [x] **Phase 10 部署驗證**: 推送代碼至 GitHub 並確保 Actions 全綠。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]

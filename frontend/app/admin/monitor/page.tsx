@@ -284,10 +284,11 @@ export default function MonitorPage() {
                 <div className="flex items-center gap-4 bg-slate-900/50 p-1 rounded-xl border border-white/5">
                     <button
                         onClick={handleManualRefresh}
-                        className="px-4 py-2 hover:bg-white/5 rounded-lg transition-colors text-sm flex items-center gap-2 group"
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors text-slate-400 hover:text-white"
+                        title="刷新數據"
+                        aria-label="刷新數據"
                     >
-                        <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-                        手動重新整理
+                        <RefreshCcw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                     </button>
                 </div>
             </div>
@@ -377,8 +378,8 @@ export default function MonitorPage() {
                                 } ${isActive ? 'scale-[1.02]' : 'hover:translate-y-[-2px]'}`}
                         >
                             <GlassCard className={`p-3 border-2 transition-all h-full ${isActive
-                                    ? `${theme.border} shadow-lg`
-                                    : 'border-white/5 hover:border-white/10'
+                                ? `${theme.border} shadow-lg`
+                                : 'border-white/5 hover:border-white/10'
                                 }`}>
                                 <div className="flex items-start justify-between mb-2">
                                     <div className={`p-1.5 rounded-lg transition-colors ${isActive ? `${theme.bg} ${theme.icon}` : 'bg-slate-800 text-slate-500 group-hover:text-slate-300'
