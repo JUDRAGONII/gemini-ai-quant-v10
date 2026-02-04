@@ -659,3 +659,24 @@
 - [x] 建立包含 `useEffect`, `useState`, `useSWR` 的組件時，首行必檢核是否存在 `"use client";`。
 - [x] `useSWR` 使用陣列作為 Key 時，應確保其成員類型與 fetcher 參數定義完全一致。
 - [x] 在推送至 GitHub 前，本地應先執行 `npm run build` 進行全量編譯檢查。
+### 2026-02-04 前端整合測試與 UI 不同步 (Test-UI Drift & Mock Incomplete)
+
+### 問題現象
+- **FAIL**: `npm test` 在 `__tests__/app/page.test.tsx` 失敗，無法找到「總覽 (Overview)」標籤。
+- **TypeError**: `_supabase.supabase.channel is not a function`，導致多項測試崩潰。
+
+### 底層根本原因
+1. **字串拆分渲染**: `Sidebar.tsx` 將選單標籤（如 `總覽 (Overview)`）拆分為中英兩個 `span`。原本的 `getByText('總覽 (Overview)')` 因 DOM 中文字被 HTML 標籤分割而無法匹配。
+2. **選單名稱更新**: 側邊欄將「總覽」改為「首頁面板」，但測試案例仍沿用舊名稱。
+3. **Mock 缺失**: `page.tsx` 引用了包含 `useAlerts` 的組件，該 Hook 內部執行了 Supabase Realtime 訂閱（`.channel().on().subscribe()`）。測試檔案中的局部 Mock 僅模擬了 `.from().select()`，缺少 Realtime 鏈式方法，引發 `TypeError`。
+
+### 解決方案
+1. **鬆散匹配斷言**: 改為搜尋拆分後的純中文字標籤（如 `expect(screen.getAllByText('首頁面板')[0]).toBeInTheDocument()`）。
+2. **同步選單標籤**: 更新測試案例以匹配最新的 `MENU_ITEMS`（首頁面板、智慧排名）。
+3. **完善鏈式 Mock**: 在 `mockSupabaseChain` 中補足 `channel`, `on`, `subscribe`, `removeChannel` 等方法。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 測試組件標籤時，若該組件會對字串進行自定義解析或拆分渲染，斷言應聚焦於不可分割的子字串。
+- [ ] 模擬 Supabase Client 時，應確保 Mock 對象具備全功能的鏈式呼叫能力（包含 Realtime 與 Auth 方法）。
+- [ ] 變更側邊欄選單或路由時，必須同步執行全站整合測試以抓取斷言失效。
+- [ ] 在 `Sidebar` 或關鍵導航元素添加 `data-testid` 標記。

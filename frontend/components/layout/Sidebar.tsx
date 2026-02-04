@@ -89,7 +89,7 @@ export default function Sidebar() {
             <div className="flex items-center justify-between px-2 mb-10 mt-2">
                 <div className="flex items-center gap-3">
                     <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <Cpu size={24} className="text-white" />
+                        <Cpu size={24} className="text-white" data-testid="icon-cpu" />
                         <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
                     </div>
                     <div>

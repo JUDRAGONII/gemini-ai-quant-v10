@@ -3,7 +3,7 @@
 ## 📌 當前里程碑 (Current Milestone)
 - **當前進度**: Phase 11: 運作監控與結案 (Operation & Handover)
 - **當前里程碑**: Phase 10: 部署與交付 (Deployment & Delivery) | CI/CD 品質修復 (COMPLETED)
-- **核心狀態**: 成功修復 GitHub CI 前端建置錯誤，整合自動化工作流，代碼已具備生產部署條件。
+- **核心狀態**: 成功修復 GitHub CI 前端建置錯誤（包含 Sidebar 渲染不匹配與 Supabase Mock 缺失問題），代碼已具備生產部署條件。
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
 - [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，達成「一次成功」目標。
 - [x] **GitHub CI 修復**: 修復 `backend/__init__.py` 與引進 `force=True` 日誌配置。
-- [x] **GitHub CI 前端修復**: 修復 `AlertToastContainer` `"use client"` 與 `useHeatmap` TS 類型錯誤。
+- [x] **GitHub CI 前端修復**: 修復 Sidebar 渲染拆分斷言、同步選單標籤與補足 Supabase Realtime Mock。
 - [x] **Phase 10 部署驗證**: 推送代碼至 GitHub 並確保 Actions 全綠。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]
@@ -166,6 +166,7 @@
 | 2026-01-30 | **UI/UX Audit** | **導航完整性**：同步 Sidebar/MobileNav 並補齊詳情頁返回按鍵，消除導航孤島。 |
 | 2026-02-04 | **Fix & Integration** | **Phase 9.6**: 修復 `NaN/Infinity` JSON 序列化錯誤，完成調度器與監聽器整合。 |
 | 2026-02-04 | **CI/CD Fix** | **Phase 10**: 修復 GitHub CI 前端建置錯誤 (TS2345 & Client Component)。 |
+| 2026-02-04 | **Frontend Fix** | **Phase 10.1**: 修復整合測試 Sidebar 渲染斷言不匹配與 Supabase Realtime Mock 缺失錯誤。 |
 
 ## [V10.2.11] - 2026-01-29
 ### Fixed
