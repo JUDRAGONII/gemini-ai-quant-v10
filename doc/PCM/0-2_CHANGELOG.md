@@ -1,5 +1,19 @@
 # 變更紀錄 (CHANGELOG)
 
+## [V10.3.12] - 2026-02-04
+### Fixed
+- **宏觀數據品質修復**: 過濾 `macro_indicators` 表中的 IMF 未來預測數據，ETL 邏輯新增 `reference_date > today` 檢查。
+- **資料庫清理**: 一次性刪除 8 筆異常記錄 (2027-2030 年)。
+
+## [V10.3.11] - 2026-02-04
+
+### Fixed
+- **前端熱修復**: 解決 Docker 環境下找不到 `swr` 模組的問題，並通過刷新匿名磁碟卷解決快取衝突。
+- **環境同步**: 透過 `npm install swr` 與 `docker-compose up -d --renew-anon-volumes` 強制同步依賴。
+
+### Added
+- **Docker 優化**: 建立 `frontend/.dockerignore` 排除 `node_modules` 與 `.next` 目錄，大幅提升 Docker Build Context 傳輸效率。
+
 ## [V10.3.10] - 2026-02-04
 ### Added
 - **文檔更新**: 建立開發日誌 `074`，記錄 Phase 10 部署準備。

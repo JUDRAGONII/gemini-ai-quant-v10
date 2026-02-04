@@ -79,10 +79,19 @@ class MacroFetcher(BaseFetcher):
         series_id = kwargs.get('series_id')
         meta = MACRO_METADATA.get(indicator_code, {})
         
+        # 【修復】取得當前日期，用於過濾未來預測數據
+        today = datetime.now().date()
+        
         records = []
         for index, row in raw_data.iterrows():
             val = row[series_id]
             if pd.isna(val):
+                continue
+            
+            # 【關鍵修復】過濾未來日期 (IMF 預測數據)
+            ref_date = index.date() if hasattr(index, 'date') else index
+            if ref_date > today:
+                logger.debug(f"Skipping future projection: {indicator_code} @ {ref_date}")
                 continue
                 
             records.append({
@@ -95,6 +104,7 @@ class MacroFetcher(BaseFetcher):
                 "source": "FRED"
             })
         return records
+
 
     def run_all(self, lookback_days: int = 365*2):
         """執行所有定義指標的同步"""
