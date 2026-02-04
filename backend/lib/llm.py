@@ -1,4 +1,6 @@
-﻿import google.generativeai as genai
+﻿import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+import google.generativeai as genai
 from backend.lib.config import Config
 
 class GeminiClient:

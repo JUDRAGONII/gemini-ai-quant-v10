@@ -4,6 +4,7 @@ import datetime
 import requests
 import json
 from typing import List, Dict, Any
+import math
 from backend.etl.base_fetcher import BaseFetcher
 from backend.lib.quota_manager import fugle_quota, tiingo_quota
 from backend.lib.supabase_client import get_supabase
@@ -90,16 +91,29 @@ class MarketRelayWorker(BaseFetcher):
         將 Fugle 原始數據轉換為 market_quotes Schema。
         """
         records = []
+        
+        def sanitize_val(val):
+            """防止 NaN/Infinity 導致 JSON 序列化失敗"""
+            if val is None:
+                return None
+            try:
+                f_val = float(val)
+                if math.isnan(f_val) or math.isinf(f_val):
+                    return None
+                return f_val
+            except (ValueError, TypeError):
+                return val # 非數值則原樣返回 (如 name, symbol)
+
         for item in raw_data:
             # Fugle Quote Schema: 
             # { "symbol": "2330", "price": 600, "change": 5, "changePercent": 0.8, "volume": 12345, "name": "...", ... }
             records.append({
                 "stock_code": item.get("symbol"),
                 "name": item.get("name"),
-                "price": item.get("lastPrice"),
-                "change": item.get("change"),
-                "change_percent": item.get("changePercent"),
-                "volume": item.get("totalVolume"),
+                "price": sanitize_val(item.get("lastPrice")),
+                "change": sanitize_val(item.get("change")),
+                "change_percent": sanitize_val(item.get("changePercent")),
+                "volume": sanitize_val(item.get("totalVolume")),
                 "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "source": "Fugle"
             })

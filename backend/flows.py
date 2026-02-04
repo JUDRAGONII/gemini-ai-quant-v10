@@ -67,8 +67,8 @@ def daily_pipeline():
     sync_relay()
     run_evolution()
 
-def run_scheduler():
-    logger.info("Starting V10.0 Orchestration Scheduler...")
+def setup_scheduler():
+    logger.info("Setting up V10.0 Orchestration Scheduler...")
     # 每天早上八點執行
     schedule.every().day.at("08:00").do(daily_pipeline)
     
@@ -76,11 +76,6 @@ def run_scheduler():
     schedule.every(30).minutes.do(sync_relay)
     
     # 啟動時執行一次驗證
-    daily_pipeline()
+    # daily_pipeline() # 註解掉以免每次重啟都跑全量
+    logger.info("Scheduler setup complete. Jobs: " + str(schedule.get_jobs()))
 
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
-
-if __name__ == "__main__":
-    run_scheduler()

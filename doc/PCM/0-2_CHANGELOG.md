@@ -1,11 +1,13 @@
 # CHANGELOG (變更紀錄)
 
-## [V10.3.7] - 2026-02-03
+## [V10.3.8] - 2026-02-04
 ### Added
-- [Phase 9] 完成 Phase 9 全面性自動化測試驗收 (Comprehensive Test Suites)。
-- [Backend] 完成 `test_phase9_comprehensive.py` 涵蓋選股、中繼、配額與警示邏輯。
-- [Frontend] 完成 `screener_comprehensive.test.tsx` 與 `alerts_comprehensive.test.tsx` 驗證組件渲染與交互。
-- [CI/CD] 成功在本地環境達成後端 6/6 與前端 4/4 全綠燈通過。
+- [Phase 9.6] 實作「完全自動化調度器整合 (Automated Scheduler Integration)」。
+- [Backend] 建立 `worker_entry.py` 作為統一 Worker 進入點，併發執行 `AlertScanner` (Async) 與 `Scheduler` (Async Loop)。
+- [Infrastructure] 配置 `ai-worker` 強制日誌輸出 (`force=True`) 並持久化至文件，解決三方庫日誌黑洞問題。
+- [Verification] 通過 Redis 模擬訊息流動驗證「行情-掃描-警示」完整閉環。
+
+## [V10.3.7] - 2026-02-03
 
 ## [V10.3.6] - 2026-02-03
 ### Added

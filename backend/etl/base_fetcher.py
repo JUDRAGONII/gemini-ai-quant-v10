@@ -56,6 +56,8 @@ class BaseFetcher(ABC):
                 subset = on_conflict.split(',')
                 # 只保留該批次中最後一筆重複紀錄
                 df_clean = df.drop_duplicates(subset=subset, keep='last')
+                # 🛡️ NaN Sanitization: Pandas 會將 None 轉為 NaN，需轉回 None 以符合 JSON 規範
+                df_clean = df_clean.where(pd.notnull(df_clean), None)
                 records = df_clean.to_dict('records')
                 if len(df) != len(df_clean):
                     logger.warning(f"[{self.table_name}] Local deduplication removed {len(df) - len(df_clean)} duplicates.")

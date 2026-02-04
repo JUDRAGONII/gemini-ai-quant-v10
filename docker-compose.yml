@@ -107,7 +107,7 @@ services:
       - ./volumes/redis:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -128,7 +128,7 @@ services:
       PYTHONPATH: /app
     volumes:
       - ./backend:/app/backend
-    command: python -m backend.flows
+    command: python -u -m backend.worker_entry
     depends_on: [ db, kong, redis ]
     restart: always
 
@@ -169,4 +169,3 @@ services:
       - ./frontend:/app
       - /app/node_modules
     depends_on: [ kong ]
-

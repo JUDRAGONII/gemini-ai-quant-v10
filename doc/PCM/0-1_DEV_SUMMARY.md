@@ -1,9 +1,9 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
 ## 📌 當前里程碑 (Current Milestone)
-- **當進度**: Phase 9: 行情即時監控與選股中心 (監控引擎已就緒)
-- **當前里程碑**: Phase 8: AI 智慧與策略驗證 | 佈局優化、報告標籤化與導航修復 (COMPLETED)
-- **核心狀態**: 統一個股返回按鈕 (Header)，新增 AI 決策報告活頁標籤，修復跨組件導航路徑，解決 Server-side API 認證問題。
+- **當前進度**: Phase 10: 部署與交付 (Deployment & Delivery)
+- **當前里程碑**: Phase 9: 行情即時監控與選股中心 | 調度器整合與資料精度修復 (COMPLETED)
+- **核心狀態**: 成功整合 AlertScanner (實時) 與 Scheduler (排程)，修復 NaN/Infinity 導致的 JSON 序列化錯誤，完成全自動化 Worker 進入點。
 
 ---
 
@@ -163,6 +163,7 @@
 | 2026-01-28 | **UI/UX** | **前端修復**：解決資產 404 故障，重構「市場導航儀」首頁為玻璃擬態高質感風格。 |
 | 2026-01-30 | **Verification** | **Phase 8 全量驗收**：完成 TC-XXXX 測試，修復回測引擎 NaN 偏差與前端 Chart 導入錯誤。 |
 | 2026-01-30 | **UI/UX Audit** | **導航完整性**：同步 Sidebar/MobileNav 並補齊詳情頁返回按鍵，消除導航孤島。 |
+| 2026-02-04 | **Fix & Integration** | **Phase 9.6**: 修復 `NaN/Infinity` JSON 序列化錯誤，完成調度器與監聽器整合。 |
 
 ## [V10.2.11] - 2026-01-29
 ### Fixed
@@ -237,7 +238,9 @@
 - [x] **Phase 9 全面性測試驗收 (Comprehensive Testing)** [COMPLETED 2026-02-03]
   - 後端 Pytest 驗證 (Screener, Relay, Quota, Alert) 全綠燈通過。
   - 前端 Jest/RTL 驗證 (Screener View, Filter Panel, Alert Toast/Badge) 全綠燈通過。
-- [ ] Phase 9.6: 自動化調度器 (Scheduler Integration)
+- [x] **Phase 9.6: 自動化調度器 (Scheduler Integration)** [COMPLETED 2026-02-04]
+  - 整合 `AlertScannerWorker` 與 `schedule` 於單一 `worker_entry.py`。
+  - 修復 `NaN`/`Infinity` 導致的 JSON 序列化錯誤，強化資料格式健壯性。
  [P2]
 
 

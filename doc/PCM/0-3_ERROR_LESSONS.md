@@ -620,3 +620,22 @@
 - [x] 前端測試渲染問題優先檢查 Mock 資料欄位是否與 `interface` 100% 同步。
 - [x] 遇到動畫組件導致的測試不穩定，應優先在 `jest.setup.js` 或單獨測試中 Mock `framer-motion`。
 - [x] 涉及 SWR 的組件測試，必須手動清理 `SWRConfig` 緩存或直接 Mock Hook。
+
+### 2026-02-04 ai-worker 數據精度錯誤 (Out of range float values)
+
+### 問題現象
+- **現象**：`ai-worker` 報錯 `[market_quotes] Upsert failed: Out of range float values are not JSON compliant`。
+- **後果**：行情中繼任務失敗，無法更新市場數據。
+
+### 底層根本原因
+- **JSON 序列化限制**：API 回傳的數據中包含 `NaN` 或 `Infinity` (可能因開盤價為 0 或漲跌幅計算分母只有 0)。Python 的 `json` 模組預設不支持這些數值，導致序列化失敗。
+- **Pandas 行為**：`BaseFetcher` 中使用 Pandas 進行去重，Pandas 會將 `None` 轉換為 `NaN` (float)，進一步加劇了 JSON 不兼容問題。
+
+### 解決方案
+1. **源頭淨化**：在 `MarketRelayWorker.transform` 中引入 `sanitize_val` 函式，使用 `math.isnan/isinf` 過濾異常數值，將其轉回 `None`。
+2. **中間層防護**：在 `BaseFetcher.upsert` 中，於 Pandas 操作後使用 `.where(pd.notnull(df), None)` 執行二次清洗，確保 `to_dict` 生成標準 JSON。
+
+### 預防重複犯錯的 Checkbox
+- [x] 處理外部 API 金融數據（如 Price, Change%）時，必須預設其可能包含 `NaN` 或 `Infinite`。
+- [x] 在將 Pandas DataFrame 轉換為 JSON/Dict 前，務必執行 `None` 替換 (`where(pd.notnull(), None)`)。
+- [x] 使用 `json.dumps` 或 Supabase Client 寫入前，應確保數值已標準化。
