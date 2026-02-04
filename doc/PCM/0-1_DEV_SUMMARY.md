@@ -2,8 +2,8 @@
 
 ## 📌 當前里程碑 (Current Milestone)
 - **當前進度**: Phase 11: 運作監控與結案 (Operation & Handover)
-- **當前里程碑**: Phase 11: 運作監控 (Operation) | 前端熱修復 (COMPLETED)
-- **核心狀態**: 成功解決 Docker 環境下 `swr` 模組遺失導致的編譯錯誤，並優化 Docker 鏡像建置流程。系統功能全數恢復。
+- **當前里程碑**: Phase 11: 運作監控 (Operation) | 宏觀數據品質修復 (COMPLETED)
+- **核心狀態**: 成功過濾並清除 IMF 預測數據，確保 `macro_indicators` 表只包含歷史實際觀測值。
 
 ---
 
@@ -16,6 +16,7 @@
 - [x] **GitHub CI 前端修復**: 修復 Sidebar 渲染拆分斷言、同步選單標籤與補足 Supabase Realtime Mock。
 - [x] **前端 SWR 熱修復**: 解決 Docker 卷快取導致的 `swr` 模組遺失錯誤，強制更新匿名磁碟卷。
 - [x] **Docker 優化**: 引入 `.dockerignore` 排除 `node_modules` 與 `.next`，建置效率提升 50%。
+- [x] **宏觀數據品質修復**: 過濾 IMF 未來預測數據，清除 8 筆異常記錄。
 - [x] **Phase 10 部署驗證**: 推送代碼至 GitHub 並確保 Actions 全綠。
 
 ### Priority 1: 核心後端與 AI 注入 (AI Injection) - [COMPLETED]
