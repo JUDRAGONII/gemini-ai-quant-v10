@@ -9,6 +9,7 @@ import {
     Database,
     TrendingUp,
     Globe,
+    Globe2,
     Cpu,
     RefreshCcw,
     Search,
@@ -16,19 +17,140 @@ import {
     Activity,
     Clock,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    BarChart2,
+    Dna,
+    DollarSign,
+    Gem
 } from 'lucide-react';
 
-// 定義監控表選項
-const TABLES = [
-    { id: 'daily_price', name: '行情數據', icon: TrendingUp },
-    { id: 'macro_indicators', name: '宏觀指標', icon: Globe },
-    { id: 'stock_factors', name: '多因子評分', icon: Activity },
-    { id: 'evolution_genes', name: '演化基因', icon: Cpu },
+// 🆕 擴展監控分類配置 (9 大類)
+interface MonitorCategory {
+    id: string;
+    name: string;
+    nameEn: string;
+    icon: any;
+    table: string;
+    filter?: Record<string, string>;
+    sortColumn: string;
+    colorTheme: 'blue' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan' | 'slate';
+    isPending?: boolean; // 待補充標記
+}
+
+const CATEGORIES: MonitorCategory[] = [
+    // 台灣行情
+    {
+        id: 'tw_equity',
+        name: '台灣行情',
+        nameEn: 'TWSE',
+        icon: TrendingUp,
+        table: 'daily_price',
+        filter: { market_type: 'TWSE' },
+        sortColumn: 'trade_date',
+        colorTheme: 'blue'
+    },
+    // 美國行情
+    {
+        id: 'us_equity',
+        name: '美國行情',
+        nameEn: 'US Equities',
+        icon: BarChart2,
+        table: 'daily_price',
+        filter: { market_type: 'TIINGO' },
+        sortColumn: 'trade_date',
+        colorTheme: 'violet'
+    },
+    // 台灣宏觀
+    {
+        id: 'tw_macro',
+        name: '台灣宏觀',
+        nameEn: 'TW Macro',
+        icon: Globe,
+        table: 'macro_indicators',
+        filter: { country: 'TW' },
+        sortColumn: 'reference_date',
+        colorTheme: 'emerald'
+    },
+    // 美國宏觀
+    {
+        id: 'us_macro',
+        name: '美國宏觀',
+        nameEn: 'US Macro',
+        icon: Globe2,
+        table: 'macro_indicators',
+        filter: { country: 'US' },
+        sortColumn: 'reference_date',
+        colorTheme: 'amber'
+    },
+    // 即時報價
+    {
+        id: 'realtime',
+        name: '即時報價',
+        nameEn: 'Real-time',
+        icon: Activity,
+        table: 'market_quotes',
+        sortColumn: 'updated_at',
+        colorTheme: 'rose'
+    },
+    // 多因子評分
+    {
+        id: 'factors',
+        name: '多因子評分',
+        nameEn: 'Factors',
+        icon: Cpu,
+        table: 'stock_factors',
+        sortColumn: 'trade_date',
+        colorTheme: 'cyan'
+    },
+    // 演化基因
+    {
+        id: 'genes',
+        name: '演化基因',
+        nameEn: 'Genes',
+        icon: Dna,
+        table: 'evolution_genes',
+        sortColumn: 'created_at',
+        colorTheme: 'violet'
+    },
+    // 🆕 匯率 (待補充)
+    {
+        id: 'fx',
+        name: '匯率',
+        nameEn: 'FX',
+        icon: DollarSign,
+        table: 'exchange_rates',
+        sortColumn: 'reference_date',
+        colorTheme: 'amber',
+        isPending: true
+    },
+    // 🆕 貴金屬 (待補充)
+    {
+        id: 'metals',
+        name: '貴金屬',
+        nameEn: 'Metals',
+        icon: Gem,
+        table: 'precious_metals',
+        sortColumn: 'reference_date',
+        colorTheme: 'rose',
+        isPending: true
+    },
 ];
 
+// 色彩主題映射
+const COLOR_THEMES: Record<string, { border: string; bg: string; text: string; icon: string }> = {
+    blue: { border: 'border-blue-500/50', bg: 'bg-blue-500/20', text: 'text-blue-400', icon: 'text-blue-400' },
+    emerald: { border: 'border-emerald-500/50', bg: 'bg-emerald-500/20', text: 'text-emerald-400', icon: 'text-emerald-400' },
+    amber: { border: 'border-amber-500/50', bg: 'bg-amber-500/20', text: 'text-amber-400', icon: 'text-amber-400' },
+    rose: { border: 'border-rose-500/50', bg: 'bg-rose-500/20', text: 'text-rose-400', icon: 'text-rose-400' },
+    violet: { border: 'border-violet-500/50', bg: 'bg-violet-500/20', text: 'text-violet-400', icon: 'text-violet-400' },
+    cyan: { border: 'border-cyan-500/50', bg: 'bg-cyan-500/20', text: 'text-cyan-400', icon: 'text-cyan-400' },
+    slate: { border: 'border-slate-500/50', bg: 'bg-slate-500/20', text: 'text-slate-400', icon: 'text-slate-400' },
+};
+
+
 export default function MonitorPage() {
-    const [activeTab, setActiveTab] = useState(TABLES[0].id);
+    const [activeTab, setActiveTab] = useState(CATEGORIES[0].id);
+    const [activeCategory, setActiveCategory] = useState<MonitorCategory>(CATEGORIES[0]);
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<any>({});
@@ -48,19 +170,15 @@ export default function MonitorPage() {
     // 獲取統計資訊
     async function fetchStats() {
         try {
-            // 🆕 改用高效 RPC 預估計數，避免大表計數超時造成 504
-            const { data: estCounts, error: rpcError } = await (supabase as any).rpc('get_estimated_counts');
+            // 🆕 改用分類統計 RPC
+            const { data: estCounts, error: rpcError } = await (supabase as any).rpc('get_category_counts');
 
             if (!rpcError && estCounts) {
                 setStats(estCounts);
             } else {
-                // 如果 RPC 失敗 (例如剛建立未重載)，回退至基本讀取但不計數以確保 UI 不掛掉
-                console.warn('RPC Estimates failed, using fast subset fetch.');
-                const results: any = {};
-                for (const table of TABLES) {
-                    results[table.id] = stats[table.id] || 0;
-                }
-                setStats(results);
+                // 回退至空物件
+                console.warn('RPC get_category_counts failed:', rpcError);
+                setStats({});
             }
         } catch (err) {
             console.error('Fetch stats exception:', err);
@@ -92,22 +210,31 @@ export default function MonitorPage() {
         return () => clearInterval(interval);
     }, [refreshKey]);
 
-    // 獲取具體表數據
+    // 獲取具體表數據 (帶篩選條件)
     async function fetchData() {
-        setLoading(true);
-        // Determine sort column based on table
-        let sortColumn = 'created_at';
-        if (activeTab === 'daily_price' || activeTab === 'stock_factors') {
-            sortColumn = 'trade_date';
-        } else if (activeTab === 'macro_indicators') {
-            sortColumn = 'reference_date';
+        if (activeCategory.isPending) {
+            // 待補充分類不讀取數據
+            setData([]);
+            setLoading(false);
+            return;
         }
 
-        const { data: result, error } = await supabase
-            .from(activeTab)
+        setLoading(true);
+
+        let query = supabase
+            .from(activeCategory.table)
             .select('*')
-            .order(sortColumn, { ascending: false })
+            .order(activeCategory.sortColumn, { ascending: false })
             .limit(50);
+
+        // 套用篩選條件
+        if (activeCategory.filter) {
+            Object.entries(activeCategory.filter).forEach(([key, value]) => {
+                query = query.eq(key, value);
+            });
+        }
+
+        const { data: result, error } = await query;
 
         if (!error) {
             setData(result || []);
@@ -117,7 +244,7 @@ export default function MonitorPage() {
 
     useEffect(() => {
         fetchData();
-    }, [activeTab, refreshKey]);
+    }, [activeCategory, refreshKey]);
 
     const handleManualRefresh = () => {
         setRefreshKey(prev => prev + 1);
@@ -157,10 +284,11 @@ export default function MonitorPage() {
                 <div className="flex items-center gap-4 bg-slate-900/50 p-1 rounded-xl border border-white/5">
                     <button
                         onClick={handleManualRefresh}
-                        className="px-4 py-2 hover:bg-white/5 rounded-lg transition-colors text-sm flex items-center gap-2 group"
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors text-slate-400 hover:text-white"
+                        title="刷新數據"
+                        aria-label="刷新數據"
                     >
-                        <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-                        手動重新整理
+                        <RefreshCcw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                     </button>
                 </div>
             </div>
@@ -230,41 +358,66 @@ export default function MonitorPage() {
                 </GlassCard>
             </div>
 
-            {/* Tabs / Stats Cards */}
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                {TABLES.map((table) => {
-                    const Icon = table.icon;
-                    const isActive = activeTab === table.id;
+            {/* 🆕 9 分類卡片網格 */}
+            <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3 mb-8">
+                {CATEGORIES.map((category) => {
+                    const Icon = category.icon;
+                    const isActive = activeTab === category.id;
+                    const theme = COLOR_THEMES[category.colorTheme];
+                    const count = stats[category.id];
+
                     return (
                         <button
-                            key={table.id}
-                            onClick={() => setActiveTab(table.id)}
-                            className={`text-left transition-all duration-300 transform group ${isActive ? 'scale-[1.02]' : 'hover:translate-y-[-2px]'
-                                }`}
+                            key={category.id}
+                            onClick={() => {
+                                setActiveTab(category.id);
+                                setActiveCategory(category);
+                            }}
+                            disabled={category.isPending}
+                            className={`text-left transition-all duration-300 transform group cursor-pointer ${category.isPending ? 'opacity-50 cursor-not-allowed' : ''
+                                } ${isActive ? 'scale-[1.02]' : 'hover:translate-y-[-2px]'}`}
                         >
-                            <GlassCard className={`p-4 border-2 transition-all ${isActive ? 'border-blue-500/50 shadow-lg shadow-blue-500/10' : 'border-white/5 hover:border-white/10'
+                            <GlassCard className={`p-3 border-2 transition-all h-full ${isActive
+                                ? `${theme.border} shadow-lg`
+                                : 'border-white/5 hover:border-white/10'
                                 }`}>
-                                <div className="flex items-start justify-between">
-                                    <div className={`p-2 rounded-lg transition-colors ${isActive ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-800 text-slate-500 group-hover:text-slate-300'
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className={`p-1.5 rounded-lg transition-colors ${isActive ? `${theme.bg} ${theme.icon}` : 'bg-slate-800 text-slate-500 group-hover:text-slate-300'
                                         }`}>
-                                        <Icon className="w-5 h-5" />
-                                    </div>
-                                    <div className="text-3xl font-bold font-mono tracking-tight">
-                                        {stats[table.id]?.toLocaleString() || '---'}
+                                        <Icon className="w-4 h-4" />
                                     </div>
                                 </div>
-                                <div className="mt-4 flex items-center justify-between">
-                                    <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-slate-500'}`}>
-                                        {table.name}
-                                    </span>
-                                    <ChevronRight className={`w-4 h-4 transition-transform ${isActive ? 'text-blue-400 translate-x-1' : 'text-slate-600'
-                                        }`} />
+
+                                {/* 統計數字 */}
+                                <div className={`text-xl font-bold font-mono tracking-tight mb-1 ${category.isPending ? 'text-slate-600' : ''
+                                    }`}>
+                                    {category.isPending
+                                        ? '---'
+                                        : (count !== undefined ? count.toLocaleString() : '...')}
+                                </div>
+
+                                {/* 分類名稱 */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                                            {category.name}
+                                        </span>
+                                        <span className="text-[10px] text-slate-600 font-mono">
+                                            {category.nameEn}
+                                        </span>
+                                    </div>
+                                    {category.isPending && (
+                                        <span className="text-[9px] text-amber-500/80 font-mono px-1 py-0.5 bg-amber-500/10 rounded">
+                                            待補
+                                        </span>
+                                    )}
                                 </div>
                             </GlassCard>
                         </button>
                     );
                 })}
             </div>
+
 
             {/* Data Table Area */}
             <div className="max-w-7xl mx-auto">
