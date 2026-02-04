@@ -1,4 +1,26 @@
-# CHANGELOG (變更紀錄)
+# 變更紀錄 (CHANGELOG)
+
+## [V10.3.10] - 2026-02-04
+### Added
+- **文檔更新**: 建立開發日誌 `074`，記錄 Phase 10 部署準備。
+- **CI 驗證**: 準備推送代碼以觸發 GitHub Actions 全量測試。
+
+### Fixed
+- **前端 CI 失敗**: 
+    - 為 `AlertToastContainer` 加入 `"use client";` 修正 Server Component 限制。
+    - 修正 `useHeatmap` 中的 TypeScript 類型斷言 (TS2345)。
+- **變更摘要**: 更新 `0-1_DEV_SUMMARY.md` 推動進度至 Phase 11 監控階段。
+
+## [V10.3.9] - 2026-02-04
+### Fixed
+- **後端日誌**: 為 `logging.basicConfig` 加入 `force=True`，修復 ai-worker 日誌被其他套件覆蓋的問題。
+- **代碼清理**: 移除 `worker_entry.py` 與 `alert_scanner_worker.py` 中的調試用 `print`。
+
+## [V10.3.8] - 2026-02-04
+### Fixed
+- [Frontend] 修復 `AlertToastContainer.tsx` 缺少 `"use client";` 指令導致的建置失敗。
+- [Frontend] 修復 `useHeatmap.ts` 中 SWR fetcher 的 TypeScript TS2345 類型錯誤。
+- [CI/CD] 通過本地 `npm run build` 驗證，解決 GitHub CI 前端編譯阻塞問題。
 
 ## [V10.3.8] - 2026-02-04
 ### Added

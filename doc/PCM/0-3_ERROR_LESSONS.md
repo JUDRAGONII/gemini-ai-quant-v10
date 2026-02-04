@@ -638,4 +638,24 @@
 ### 預防重複犯錯的 Checkbox
 - [x] 處理外部 API 金融數據（如 Price, Change%）時，必須預設其可能包含 `NaN` 或 `Infinite`。
 - [x] 在將 Pandas DataFrame 轉換為 JSON/Dict 前，務必執行 `None` 替換 (`where(pd.notnull(), None)`)。
-- [x] 使用 `json.dumps` 或 Supabase Client 寫入前，應確保數值已標準化。
+- [x] 使用 `json.dumps` 或 Supabase Client 寫入前，應確保數值轉化為標準 JSON。
+
+## [2026-02-04] 前端生產建置失敗 (Next.js Client Component & TS Type)
+
+### 錯誤現象
+在 GitHub CI 的 `npm run build` 階段發生以下錯誤：
+1. `Error: Hooks can only be used in a browser environment`：`AlertToastContainer.tsx` 未標記為 Client Component。
+2. `TS2345: Argument of type 'string[]' is not assignable to parameter of type 'keyof ...'`：`useHeatmap.ts` 中 SWR 的 array key 類型推斷失敗。
+
+### 底層根本原因
+- **Next.js App Router 限制**：Next.js 13/14+ 預設所有組件為 Server Component。若組件內使用了 `useEffect` 或 `useSWR` 等 Hook，必須顯式標註 `"use client";`，否則在生產建置（預渲染）時會報錯。
+- **TypeScript 嚴格檢查**：SWR 的 array key 被推斷為 `string[]` 時，若 fetcher 函數對 key 的參數有特定的物件鍵值 (keyof) 要求，會因類型不匹配而報錯。
+
+### 解決方案
+1. **指令補齊**：在所有包含 Hooks 的互動式 UI 組件頂部加入 `"use client";`。
+2. **類型斷言**：在 `useSWR` 的 array key 中，將參數顯式斷言或定義型別，例如 `[ 'cache-key', arg1 as SpecificType ]`，確保滿足 fetcher 簽名。
+
+### 預防重複犯錯的 Checkbox
+- [x] 建立包含 `useEffect`, `useState`, `useSWR` 的組件時，首行必檢核是否存在 `"use client";`。
+- [x] `useSWR` 使用陣列作為 Key 時，應確保其成員類型與 fetcher 參數定義完全一致。
+- [x] 在推送至 GitHub 前，本地應先執行 `npm run build` 進行全量編譯檢查。

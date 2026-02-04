@@ -32,7 +32,7 @@ const fetcher = async (url: string, marketType: string, groupBy: string) => {
 export function useHeatmap(marketType: string = 'ALL', groupBy: string = 'sector') {
     const { data, error, isValidating } = useSWR<HeatmapResponse>(
         ['/api/v1/market/heatmap', marketType, groupBy],
-        ([url, m, g]) => fetcher(url, m, g),
+        ([url, m, g]: [string, string, string]) => fetcher(url, m, g),
         {
             revalidateOnFocus: false,
             refreshInterval: 300000, // 5 分鐘刷新一次
