@@ -10,7 +10,8 @@
 - [x] **初始化**: 執行 `init_stock_list.py` 重建全市場標的主檔 (Phase 11.7)。
 - [x] **全歷史回補 (1990+)**: 實作 `HybridMarketFetcher` 整合 Yahoo + TWSE 雙軌制 (Phase 11.7)。
 - [x] **Phase 12 (完工)**: 進階 AI 洞察、戰術覆盤閉環與 Bento V3 視覺全棧部署。
-- [/] **宏觀同步**: 補回 FRED 指標與匯率歷史 (極限極深度)。
+- [x] **宏觀同步**: 補回 FRED 指標與匯率歷史 (極限極深度)。
+- [ ] **Phase 13 (待啟動)**: 全球資產配置建議與 AI 交易訊號回測。
 
 ### Priority 0: 核心品質、自動化與智力決策 (Production Hardening) - [IN PROGRESS]
 - [x] **Phase 12 - AI 辯證引擎**: 實作多代理人模擬與信心指標展示。
