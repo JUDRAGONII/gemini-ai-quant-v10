@@ -18,9 +18,11 @@
     - `EconomicCalendar.tsx` fetcher 加入巢狀結構自動解包。
     - `next.config.mjs` 合併為 `/api/:path*` catch-all rewrite，消除路由遺漏。
     - `useAlerts.ts` 修復 FastAPI trailing slash 307 redirect 問題。
-- **全量自動化測試 (Phase 11-12)**:
-    - 新增 5 個 Test Suite / 22 個 TC，覆蓋 DialecticPanel、CorrelationChart、TacticalPlanner、EconomicCalendar、InsightsPage。
-    - 測試維度涵蓋基礎路徑、邊界條件（null fallback、空陣列）、表單驗證。
+- **全量自動化測試穩定性硬化 (Phase 11-12 CI Fix)**:
+    - **Supabase Mock 強化**: 實作顯式鏈式 Mock (`.mockReturnValue(mockChain)`)，徹底解決 `query.order is not a function` 錯誤。
+    - **SWR 測試隔離**: 在測試框架中導入 `SWRConfig` 局部 Cache 清理機制，消除測試案例間的數據污染。
+    - **UI 文字同步**: 統一 `...` 載入文字與 `Refresh Data` 標籤，確保斷言 100% 命中。
+    - **成功驗收**: 關鍵套件 (`MacroPage`, `AdminMonitor`, `MonitorV2`) 在全量測試下達成 100% Pass。
 
 ## [V10.4.2] - 2026-02-09
 ### Added

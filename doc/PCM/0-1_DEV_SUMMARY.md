@@ -20,7 +20,7 @@
 - [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
 - [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，達成「一次成功」目標。
 - [x] **GitHub CI 修復**: 修復 `backend/__init__.py` 與引進 `force=True` 日誌配置。
-- [x] **GitHub CI 前端修復**: 修復 Sidebar 渲染拆分斷言、同步選單標籤與補足 Supabase Realtime Mock。
+- [x] **GitHub CI 前端修復**: 解決 Supabase 鏈式調用 Mock 失敗、SWR 測試隔離不足與 UI 斷言不匹配 (TC-1201~4102)。
 - [x] **前端 SWR 熱修復**: 解決 Docker 卷快取導致的 `swr` 模組遺失錯誤，強制更新匿名磁碟卷。
 - [x] **Docker 優化**: 引入 `.dockerignore` 排除 `node_modules` 與 `.next`，建置效率提升 50%。
 - [x] **宏觀數據品質修復**: 過濾 IMF 未來預測數據，清除 8 筆異常記錄。
