@@ -14,7 +14,8 @@ import {
     Cpu,
     Search,
     Sparkles,
-    Briefcase
+    Briefcase,
+    BrainCircuit
 } from "lucide-react";
 import { AlertBadge } from "../Market/AlertBadge";
 
@@ -25,6 +26,7 @@ import { AlertBadge } from "../Market/AlertBadge";
 
 const MENU_ITEMS = [
     { label: "首頁面板 (Overview)", href: "/", icon: Home, matchExact: true },
+    { label: "智力洞察 (Insights)", href: "/ai/insights", icon: BrainCircuit }, // 新增
     { label: "籌碼分析 (Chips)", href: "/chips", icon: Layers },
     { label: "市場動態 (Market)", href: "/stocks", icon: TrendingUp },
     { label: "投資組合 (Portfolios)", href: "/portfolios", icon: Briefcase },

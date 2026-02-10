@@ -38,6 +38,8 @@ services:
       GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
       GOTRUE_SITE_URL: ${SITE_URL}
       GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_EXTERNAL_URL: ${SITE_URL}
+      API_EXTERNAL_URL: ${SITE_URL} # 新增：對應日誌中要求的變數名
     depends_on: [ db ]
 
   rest:
@@ -159,7 +161,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: ai-frontend
-    ports: [ "3000:3000" ]
+    ports: [ "3300:3000" ]
     environment:
       NEXT_PUBLIC_SUPABASE_URL: http://localhost:8000
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}

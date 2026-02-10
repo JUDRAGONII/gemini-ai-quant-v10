@@ -1,15 +1,22 @@
 # 0-1_DEV_SUMMARY (開發摘要)
 
-## 📌 當前里程碑 (Current Milestone)
-- **當前進度**: Phase 11: 運作監控與結案 (Operation & Handover)
-- **當前里程碑**: Phase 11.1: 數據監控中心 UI 改造 (COMPLETED)
-- **核心狀態**: 數據監控中心已擴展至 9 分類卡片（台/美行情、台/美宏觀、即時報價、因子、基因、匯率、貴金屬），匯率/貴金屬顯示「待補」狀態。
 
 ---
 
 ## 📝 待辦清單 (Todo List)
 
-### Priority 0: 核心品質與自動化 (Auto CI/CD) - [COMPLETED]
+- [x] **全景調研**: 產出 `080_Full_Scale_Project_Audit_Report.md`，識別全系統缺口。
+- [x] **結構修復**: 建立 `exchange_rates` 表與補齊 `daily_price` 索引 (Phase 11.6)。
+- [x] **初始化**: 執行 `init_stock_list.py` 重建全市場標的主檔 (Phase 11.7)。
+- [x] **全歷史回補 (1990+)**: 實作 `HybridMarketFetcher` 整合 Yahoo + TWSE 雙軌制 (Phase 11.7)。
+- [x] **Phase 12 (完工)**: 進階 AI 洞察、戰術覆盤閉環與 Bento V3 視覺全棧部署。
+- [/] **宏觀同步**: 補回 FRED 指標與匯率歷史 (極限極深度)。
+
+### Priority 0: 核心品質、自動化與智力決策 (Production Hardening) - [IN PROGRESS]
+- [x] **Phase 12 - AI 辯證引擎**: 實作多代理人模擬與信心指標展示。
+- [x] **Phase 12 - 戰術覆盤系統**: 建立 `tactical_plans` RLS 安全架構與後端 CRUD。
+- [x] **Phase 12 - 智力決策中心**: 基於 Bento Grid V3 佈局之量化作戰終端。
+- [x] **Phase 12 - 效能硬化**: 導入 Redis L2 緩存，API 響應降至 < 2ms。
 - [x] **本地 CI 驗證工作流**: 整合 `tsc`, `jest`, `pytest` 於 `/local-ci-v10`。
 - [x] **Git 推送優化**: 實作 `git pull --rebase` 前置作業，達成「一次成功」目標。
 - [x] **GitHub CI 修復**: 修復 `backend/__init__.py` 與引進 `force=True` 日誌配置。
@@ -64,8 +71,13 @@
 - [x] **前端剩餘工作深度分析 (V10 Core Audit)**:
     - [x] 依據「憲級文件」1:1 比對 Next.js 14 實作現況。
     - [x] 完成 `frontend_remaining_work.md` 更新，識別 P1 級別缺項 (K線、籌碼子頁)。
-    - [x] 整合 UI/UX Pro Max 規範，規劃 Phase 4.3 視覺優化路徑。
-- [x] Phase 4.7: 錯誤訊息中英雙語化優化 (2026-01-28)
+    - [x] 整合 UI/UX Pro Max 規範，規劃- [ ] **Phase 11.3: 全歷史數據恢復 (極限探測)**
+    - [ ] 重建 `exchange_rates` 表 (SQL)
+    - [ ] 實作 `HybridMarketFetcher` (Yahoo + TWSE 雙軌制)
+    - [ ] 執行台股 1990-2004 遺產行情回補
+    - [ ] 執行全市場 2004 至今權威行情灌漿
+- [ ] **Phase 11.4: ETL 補缺與規格對齊**
+錯誤訊息中英雙語化優化 (2026-01-28)
 ### Added
 - **全域測試 Mock 基礎 (QA Infrastructure)**:
   - 實作基於 Proxy 的全域 `lucide-react` 圖標 Mock，自動化生成 `data-testid`。
@@ -172,9 +184,26 @@
 | 2026-02-04 | **Fix & Integration** | **Phase 9.6**: 修復 `NaN/Infinity` JSON 序列化錯誤，完成調度器與監聽器整合。 |
 | 2026-02-04 | **CI/CD Fix** | **Phase 10**: 修復 GitHub CI 前端建置錯誤 (TS2345 & Client Component)。 |
 | 2026-02-04 | **Frontend Fix** | **Phase 10.1**: 修復整合測試 Sidebar 渲染斷言不匹配與 Supabase Realtime Mock 缺失錯誤。 |
+| 2026-02-09 | **SDD Execution** | **Phase 11.6**: 完成 Schema 對齊，補全 `turnover` 欄位與 `exchange_rates` 表重構。 |
+| 2026-02-09 | **API Spec** | **Phase 11.6**: 更新 API 規格書 Ch. 12，同步實作 FastAPI 匯率端點與 TS 介面。 |
+| 2026-02-09 | **Data Engineering** | **Phase 11.7**: 重建標的主檔 (2800+)，實作 Hybrid Fetcher 雙軌回補自 1990 年起之歷史。 |
 
-## [V10.2.11] - 2026-01-29
-### Fixed
+### V10.3.16 (2026-02-05)
+- **[Plan]** 重構 Phase 11.2 ~ Phase 12 全景開發計畫。
+- **[Research]** 完成台股 1990 全歷史調研，確定「Yahoo Finance + TWSE」雙源切換策略。
+- **[Doc]** 產出 043, 044, 045, 046 詳細子計畫文件。
+- **[DevLog]** 完成 081、082 開發日誌。
+
+### V10.3.15 (2026-02-05) - MonitorPage Update
+### Fixed & Improved
+- **數據監控中心優化 (MonitorPage Pro Max)**:
+  - [x] **智能分頁**: 實量 `range()` 查詢與前端分頁控制，突破 50 筆顯示限制。
+  - [x] **市場映射**: 實作 `TWSE` -> `TW 🇹🇼` / `TIINGO` -> `US 🇺🇸` 友善顯示。
+  - [x] **即時過濾**: 強化客戶端關鍵字搜尋 (Symbol/Name) 體驗。
+  - [x] **自動化驗證**: 完成 4 項核心測試 (TC-M01~M04) 確保功能穩健。
+- **數據回補全面啟動 (Data Backfill)**:
+  - 手動觸發 `daily_pipeline`，啟動 Market/Macro/FX 全流程歷史回補。
+  - **狀態**: 背景執行中 (Docker Worker)。
 - **籌碼 ETL 精度修復 (Precision Fix)**:
   - 修正 `InstitutionalFetcher` 參數（`selectType=ALL`），恢復每日萬筆級數據抓取能力。
   - 修復 `MarginFetcher` 404 與 0 筆問題，更換為穩定端點 `MI_MARGN`。

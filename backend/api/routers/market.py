@@ -11,6 +11,15 @@ class HeatmapRequest(BaseModel):
     market_type: Optional[str] = "ALL"  # TWSE, TIINGO, ALL
     group_by: Optional[str] = "sector"  # sector, industry
 
+class ExchangeRateResponse(BaseModel):
+    base_currency: str
+    target_currency: str
+    rates: List[Dict[str, Any]]
+
+class ExchangeRateLatestResponse(BaseModel):
+    rates: Dict[str, float]
+    last_updated: str
+
 @router.get("/quotes")
 async def get_market_quotes(
     symbols: Optional[str] = Query(None, description="Comma separated symbols, e.g. 2330,2317")
@@ -45,6 +54,84 @@ async def get_symbol_snapshot(stock_code: str):
         if not response.data:
             raise HTTPException(status_code=404, detail="Quote not found")
         return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/exchange_rates")
+async def get_exchange_rates(
+    base: Optional[str] = "USD",
+    target: Optional[str] = "TWD",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None
+):
+    """
+    獲取歷史匯率數據。
+    """
+    try:
+        query = supabase.table("exchange_rates") \
+            .select("trade_date, rate, change, change_percent") \
+            .eq("base_currency", base) \
+            .eq("target_currency", target)
+            
+        if start_date:
+            query = query.gte("trade_date", start_date)
+        if end_date:
+            query = query.lte("trade_date", end_date)
+            
+        response = query.order("trade_date", desc=True).limit(100).execute()
+        
+        return {
+            "base_currency": base,
+            "target_currency": target,
+            "rates": response.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/exchange_rates/latest")
+async def get_latest_exchange_rates(
+    pairs: Optional[str] = Query(None, description="Comma separated pairs, e.g. USDTWD,USDCNY")
+):
+    """
+    獲取最新匯率。
+    """
+    try:
+        # 獲取每個交易對最新的一筆資料
+        # 注意：這裡使用簡易邏輯，實際生產環境可用 RPC 優化
+        query = supabase.table("exchange_rates").select("*")
+        
+        if pairs:
+            # 輔助：如果傳入的是 USDTWD 格式，需在 Repo 層處理或這裡簡單處理
+            # 目前 DB 已將其拆分為 base/target
+            pair_list = pairs.split(",")
+            # 這裡採簡單策略：獲取最近 20 筆並在 Python 過濾，或精準查詢
+            # 為求效能，我們先查出所有 base_currency 為 USD 的最新
+            response = supabase.rpc("get_latest_exchange_rates").execute()
+            if response.data:
+                return {
+                    "rates": {f"{r['base_currency']}{r['target_currency']}": r['rate'] for r in response.data},
+                    "last_updated": response.data[0]['trade_date'] if response.data else None
+                }
+        
+        # Fallback: 傳回常見對
+        response = supabase.table("exchange_rates") \
+            .select("base_currency, target_currency, rate, trade_date") \
+            .order("trade_date", desc=True) \
+            .limit(10) \
+            .execute()
+            
+        rates = {}
+        last_date = None
+        for r in response.data:
+            key = f"{r['base_currency']}{r['target_currency']}"
+            if key not in rates:
+                rates[key] = r['rate']
+                last_date = r['trade_date']
+                
+        return {
+            "rates": rates,
+            "last_updated": last_date
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

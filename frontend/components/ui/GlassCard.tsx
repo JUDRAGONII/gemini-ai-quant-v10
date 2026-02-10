@@ -8,7 +8,7 @@
 
 import React from "react";
 
-interface GlassCardProps {
+interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     /** 是否啟用 Hover 發光效果 */
     glow?: boolean;
@@ -26,7 +26,9 @@ export function GlassCard({
     className = "",
     onClick,
     interactive = false,
+    ...rest
 }: GlassCardProps) {
+
     const baseStyles = `
         relative overflow-hidden rounded-2xl
         bg-slate-900/40 backdrop-blur-xl
@@ -50,7 +52,9 @@ export function GlassCard({
             onClick={onClick}
             role={onClick ? "button" : undefined}
             tabIndex={onClick ? 0 : undefined}
+            {...rest}
         >
+
             {/* 頂部漸層光暈 */}
             {glow && (
                 <div
