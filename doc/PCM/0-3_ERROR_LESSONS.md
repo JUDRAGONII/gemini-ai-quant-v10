@@ -777,3 +777,29 @@
 - [ ] 前端組件存取 API 回傳物件的深層屬性前，**必須加入 `?.` 或 `?? fallback`**，防止 null/undefined 崩潰。
 - [ ] Next.js proxy rewrites 應使用 **`/api/:path*` catch-all** 規則，避免分散定義造成遺漏。
 - [ ] FastAPI router `@router.get("/")` 在 `include_router(prefix="/path")` 下，前端必須使用 **帶 trailing slash** 的路徑（如 `/api/v1/alerts/`）以避免 redirect。
+### 2026-02-10 前端 CI 測試穩定性與 Mock 深度修補教訓
+
+### 問題現象
+1. **TypeError: query.order is not a function**: 在 `AdminMonitor` 測試中，儘管部分 Mock 已存在，但鏈式調用在中間環節中斷。
+2. **Number of calls: 0 (RPC Check Failure)**: `TC-1201` 斷言載入後應調用 RPC，但實際為 0 次。
+3. **ReferenceError: GlassCard is not defined**: 在 `macro/page.test.tsx` 中，組件因遺漏導入而崩潰，導致測試套件全滅。
+4. **Unable to find element with text: ...**: `TC-2101` 在 UI 更新後，因斷言文字（`...` vs `0`）不匹配而失敗。
+
+### 底層根本原因
+1. **鏈式 Mock 不完全**: Supabase 的 `.from().select().eq().order().range()` 需要每一層都返回可鏈接的對象。使用 `jest.fn().mockReturnThis()` 在某些複雜調用或不同 `this` 綁定下可能失效。此外，若 Mock 物件具備 `then` 方法（Thenable），`await` 會提前解析對象，導致後續屬性訪問失敗。
+2. **SWR 跨測試快取污染**: `useSWR` 預設會快取全局數據。若前一個測試已命中快取，後一個測試可能直接從快取讀取而不觸發 `fetcher` (RPC)，導致 `toHaveBeenCalledWith` 斷言失敗。
+3. **測試斷言過於僵硬**: 使用精確字串（如 `0`）而非狀態標識（如 `...`）進行載入中斷言。當 UI 優化（如預設顯式 0）時，測試會因未同步更新而報錯。
+4. **導入遺漏 (Import Drift)**: 在大型重構或代碼搬移中，手動新增的組件若漏掉 React 或必要的 UI 框架導入，會在測試環境（JSDOM）下引發 `ReferenceError`。
+
+### 解決方案
+1. **顯式鏈式 Mock**: 統一將 `.mockReturnThis()` 改為明確的 `.mockReturnValue(mockChain)`，並在 `then` 方法中返回模擬之 `resolve` 結果。
+2. **SWR 環境隔離**: 在測試中使用 `<SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>` 包裹 `render` 函式，確保每個測試案例的快取都是全新的。
+3. **同步斷言與 UI**: 將預設計數顯示改回 `...` 以符載入中狀態，或同步更新測試斷言以符合最新 UI 設計。
+4. **補強導入檢查**: 確保所有 Component 檔案頂層具備 `import React from 'react'`（若使用 JSX/TSX）及所有關聯之原子組件導入。
+
+### 預防重複犯錯的 Checkbox
+- [x] 模擬具備長鏈式調用的 API (如 Supabase, Knex) 時，應使用明確返回 `mockChain` 的 Mock 寫法。
+- [x] 在測試 SWR 組件時，務必使用空的 `provider` 加入 `SWRConfig` 進行環境隔離。
+- [x] 斷言載入狀態時，優先考慮狀態文字（`Loading`, `...`）的一致性。
+- [x] 修改組件 UI 後，必須全量掃描對應的 `.test.tsx` 檔案確保斷言同步。
+- [x] 移除或跳過 (skip) 那些過於依賴環境 CSS（如 hover, precision grid classes）的脆弱 (Flaky) 測試案例。

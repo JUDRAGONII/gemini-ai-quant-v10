@@ -237,6 +237,7 @@ export default function MonitorPage() {
                 </div>
                 <button
                     onClick={() => setRefreshKey(k => k + 1)}
+                    aria-label="Refresh Data"
                     className="p-2 bg-slate-900 border border-white/5 rounded-xl hover:bg-white/10 transition-colors"
                 >
                     <RefreshCcw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -264,7 +265,7 @@ export default function MonitorPage() {
                                             <Icon className="w-5 h-5" />
                                         </div>
                                         <div className={`text-2xl font-bold font-mono tracking-tight mb-1 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`}>
-                                            {count !== undefined ? count.toLocaleString() : '0'}
+                                            {count !== undefined ? count.toLocaleString() : '...'}
                                         </div>
                                     </div>
                                     <div className="mt-2">
@@ -373,7 +374,7 @@ export default function MonitorPage() {
                         ) : (
                             <div className="p-24 text-center">
                                 <AlertCircle className="w-10 h-10 text-slate-700 mx-auto mb-4 opacity-20" />
-                                <div className="text-sm font-medium text-slate-500 tracking-tight">No records found for {activeCategory.name}.</div>
+                                <div className="text-sm font-medium text-slate-500 tracking-tight">此資料表目前尚無數據</div>
                                 <div className="text-[10px] text-slate-700 mt-1 font-mono uppercase tracking-widest">Verify database tables or check connectivity.</div>
                             </div>
                         )}

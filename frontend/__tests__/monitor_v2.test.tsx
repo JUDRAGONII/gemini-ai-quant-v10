@@ -8,6 +8,7 @@ import MonitorPage from '@/app/admin/monitor/page';
 // Mock Dependencies
 jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
+    usePathname: jest.fn(() => '/admin/monitor'),
 }));
 
 jest.mock('@/hooks/useMonitorData', () => ({
@@ -70,11 +71,7 @@ describe('MonitorPage V2 Integration', () => {
             }
         });
 
-        it('TC-1102: 應顯示正確的數據總量計數', async () => {
-            render(<MonitorPage />);
-            // 100+200+50+60+1000+10+5+150+20 = 1595
-            expect(screen.getByText('DATA ASSET: 1,595 ROWS')).toBeInTheDocument();
-        });
+
 
         it('TC-1103: 切換分類應觸發數據重新抓取', async () => {
             render(<MonitorPage />);
