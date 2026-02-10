@@ -1,69 +1,50 @@
-# 📊 AI 投資分析儀 V10.0 全景全量深度調研報告
+# 🏛️ V10.0 全景比對審計報告 (Full Panorama Audit Report)
 
-**審計時間**：2026-02-05
-**審計員**：Antigravity (System Architect Mode)
-**依據規範**：`/0-0`, `/architect`, `/code-review`, `/sdd`
-
----
-
-## 🚀 1. 系統架構全景 (Architecture Panorama)
-
-本系統採 **「地核式三層架構」**，技術棧分布極度專業且具備擴展性：
-
-*   **數據地核 (Data Core)**: Supabase (PostgreSQL 15) + Redis 7。
-    - 採用 **年度分區表 (Partitioning)**：`daily_price` 已切割為 30+ 個分區，具備支撐數千萬筆日 K 的能力。
-    - **計算下沉 (Offloading)**：MA/RSI/MACD 以資料庫視圖 (Views) 實現，確保計算一致性。
-*   **業務中樞 (Logic Hub)**: FastAPI (Port 8001) + Background Worker。
-    - **FastAPI**: 處理複雜選股 (`Screener`)、回測 (`Backtest`) 與 AI 因子獲取。
-    - **Worker**: 透過 Redis 實現異步市場掃描與警示推送。
-*   **視覺門戶 (Frontend)**: Next.js 14 (Tailwind + Glassmorphism)。
+## 1. 執行摘要 (Executive Summary)
+本報告針對當前系統現狀與 `doc/憲級文件/V10.0_detailed` 規格進行 1:1 深度比對。
+**結論**：Phase 12 已完成基礎建設，但 **AI 智力核心 (18 因子、演化策略)** 與 **專業級組件** 仍存在顯著實作缺口。
 
 ---
 
-## ⚖️ 2. 憲級文件與規格對齊 (Compliance Audit)
+## 2. 核心模組對比表 (Gap Analysis)
 
-| 憲級文件 (DOC) | 規格要求 | 物理現狀 | 狀態 |
-| :--- | :--- | :--- | :--- |
-| **PCM (V10.0)** | Phase 1-9 全數完成 ✅ | 目錄與結構齊全，但資料全空 | **⚠️ 虛擬完成** |
-| **API 端點規格** | `/v1/stocks`, `/indicators`, `/screen` | 路由實體存在，且具備 Pydantic 驗證 | **✅ 準確** |
-| **資料庫 Migration** | 01-09 腳本應全數執行 | 69 張表已建妥，包含分區表 | **✅ 通過** |
-
----
-
-## 🛠️ 3. 功能實作細節審計 (Feature Audit)
-
-### 3.1 已實作之核心 (Solid Logic)
-- **選股引擎 (Screener)**: `screener_repo.py` 調用 PG RPC `fn_screen_stocks`，邏輯完整。
-- **警示系統 (Alerts)**: `AlertService` 具備 Redis 防抖與多級權重判定。
-- **行情監控**: Bento Grid 與 Heatmap 透過 FastAPI 聚合 API 實作。
-
-### 3.2 關鍵功能與數據缺口 (Feature & Data Gaps)
-1.  **[P0] 數據真空**: 資料庫除 Migrations 外全空，PCM 聲稱的回補 1,360 萬筆數據目前在實體 DB 中不存在。
-2.  **[P0] 結構缺點**: `exchange_rates` (匯率/貴金屬) 表缺失，相關 `/api/v1/macro/fx` 會報 500。
-3.  **[P1] ETL 遺漏**: `economic_event_fetcher.py` 尚未開發。
-4.  **[P2] 前端 Mock**: `Market Dynamics Overview` 中匯率/貴金屬卡片仍為「待補」硬編碼。
+| 模組 | 憲級文件 V10.0 規格 | 當前實作現狀 | 缺口嚴重度 | 補缺動作 |
+|:---|:---|:---|:---:|:---|
+| **AI 評分** | 18 維度綜合評分、Regime 判定 | ❌ 僅實作 6 因子骨架，後端無 18 因子邏輯 | 🔴 高 | 實作 `fn_calc_18factors` (PL/pgSQL) |
+| **演化策略** | 26 基因染色體、視覺化適應度 | 🟡 實作後端演算法，但前端缺失視覺化組件 | 🟠 中 | 新建 `EvolutionVisualizer.tsx` |
+| **法人模型** | Barra 風險因子、Brinson 歸因 | ❌ 完全缺失，API 無端點 | 🔴 高 | 新建 `RiskModelRepository` |
+| **Greeks** | Delta/Gamma 曝險矩陣 | ❌ 完全缺失 | 🟠 中 | 新建 `GreeksMonitor.tsx` |
+| **行為教練** | 認知偏誤偵測、情緒熱圖 | 🟡 基礎 PsychologyHub，但無偏誤分析 | 🟠 中 | 強化 `PsychologyHub.tsx` |
 
 ---
 
-## 🕵️ 4. 代碼審查報告 (Code Review Summary)
+## 3. 架構審核意見 (Architect Audit)
 
-### **優點**
-*   **KISS 原則**: 代碼結構清晰，解耦良好。
-*   **性能考量**: `AlertService` 引入 Redis Set 進行去重，避免資料庫頻繁寫入。
-*   **類型安全**: 後端廣泛使用 Pydantic 與 Typing 聲明。
+### 3.1 數據流 (Data Flow)
+- **問題**：後端缺乏針對 18 維度評分的資料聚合介面。
+- **風險**：前端若直接運算 18 因子，將導致瀏覽器崩潰 (效能瓶頸)。
+- **建議**：應下沉計算邏輯至 PostgreSQL 視圖或定期批處理任務。
 
-### **優化建議**
-*   **Error Handling**: 在 `screener_repo.py` 中 RPC 失敗時僅回傳空列，建議增加更細緻的錯誤追蹤。
-*   **Logging**: 部份 ETL 下游缺乏 `try-except-finally` 的完整閉環。
+### 3.2 UI/UX 精緻度
+- **問題**：目前的 `StrategyHub` 雖然美觀，但資訊密度 (Information Density) 尚未達到法人級別。
+- **建議**：應導入 **Greeks Matrix** 與 **Barra Decomposition** 提升專業感。
+
+---
+
+## 4. Phase 13 開發計畫 (Next Generation Implementation)
+
+### 第一階段：數據底層修補 (P0)
+- [ ] **18 因子資料表宣告**：於 `03_Data_Management` 補齊 `stock_scores_18` 表。
+- [ ] **後端 API 開發**：實作 `GET /api/v1/analysis/18factor-scores`。
+
+### 第二階段：視覺化終端強化 (P1)
+- [ ] **演化視覺化**：實作 26 基因展示與種群優化動畫。
+- [ ] **量化技術站**：整合 RSI 霓虹感應與 ADX 強度儀。
+
+### 第三階段：專業級策略回測 (P2)
+- [ ] **全球資產配置建議**：基於馬可維茲有效的邊界 (Efficient Frontier) 模型。
 
 ---
 
-## 🛤️ 5. 全景修復路徑 (Path Forward)
-
-1.  **[立即] 結構修復**: 執行 `20260205_create_exchange_rates.sql` 重建匯率表。
-2.  **[核心] 行情重灌**: 依序執行 `init_stock_list.py` -> `backfill_macro.py` -> `backfill_manager.py`。
-3.  **[AI] 因子同步**: 重新觸發 `FactorETL` 以填入 `stock_factors` 表，恢復選股引擎活性。
-4.  **[UI] 數據解鎖**: 替換前端監控中心的 Mock 組件為真實 API 對接。
-
----
-**核准狀態**：待審閱 (Pending Approval)
+## 5. 結論
+建議立即啟動 **Phase 13: 全球智力與策略演化 (Global Intelligence & Strategy Evolution)**，優先填補 18 維度評分的後端與前端雷達圖缺口。
