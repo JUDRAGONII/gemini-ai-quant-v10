@@ -5,13 +5,13 @@
 
 ## 📝 待辦清單 (Todo List)
 
-- [x] **全景調研**: 產出 `080_Full_Scale_Project_Audit_Report.md`，識別全系統缺口。
+- [x] **全景調研**: 產出 `080_Full_Scale_Project_Audit_Report.md`，識別全系統缺口 (與 V10.0 憲級比對)。
 - [x] **結構修復**: 建立 `exchange_rates` 表與補齊 `daily_price` 索引 (Phase 11.6)。
 - [x] **初始化**: 執行 `init_stock_list.py` 重建全市場標的主檔 (Phase 11.7)。
 - [x] **全歷史回補 (1990+)**: 實作 `HybridMarketFetcher` 整合 Yahoo + TWSE 雙軌制 (Phase 11.7)。
 - [x] **Phase 12 (完工)**: 進階 AI 洞察、戰術覆盤閉環與 Bento V3 視覺全棧部署。
 - [x] **宏觀同步**: 補回 FRED 指標與匯率歷史 (極限極深度)。
-- [ ] **Phase 13 (待啟動)**: 全球資產配置建議與 AI 交易訊號回測。
+- [ ] **Phase 13 (待啟動)**: 全球智力與策略演化 (18 維度評分系統與演化視覺化)。
 
 ### Priority 0: 核心品質、自動化與智力決策 (Production Hardening) - [IN PROGRESS]
 - [x] **Phase 12 - AI 辯證引擎**: 實作多代理人模擬與信心指標展示。
