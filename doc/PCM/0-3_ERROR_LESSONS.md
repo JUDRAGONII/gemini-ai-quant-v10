@@ -698,3 +698,108 @@
 - [ ] 凡涉及 `package.json` 依賴新增/刪除，重新啟動容器時必須使用 `--renew-anon-volumes`。
 - [ ] 定期執行 `docker system prune` 清理無效的匿名磁碟卷。
 - [ ] 確保 `.dockerignore` 包含 `node_modules` 與 `.next` 以防止 Context 過大。
+### 2026-02-05 Phase 12 TDD 與 Recharts 圖表模擬教訓
+
+### 問題現象
+1. **測試異常超時或失敗**：`InsightsPanel` 的測試在渲染包含 `Recharts` 的圖表時，出現 `ResponsiveContainer` 尺寸為 0 或 SVG 標籤未定義的錯誤，導致斷言失敗。
+2. **Mock 競爭**：同時 Mock `useInsights` 與 `Recharts` 時，若 SWR 的狀態（loading/data）切換過快，Jest 可能在數據渲染完成前就執行斷言。
+
+### 底層根本原因
+1. **JSDOM 限制**：JSDOM 環境並非真實瀏覽器，不具備 `getComputedStyle` 或 `getBoundingClientRect` 的完整能力。`ResponsiveContainer` 依賴這些 API 來決定寬高，若未正確 Mock `ResizeObserver`，圖表寬高將永遠為 0，導致內容不被渲染。
+2. **UI/邏輯耦合過緊**：在單一測試案例中同時驗證數據抓取邏輯與圖表渲染，導致複雜度過高。
+
+### 解決方案
+1. **Mock ResizeObserver**：在 `jest.setup.js` 中補全全域 `ResizeObserver` 模擬。
+2. **Hook 隔離測試**：優先針對 `useInsights.ts` 進行邏輯測試。
+3. **組件層 Mock Hook**：在測試 `InsightsPanel.tsx` 時，強制 Mock `useInsights` Hook 的回傳值，避開 SWR 的非同步行為，專注於 UI 狀態（Loading Skeleton, Data Table, Summary Text）的呈現。
+
+### 預防重複犯錯的 Checkbox
+- [x] 涉及大型圖表庫 (Recharts, TradingView) 的組件，應優先 Mock 數據層 Hook。
+- [x] 確保 `jest.setup.js` 包含完整的 `ResizeObserver` 與 `Response/Request` Polyfills。
+- [x] 測試 Recharts 時，若不需要驗證圖表內部細節，應 Mock `ResponsiveContainer` 返回固定寬高的 `div`。
+
+### 2026-02-09 PowerShell 管道傳輸與 SQL 編碼教訓
+
+### 問題現象
+1. **指令失效**：在 PowerShell 使用 `<` 重定向符號（如 `docker exec ... < migration.sql`）執行失敗，報錯 `運算子保留供未來使用`。
+2. **中文字元損壞**：透過 `Get-Content | docker exec` 傳輸 SQL 時，註釋中的中文字元導致 `psql` 報錯 `unterminated quoted string`。
+
+### 底層根本原因
+1. **Shell 特性**：PowerShell 的 `<` 是保留字，不支援像 cmd 或 bash 那樣的標準輸入重定向。
+2. **編碼摩擦**：PowerShell 管道傳輸預設可能隨系統區域設定而異（如 Big5 或 UTF-16），當含有中文字符的串流未經 UTF-8 正確轉換即傳給容器內的 `psql` (UTF-8) 時，會因 Multi-byte 序列斷裂導致 SQL 解析錯誤。
+
+### 解決方案
+1. **改用管道**：使用 `Get-Content -Encoding UTF8 "file.sql" | docker exec -i container psql ...`。
+2. **移除冗餘註釋**：在關鍵遷移指令中，儘量移除 SQL 註釋中的中文字元，或確保整個管道鏈路強制指定 UTF-8 編碼。
+
+### 預防重複犯錯的 Checkbox
+- [ ] Windows PowerShell 環境下執行 Docker SQL 遷移，應優先使用 `Get-Content -Encoding UTF8` 配合同步管道。
+- [ ] 遷移指令應保持「編碼中性」，避免在 SQL 註釋中使用特殊或多字節字元。
+
+### 2026-02-10 Docker 容器內 API 代理 404 錯誤 (Cross-Container Routing Failure)
+
+### 問題現象
+- **現象**: 瀏覽器 DevTools 顯示大量 `/api/v1/alerts`, `/api/v1/alerts/count` 等請求返回 **404 Not Found**。
+- **影響範圍**: 所有由 FastAPI 後端 (`ai-api:8001`) 處理的端點在前端代理 (Next.js `:3300`) 下均不可達。
+
+### 底層根本原因 (三層故障)
+1. **代理規則缺失**: `next.config.mjs` 缺少 `rewrites()` 配置，Next.js 無法將 `/api/v1/*` 的請求自動轉發至 FastAPI 後端。
+2. **後端路由遺漏**: `backend/api/main.py` 未註冊 `macro` 路由器模組，導致 `/api/v1/macro/*` 端點完全不存在。
+3. **硬編碼 URL (Critical)**: `DialecticPanel`, `TacticalPlanner`, `CorrelationChart`, `EconomicCalendar`, `useInsights` 等 7 處前端組件直接硬編碼了 `http://localhost:8001`。在 Docker 容器內，`localhost` 解析為容器自身 (`::1`)，非宿主機或其他容器，導致 `ECONNREFUSED`。
+4. **環境判斷邏輯錯誤**: 初始修復中使用 `process.env.NODE_ENV === 'production'` 判斷是否使用 Docker hostname，但 `npm run dev` 模式下 `NODE_ENV` 始終為 `development`，導致容器內仍走 `localhost`。
+
+### 解決方案
+1. **Next.js Rewrites**: 在 `next.config.mjs` 中建立 6 組 `rewrites()` 規則 (alerts, market, screener, macro, insights, tactical)。
+2. **環境感知**: 使用 `process.env.BACKEND_URL || 'http://ai-api:8001'`，預設走 Docker service name。
+3. **URL 統一**: 將所有前端組件的 API 呼叫統一為相對路徑 (`/api/v1/...`)，完全消除硬編碼的絕對 URL。
+4. **路由補齊**: 在 `main.py` 中註冊遺漏的 `macro` 路由器。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 前端組件中的 API 呼叫**嚴禁使用硬編碼 `http://localhost:PORT`**，必須使用相對路徑或環境變數。
+- [ ] 新增後端路由器後，**必須同步更新 `main.py` 與 `next.config.mjs` 的 rewrites 規則**。
+- [ ] Docker 容器間通訊必須使用 **Docker service name**（如 `ai-api`），而非 `localhost`。
+- [ ] 環境感知判斷**不可依賴 `NODE_ENV`**（dev server 始終為 `development`），應使用專屬環境變數如 `BACKEND_URL`。
+
+## 2026-02-10 Phase 12 API 回傳結構不一致
+
+### 問題現象
+1. `EconomicCalendar.tsx:52` 拋出 `TypeError: data.map is not a function`
+2. `CorrelationChart.tsx:55` 拋出 `TypeError: Cannot read properties of null (reading 'toFixed')`
+3. `alerts` 端點返回 307/308 redirect，通過 Next.js proxy 後 redirect chain 斷裂
+
+### 底層根本原因
+1. **`macro.py` `/calendar`** 返回 `{status, count, data:[...]}` 嵌套物件，但前端 `useSWR<EconomicEvent[]>` 期望直接陣列。
+2. **`CorrelationChart`** 的 `data.summary.current` 可能為 `null`（API 返回不完整），直接調用 `.toFixed()` 崩潰。
+3. **FastAPI `redirect_slashes=True`** 將 `/api/v1/alerts` 重定向至 `/api/v1/alerts/`，307 Location header 包含 Docker hostname `ai-api:8001`，瀏覽器無法解析。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 新增 API 端點時，**回傳格式必須統一**：陣列型端點直接返回 `response.data`，禁止額外包裝 `{status, data}`。
+- [ ] 前端組件存取 API 回傳物件的深層屬性前，**必須加入 `?.` 或 `?? fallback`**，防止 null/undefined 崩潰。
+- [ ] Next.js proxy rewrites 應使用 **`/api/:path*` catch-all** 規則，避免分散定義造成遺漏。
+- [ ] FastAPI router `@router.get("/")` 在 `include_router(prefix="/path")` 下，前端必須使用 **帶 trailing slash** 的路徑（如 `/api/v1/alerts/`）以避免 redirect。
+### 2026-02-10 前端 CI 測試穩定性與 Mock 深度修補教訓
+
+### 問題現象
+1. **TypeError: query.order is not a function**: 在 `AdminMonitor` 測試中，儘管部分 Mock 已存在，但鏈式調用在中間環節中斷。
+2. **Number of calls: 0 (RPC Check Failure)**: `TC-1201` 斷言載入後應調用 RPC，但實際為 0 次。
+3. **ReferenceError: GlassCard is not defined**: 在 `macro/page.test.tsx` 中，組件因遺漏導入而崩潰，導致測試套件全滅。
+4. **Unable to find element with text: ...**: `TC-2101` 在 UI 更新後，因斷言文字（`...` vs `0`）不匹配而失敗。
+
+### 底層根本原因
+1. **鏈式 Mock 不完全**: Supabase 的 `.from().select().eq().order().range()` 需要每一層都返回可鏈接的對象。使用 `jest.fn().mockReturnThis()` 在某些複雜調用或不同 `this` 綁定下可能失效。此外，若 Mock 物件具備 `then` 方法（Thenable），`await` 會提前解析對象，導致後續屬性訪問失敗。
+2. **SWR 跨測試快取污染**: `useSWR` 預設會快取全局數據。若前一個測試已命中快取，後一個測試可能直接從快取讀取而不觸發 `fetcher` (RPC)，導致 `toHaveBeenCalledWith` 斷言失敗。
+3. **測試斷言過於僵硬**: 使用精確字串（如 `0`）而非狀態標識（如 `...`）進行載入中斷言。當 UI 優化（如預設顯式 0）時，測試會因未同步更新而報錯。
+4. **導入遺漏 (Import Drift)**: 在大型重構或代碼搬移中，手動新增的組件若漏掉 React 或必要的 UI 框架導入，會在測試環境（JSDOM）下引發 `ReferenceError`。
+
+### 解決方案
+1. **顯式鏈式 Mock**: 統一將 `.mockReturnThis()` 改為明確的 `.mockReturnValue(mockChain)`，並在 `then` 方法中返回模擬之 `resolve` 結果。
+2. **SWR 環境隔離**: 在測試中使用 `<SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>` 包裹 `render` 函式，確保每個測試案例的快取都是全新的。
+3. **同步斷言與 UI**: 將預設計數顯示改回 `...` 以符載入中狀態，或同步更新測試斷言以符合最新 UI 設計。
+4. **補強導入檢查**: 確保所有 Component 檔案頂層具備 `import React from 'react'`（若使用 JSX/TSX）及所有關聯之原子組件導入。
+
+### 預防重複犯錯的 Checkbox
+- [x] 模擬具備長鏈式調用的 API (如 Supabase, Knex) 時，應使用明確返回 `mockChain` 的 Mock 寫法。
+- [x] 在測試 SWR 組件時，務必使用空的 `provider` 加入 `SWRConfig` 進行環境隔離。
+- [x] 斷言載入狀態時，優先考慮狀態文字（`Loading`, `...`）的一致性。
+- [x] 修改組件 UI 後，必須全量掃描對應的 `.test.tsx` 檔案確保斷言同步。
+- [x] 移除或跳過 (skip) 那些過於依賴環境 CSS（如 hover, precision grid classes）的脆弱 (Flaky) 測試案例。

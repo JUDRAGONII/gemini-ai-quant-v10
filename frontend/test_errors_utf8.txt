@@ -1,0 +1,3300 @@
+﻿
+> ai-invest-frontend@0.1.0 test
+> jest --testPathPatterns=macro/page|admin/monitor/page --watchAll=false --no-cache
+
+node.exe : FAIL __tests__/app/macro/page.test.tsx
+位於 線路:1 字元:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/n
+ode_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL __tests__/app/ 
+   macro/page.test.tsx:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ??Console
+
+    console.error
+      Warning: An update to EconomicCalendar inside a test was no
+t wrapped in act(...).
+      
+      When testing, code that causes React state updates should b
+e wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user woul
+d see in the browser. Learn more at https://reactjs.org/link/wrap
+-tests-with-act
+          at EconomicCalendar (D:\APP\AI?????V10.0\frontend\co
+mponents\macro\EconomicCalendar.tsx:27:46)
+          at section
+          at div
+          at div
+          at div
+          at main
+          at div
+          at div
+          at MacroPage (D:\APP\AI?????V10.0\frontend\app\macro
+\page.tsx:65:51)
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.devel
+opment.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.
+js:60:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-do
+m/cjs/react-dom.development.js:27628:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-
+dom.development.js:25547:5)
+      at forceStoreRerender (node_modules/react-dom/cjs/react-dom
+.development.js:16158:5)
+      at handleStoreChange (node_modules/react-dom/cjs/react-dom.
+development.js:16134:7)
+      at node_modules/swr/dist/index/index.js:273:42
+      at Array.setter (node_modules/swr/dist/_internal/config-con
+text-12s-DER5jwVW.js:435:21)
+      at node_modules/swr/dist/_internal/config-context-12s-DER5j
+wVW.js:70:25
+      at finishRequestAndUpdateState (node_modules/swr/dist/index
+/index.js:368:13)
+      at node_modules/swr/dist/index/index.js:502:9
+
+    console.error
+      Warning: An update to MacroPage inside a test was not wrapp
+ed in act(...).
+      
+      When testing, code that causes React state updates should b
+e wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user woul
+d see in the browser. Learn more at https://reactjs.org/link/wrap
+-tests-with-act
+          at MacroPage (D:\APP\AI?????V10.0\frontend\app\macro
+\page.tsx:65:51)
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.devel
+opment.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.
+js:60:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-do
+m/cjs/react-dom.development.js:27628:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-
+dom.development.js:25547:5)
+      at forceStoreRerender (node_modules/react-dom/cjs/react-dom
+.development.js:16158:5)
+      at handleStoreChange (node_modules/react-dom/cjs/react-dom.
+development.js:16134:7)
+      at node_modules/swr/dist/index/index.js:273:42
+      at Array.setter (node_modules/swr/dist/_internal/config-con
+text-12s-DER5jwVW.js:435:21)
+      at node_modules/swr/dist/_internal/config-context-12s-DER5j
+wVW.js:70:25
+      at finishRequestAndUpdateState (node_modules/swr/dist/index
+/index.js:368:13)
+      at node_modules/swr/dist/index/index.js:502:9
+
+    console.error
+      Warning: An update to EconomicCalendar inside a test was no
+t wrapped in act(...).
+      
+      When testing, code that causes React state updates should b
+e wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user woul
+d see in the browser. Learn more at https://reactjs.org/link/wrap
+-tests-with-act
+          at EconomicCalendar (D:\APP\AI?????V10.0\frontend\co
+mponents\macro\EconomicCalendar.tsx:27:46)
+          at section
+          at div
+          at div
+          at div
+          at main
+          at div
+          at div
+          at MacroPage (D:\APP\AI?????V10.0\frontend\app\macro
+\page.tsx:65:51)
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.devel
+opment.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.
+js:60:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-do
+m/cjs/react-dom.development.js:27628:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-
+dom.development.js:25547:5)
+      at forceStoreRerender (node_modules/react-dom/cjs/react-dom
+.development.js:16158:5)
+      at handleStoreChange (node_modules/react-dom/cjs/react-dom.
+development.js:16134:7)
+      at node_modules/swr/dist/index/index.js:273:42
+      at Array.setter (node_modules/swr/dist/_internal/config-con
+text-12s-DER5jwVW.js:435:21)
+      at node_modules/swr/dist/_internal/config-context-12s-DER5j
+wVW.js:70:25
+      at finishRequestAndUpdateState (node_modules/swr/dist/index
+/index.js:368:13)
+      at node_modules/swr/dist/index/index.js:502:9
+
+    console.error
+      Warning: An update to EconomicCalendar inside a test was no
+t wrapped in act(...).
+      
+      When testing, code that causes React state updates should b
+e wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user woul
+d see in the browser. Learn more at https://reactjs.org/link/wrap
+-tests-with-act
+          at EconomicCalendar (D:\APP\AI?????V10.0\frontend\co
+mponents\macro\EconomicCalendar.tsx:27:46)
+          at section
+          at div
+          at div
+          at div
+          at main
+          at div
+          at div
+          at MacroPage (D:\APP\AI?????V10.0\frontend\app\macro
+\page.tsx:65:51)
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.devel
+opment.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.
+js:60:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-do
+m/cjs/react-dom.development.js:27628:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-
+dom.development.js:25547:5)
+      at forceStoreRerender (node_modules/react-dom/cjs/react-dom
+.development.js:16158:5)
+      at handleStoreChange (node_modules/react-dom/cjs/react-dom.
+development.js:16134:7)
+      at node_modules/swr/dist/index/index.js:273:42
+      at Array.setter (node_modules/swr/dist/_internal/config-con
+text-12s-DER5jwVW.js:435:21)
+      at node_modules/swr/dist/_internal/config-context-12s-DER5j
+wVW.js:70:25
+      at finishRequestAndUpdateState (node_modules/swr/dist/index
+/index.js:368:13)
+      at node_modules/swr/dist/index/index.js:502:9
+
+    console.error
+      Warning: An update to EconomicCalendar inside a test was no
+t wrapped in act(...).
+      
+      When testing, code that causes React state updates should b
+e wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user woul
+d see in the browser. Learn more at https://reactjs.org/link/wrap
+-tests-with-act
+          at EconomicCalendar (D:\APP\AI?????V10.0\frontend\co
+mponents\macro\EconomicCalendar.tsx:27:46)
+          at section
+          at div
+          at div
+          at div
+          at main
+          at div
+          at div
+          at MacroPage (D:\APP\AI?????V10.0\frontend\app\macro
+\page.tsx:65:51)
+
+      at printWarning (node_modules/react-dom/cjs/react-dom.devel
+opment.js:86:30)
+      at error (node_modules/react-dom/cjs/react-dom.development.
+js:60:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-do
+m/cjs/react-dom.development.js:27628:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-
+dom.development.js:25547:5)
+      at forceStoreRerender (node_modules/react-dom/cjs/react-dom
+.development.js:16158:5)
+      at handleStoreChange (node_modules/react-dom/cjs/react-dom.
+development.js:16134:7)
+      at node_modules/swr/dist/index/index.js:273:42
+      at Array.setter (node_modules/swr/dist/_internal/config-con
+text-12s-DER5jwVW.js:435:21)
+      at node_modules/swr/dist/_internal/config-context-12s-DER5j
+wVW.js:70:25
+      at finishRequestAndUpdateState (node_modules/swr/dist/index
+/index.js:368:13)
+      at node_modules/swr/dist/index/index.js:502:9
+
+  ??摰???璅∠? (Macro) ???箇?頝臬?皜祈岫 (Happy Path) ??TC-5201: 蝬脫皜脫?:
+ /macro ?迤蝣粹＊蝷?GDP, CPI, VIX 蝑憭扳?璅??
+    ReferenceError: waitFor is not defined
+
+    [0m [90m 48 |[39m             render([33m<[39m[33mMacro
+Page[39m [33m/[39m[33m>[39m)[33m;[39m
+     [90m 49 |[39m
+    [31m[1m>[22m[39m[90m 50 |[39m             [36mawait[3
+9m waitFor(() [33m=>[39m {
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 51 |[39m                 expect(screen[33m.[39mgetB
+yText([35m/FEDFUNDS/[39m))[33m.[39mtoBeInTheDocument()[33m;
+[39m
+     [90m 52 |[39m                 expect(screen[33m.[39mgetB
+yText([35m/CPI/[39m))[33m.[39mtoBeInTheDocument()[33m;[39m
+     [90m 53 |[39m             })[33m;[39m[0m
+
+      at Object.<anonymous> (__tests__/app/macro/page.test.tsx:50
+:13)
+
+  ??摰???璅∠? (Macro) ???箇?頝臬?皜祈岫 (Happy Path) ??TC-7103: Warning
+: ?敹???芋?祆??蝷箝?憿舐霅血?摮見
+
+    TestingLibraryElementError: Unable to find an element with th
+e text: /?桀?雿輻撠平璅⊥?豢?撅內蝟餌絞?嗆?/. This could be because the tex
+t is broken up by multiple elements. In this case, you can provid
+e a function for your text matcher to make your matcher more flex
+ible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"mobilenav-mock"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden lg:block"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"sidebar-mock"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex"[39m
+          [36m>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"flex-1 ml-0 lg:ml-64 p-4 lg:p
+-8"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-col md:flex-row j
+ustify-between items-start md:items-end gap-6 mb-12"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-3
+"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2.5 bg-blue-500/10 
+rounded-xl border border-blue-500/20 shadow-inner"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"w-6 h-6 text-blue-4
+00"[39m
+                        [33mdata-testid[39m=[32m"icon-globe"[
+39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-[10px] uppercase
+ tracking-[0.2em] font-black text-blue-500/60 font-mono"[39m
+                    [36m>[39m
+                      [0mGlobal Macro Insights V3[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<h1[39m
+                    [33mclass[39m=[32m"text-4xl font-black bg-
+gradient-to-r from-white via-white to-slate-500 bg-clip-text text
+-transparent tracking-tighter"[39m
+                  [36m>[39m
+                    [0m摰?憭扳????[0m
+                  [36m</h1>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-slate-500 text-sm 
+max-w-xl leading-relaxed"[39m
+                  [36m>[39m
+                    [0m?航??函???蝬?撘??豢???[0m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-blue-400/80 font
+-bold mx-1"[39m
+                    [36m>[39m
+                      [0mPearson Correlation[0m
+                    [36m</span>[39m
+                    [0m蝞???頝刻??Ｗ???撽?蝎暹? AI ??頝臬???[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex bg-slate-900/50 p-1.
+5 rounded-2xl border border-white/5 backdrop-blur-md"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 text-slate-500 hover:
+text-slate-300"[39m
+                  [36m>[39m
+                    [0mTAIWAN[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 bg-blue-500 text-whit
+e shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-105 z-10"[39m
+                  [36m>[39m
+                    [0mUSA[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 text-slate-500 hover:
+text-slate-300"[39m
+                  [36m>[39m
+                    [0mWORLD[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"grid grid-cols-1 xl:grid-co
+ls-12 gap-6 mb-12"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"xl:col-span-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"
+            relative overflow-hidden rounded-2xl
+            bg-slate-900/40 backdrop-blur-xl
+            border border-white/10
+            shadow-2xl
+            transition-all duration-300 ease-out
+         hover:border-white/20  p-5 flex items-center justify-bet
+ween border-white/5 h-full group"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-[10px] font-bl
+ack uppercase tracking-widest text-slate-600"[39m
+                      [36m>[39m
+                        [0mUS GDP[0m
+                      [36m</p>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-baseline
+ gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xl font-blac
+k font-mono tracking-tighter text-slate-200"[39m
+                        [36m>[39m
+                          [0m2.9%[0m
+                        [36m</span>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-[10px] font-
+bold text-emerald-400"[39m
+                        [36m>[39m
+                          [0m??[0m
+                        [36m</span>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2 rounded-xl bg-sla
+te-800/50 group-hover:scale-110 transition-transform text-emerald
+-400"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mdata-testid[39m=[32m"icon-flame"[
+39m
+                        [33msize[39m=[32m"18"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"xl:col-span-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"
+            relative overflow-hidden rounded-2xl
+            bg-slate-900/40 backdrop-blur-xl
+            border border-white/10
+            shadow-2xl
+            transition-all duration-300 ease-out
+         hover:border-white/20  p-5 flex items-center justify-bet
+ween border-white/5 h-full group"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-[10px] font-bl
+ack uppercase tracking-widest text-slate-600"[39m
+                      [36m>[39m
+                        [0mCORE CPI[0m
+                      [36m</p>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-baseline
+ gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xl font-blac
+k font-mono tracking-tighter text-slate-200"[39m
+                        [36m>[39m
+                          [0m3.1%[0m
+                        [36m</span>[39m
+       ...
+
+    [0m [90m 110 |[39m         it([32m"TC-7103: Warning: ?敹
+???芋?祆??蝷箝?憿舐霅血?摮見"[39m[33m,[39m () [33m=>[39m {
+     [90m 111 |[39m             render([33m<[39m[33mMacroPag
+e[39m [33m/[39m[33m>[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 112 |[39m             expect(scree
+n[33m.[39mgetByText([35m/?桀?雿輻撠平璅⊥?豢?撅內蝟餌絞?嗆?/[39m))[33m
+.[39mtoBeInTheDocument()[33m;[39m
+     [90m     |[39m                           [31m[1m^[22m[
+39m
+     [90m 113 |[39m         })[33m;[39m
+     [90m 114 |[39m
+     [90m 115 |[39m         it([32m"TC-7101 (Mock Data): 蝣箄? m
+ockMacro ?豢?蝯?蝚血? Recharts 閬?"[39m[33m,[39m () [33m=>[39m 
+{[0m
+
+      at Object.getElementError (node_modules/@testing-library/do
+m/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+95:19
+      at Object.getByText (__tests__/app/macro/page.test.tsx:112:
+27)
+
+  ??摰???璅∠? (Macro) ???航赤?扯? UI/UX ??TC-8001 (Pointer): ???∠
+????cursor-pointer
+
+    TestingLibraryElementError: Unable to find an accessible elem
+ent with the role "link"
+
+    Here are the accessible roles:
+
+      main:
+
+      Name "":
+      [36m<main[39m
+        [33mclass[39m=[32m"flex-1 ml-0 lg:ml-64 p-4 lg:p-8"[3
+9m
+      [36m/>[39m
+
+      --------------------------------------------------
+      heading:
+
+      Name "摰?憭扳????:
+      [36m<h1[39m
+        [33mclass[39m=[32m"text-4xl font-black bg-gradient-to-
+r from-white via-white to-slate-500 bg-clip-text text-transparent
+ tracking-tighter"[39m
+      [36m/>[39m
+
+      Name "蝬??交?":
+      [36m<h2[39m
+        [33mclass[39m=[32m"text-sm font-black uppercase tracki
+ng-widest text-slate-400 flex items-center gap-2"[39m
+      [36m/>[39m
+
+      Name "Deep Indicators Grid":
+      [36m<h2[39m
+        [33mclass[39m=[32m"text-sm font-black uppercase tracki
+ng-[0.3em] text-slate-500"[39m
+      [36m/>[39m
+
+      Name "?輻??拍? GROUP":
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-xs font-mono text-blue-500/60 
+mb-6 flex items-center gap-3"[39m
+      [36m/>[39m
+
+      Name "?箸??拍?":
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-slate-400 text-xs font-medium"
+[39m
+      [36m/>[39m
+
+      Name "?疏?刻 GROUP":
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-xs font-mono text-blue-500/60 
+mb-6 flex items-center gap-3"[39m
+      [36m/>[39m
+
+      Name "瘨祥??寞???:
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-slate-400 text-xs font-medium"
+[39m
+      [36m/>[39m
+
+      Name "蝬?? GROUP":
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-xs font-mono text-blue-500/60 
+mb-6 flex items-center gap-3"[39m
+      [36m/>[39m
+
+      Name "撖西釭 GDP 撟游???:
+      [36m<h3[39m
+        [33mclass[39m=[32m"text-slate-400 text-xs font-medium"
+[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+      paragraph:
+
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"text-slate-500 text-sm max-w-xl lea
+ding-relaxed"[39m
+      [36m/>[39m
+
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"text-[10px] font-black uppercase tr
+acking-widest text-slate-600"[39m
+      [36m/>[39m
+
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"text-[10px] font-black uppercase tr
+acking-widest text-slate-600"[39m
+      [36m/>[39m
+
+      Name "":
+      [36m<p[39m
+        [33mclass[39m=[32m"text-[10px] font-black uppercase tr
+acking-widest text-slate-600"[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+      button:
+
+      Name "TAIWAN":
+      [36m<button[39m
+        [33mclass[39m=[32m"px-6 py-2 rounded-xl text-xs font-b
+old transition-all duration-500 text-slate-500 hover:text-slate-3
+00"[39m
+      [36m/>[39m
+
+      Name "USA":
+      [36m<button[39m
+        [33mclass[39m=[32m"px-6 py-2 rounded-xl text-xs font-b
+old transition-all duration-500 bg-blue-500 text-white shadow-[0_
+0_20px_rgba(59,130,246,0.3)] scale-105 z-10"[39m
+      [36m/>[39m
+
+      Name "WORLD":
+      [36m<button[39m
+        [33mclass[39m=[32m"px-6 py-2 rounded-xl text-xs font-b
+old transition-all duration-500 text-slate-500 hover:text-slate-3
+00"[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+      textbox:
+
+      Name "":
+      [36m<input[39m
+        [33mclass[39m=[32m"w-full h-full min-h-[72px] bg-slate
+-900/40 border border-white/5 rounded-2xl pl-12 pr-4 text-xs font
+-mono focus:outline-none focus:border-blue-500/40 transition-all 
+placeholder:text-slate-700"[39m
+        [33mplaceholder[39m=[32m"FAST SEARCH..."[39m
+        [33mtype[39m=[32m"text"[39m
+        [33mvalue[39m=[32m""[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"mobilenav-mock"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden lg:block"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"sidebar-mock"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex"[39m
+          [36m>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"flex-1 ml-0 lg:ml-64 p-4 lg:p
+-8"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-col md:flex-row j
+ustify-between items-start md:items-end gap-6 mb-12"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-3
+"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2.5 bg-blue-500/10 
+rounded-xl border border-blue-500/20 shadow-inner"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"w-6 h-6 text-blue-4
+00"[39m
+                        [33mdata-testid[39m=[32m"icon-globe"[
+39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-[10px] uppercase
+ tracking-[0.2em] font-black text-blue-500/60 font-mono"[39m
+                    [36m>[39m
+                      [0mGlobal Macro Insights V3[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<h1[39m
+                    [33mclass[39m=[32m"text-4xl font-black bg-
+gradient-to-r from-white via-white to-slate-500 bg-clip-text text
+-transparent tracking-tighter"[39m
+                  [36m>[39m
+                    [0m摰?憭扳????[0m
+                  [36m</h1>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-slate-500 text-sm 
+max-w-xl leading-relaxed"[39m
+                  [36m>[39m
+                    [0m?航??函???蝬?撘??豢???[0m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-blue-400/80 font
+-bold mx-1"[39m
+                    [36m>[39m
+                      [0mPearson Correlation[0m
+                    [36m</span>[39m
+                    [0m蝞???頝刻??Ｗ???撽?蝎暹? AI ??頝臬???[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex bg-slate-900/50 p-1.
+5 rounded-2xl border border-white/5 backdrop-blur-md"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 text-slate-500 hover:
+text-slate-300"[39m
+                  [36m>[39m
+                    [0mTAIWAN[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 bg-blue-500 text-whit
+e shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-105 z-10"[39m
+                  [36m>[39m
+                    [0mUSA[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"px-6 py-2 rounded-xl te
+xt-xs font-bold transition-all duration-500 text-slate-500 hover:
+text-slate-300"[39m
+                  [36m>[39m
+                    [0mWORLD[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"grid grid-cols-1 xl:grid-co
+ls-12 gap-6 mb-12"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"xl:col-span-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"
+            relative overflow-hidden rounded-2xl
+            bg-slate-900/40 backdrop-blur-xl
+            border border-white/10
+            shadow-2xl
+            transition-all duration-300 ease-out
+         hover:border-white/20  p-5 flex items-center justify-bet
+ween border-white/5 h-full group"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-[10px] font-bl
+ack uppercase tracking-widest text-slate-600"[39m
+                      [36m>[39m
+                        [0mUS GDP[0m
+                      [36m</p>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-baseline
+ gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xl font-blac
+k font-mono tracking-tighter text-slate-200"[39m
+                        [36m>[39m
+                          [0m2.9%[0m
+                        [36m</span>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-[10px] font-
+bold text-emerald-400"[39m
+                        [36m>[39m
+                          [0m??[0m
+                        [36m</span>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2 rounded-xl bg-sla
+te-800/50 group-hover:scale-110 transition-transform text-emerald
+-400"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mdata-testid[39m=[32m"icon-flame"[
+39m
+                        [33msize[39m=[32m"18"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"xl:col-span-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"
+            relative overflow-hidden rounded-2xl
+            bg-slate-900/40 backdrop-blur-xl
+            border border-white/10
+            shadow-2xl
+            transition-all duration-300 ease-out
+         hover:border-white/20  p-5 flex items-center justify-bet
+ween border-white/5 h-full group"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"space-y-1"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-[10px] font-bl
+ack uppercase tracking-widest text-slate-600"[39m
+                      [36m>[39m
+                        [0mCORE CPI[0m
+                      [36m</p>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex items-baseline
+ gap-2"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xl font-blac
+k font-mono tracking-tighter text-slate-200"[39m
+                        [36m>[39m
+                          [0m3.1%[0m
+                        [36m</span>[39m
+       ...
+
+    [0m [90m 201 |[39m         it([32m"TC-8001 (Pointer): ??
+?∠????cursor-pointer"[39m[33m,[39m () [33m=>[39m {
+     [90m 202 |[39m             render([33m<[39m[33mMacroPag
+e[39m [33m/[39m[33m>[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 203 |[39m             [36mconst[
+39m links [33m=[39m screen[33m.[39mgetAllByRole([32m"link"[
+39m)[33m;[39m
+     [90m     |[39m                                  [31m[1m^
+[22m[39m
+     [90m 204 |[39m             links[33m.[39mforEach(link [
+33m=>[39m {
+     [90m 205 |[39m                 [36mconst[39m container 
+[33m=[39m link[33m.[39mquerySelector([32m'div.glass'[39m)[3
+3m;[39m
+     [90m 206 |[39m                 [36mif[39m (container) {
+[0m
+
+      at Object.getElementError (node_modules/@testing-library/do
+m/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+109:15
+      at Object.getAllByRole (__tests__/app/macro/page.test.tsx:2
+03:34)
+
+  ??摰???璅∠? (Macro) ???航赤?扯? UI/UX ??TC-8003 (RWD): ?刻??垢撖砍漲
+銝???蝬脫?迤蝣粹?蝵?Grid 甈?
+
+    expect(element).toHaveClass("lg:grid-cols-3")
+
+    Expected the element to have class:
+      lg:grid-cols-3
+    Received:
+      grid grid-cols-1 xl:grid-cols-12 gap-6 mb-12
+
+    [0m [90m 231 |[39m             [36mconst[39m grid [33m=
+[39m container[33m.[39mquerySelector([32m".grid"[39m)[33m;
+[39m
+     [90m 232 |[39m             expect(grid)[33m.[39mtoHaveCl
+ass([32m"grid-cols-1"[39m)[33m;[39m [90m// Mobile first[39m
+    [31m[1m>[22m[39m[90m 233 |[39m             expect(grid)
+[33m.[39mtoHaveClass([32m"lg:grid-cols-3"[39m)[33m;[39m [9
+0m// Desktop[39m
+     [90m     |[39m                          [31m[1m^[22m[3
+9m
+     [90m 234 |[39m         })[33m;[39m
+     [90m 235 |[39m     })[33m;[39m
+     [90m 236 |[39m })[33m;[39m[0m
+
+      at Object.toHaveClass (__tests__/app/macro/page.test.tsx:23
+3:26)
+
+FAIL __tests__/admin/monitor/page.test.tsx (6.596 s)
+  ??Console
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+          at processTicksAndRejections (node:internal/process/tas
+k_queues:105:5)
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at commitRootImpl (D:\APP\AI?????V10.0\frontend\node
+_modules\react-dom\cjs\react-dom.development.js:26974:5)
+          at commitRoot (D:\APP\AI?????V10.0\frontend\node_mod
+ules\react-dom\cjs\react-dom.development.js:26721:5)
+          at performSyncWorkOnRoot (D:\APP\AI?????V10.0\fronte
+nd\node_modules\react-dom\cjs\react-dom.development.js:26156:3)
+          at flushSyncCallbacks (D:\APP\AI?????V10.0\frontend\
+node_modules\react-dom\cjs\react-dom.development.js:12042:22)
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at act (D:\APP\AI?????V10.0\frontend\node_modules\re
+act\cjs\react.development.js:2582:11)
+          at D:\APP\AI?????V10.0\frontend\node_modules\@testin
+g-library\react\dist\act-compat.js:46:25
+          at Object.eventWrapper (D:\APP\AI?????V10.0\frontend
+\node_modules\@testing-library\react\dist\pure.js:106:28)
+          at fireEvent (D:\APP\AI?????V10.0\frontend\node_modu
+les\@testing-library\dom\dist\events.js:12:35)
+          at Function.fireEvent.<computed> [as click] (D:\APP\AI?
+????V10.0\frontend\node_modules\@testing-library\dom\dist\even
+ts.js:110:36)
+          at Function.fireEvent.<computed> [as click] (D:\APP\AI?
+????V10.0\frontend\node_modules\@testing-library\react\dist\fi
+re-event.js:15:52)
+          at Object.click (D:\APP\AI?????V10.0\frontend\__test
+s__\admin\monitor\page.test.tsx:177:23)
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at commitRootImpl (node_modules/react-dom/cjs/react-dom.dev
+elopment.js:26974:5)
+      at commitRoot (node_modules/react-dom/cjs/react-dom.develop
+ment.js:26721:5)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-
+dom.development.js:26156:3)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom
+.development.js:12042:22)
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at act (node_modules/react/cjs/react.development.js:2582:11
+)
+      at node_modules/@testing-library/react/dist/act-compat.js:4
+6:25
+      at Object.eventWrapper (node_modules/@testing-library/react
+/dist/pure.js:106:28)
+      at fireEvent (node_modules/@testing-library/dom/dist/events
+.js:12:35)
+      at Function.fireEvent.<computed> [as click] (node_modules/@
+testing-library/dom/dist/events.js:110:36)
+      at Function.fireEvent.<computed> [as click] (node_modules/@
+testing-library/react/dist/fire-event.js:15:52)
+      at Object.click (__tests__/admin/monitor/page.test.tsx:177:
+23)
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at commitRootImpl (D:\APP\AI?????V10.0\frontend\node
+_modules\react-dom\cjs\react-dom.development.js:26974:5)
+          at commitRoot (D:\APP\AI?????V10.0\frontend\node_mod
+ules\react-dom\cjs\react-dom.development.js:26721:5)
+          at performSyncWorkOnRoot (D:\APP\AI?????V10.0\fronte
+nd\node_modules\react-dom\cjs\react-dom.development.js:26156:3)
+          at flushSyncCallbacks (D:\APP\AI?????V10.0\frontend\
+node_modules\react-dom\cjs\react-dom.development.js:12042:22)
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at act (D:\APP\AI?????V10.0\frontend\node_modules\re
+act\cjs\react.development.js:2582:11)
+          at D:\APP\AI?????V10.0\frontend\node_modules\@testin
+g-library\react\dist\act-compat.js:46:25
+          at Object.eventWrapper (D:\APP\AI?????V10.0\frontend
+\node_modules\@testing-library\react\dist\pure.js:106:28)
+          at fireEvent (D:\APP\AI?????V10.0\frontend\node_modu
+les\@testing-library\dom\dist\events.js:12:35)
+          at Function.fireEvent.<computed> [as click] (D:\APP\AI?
+????V10.0\frontend\node_modules\@testing-library\dom\dist\even
+ts.js:110:36)
+          at Function.fireEvent.<computed> [as click] (D:\APP\AI?
+????V10.0\frontend\node_modules\@testing-library\react\dist\fi
+re-event.js:15:52)
+          at Object.click (D:\APP\AI?????V10.0\frontend\__test
+s__\admin\monitor\page.test.tsx:191:23)
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at commitRootImpl (node_modules/react-dom/cjs/react-dom.dev
+elopment.js:26974:5)
+      at commitRoot (node_modules/react-dom/cjs/react-dom.develop
+ment.js:26721:5)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-
+dom.development.js:26156:3)
+      at flushSyncCallbacks (node_modules/react-dom/cjs/react-dom
+.development.js:12042:22)
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at act (node_modules/react/cjs/react.development.js:2582:11
+)
+      at node_modules/@testing-library/react/dist/act-compat.js:4
+6:25
+      at Object.eventWrapper (node_modules/@testing-library/react
+/dist/pure.js:106:28)
+      at fireEvent (node_modules/@testing-library/dom/dist/events
+.js:12:35)
+      at Function.fireEvent.<computed> [as click] (node_modules/@
+testing-library/dom/dist/events.js:110:36)
+      at Function.fireEvent.<computed> [as click] (node_modules/@
+testing-library/react/dist/fire-event.js:15:52)
+      at Object.click (__tests__/admin/monitor/page.test.tsx:191:
+23)
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.order is not a
+ function
+          at order (D:\APP\AI?????V10.0\frontend\app\admin\mon
+itor\page.tsx:189:18)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+    console.error
+      Fetch table data exception: TypeError: query.eq is not a fu
+nction
+          at eq (D:\APP\AI?????V10.0\frontend\app\admin\monito
+r\page.tsx:144:35)
+          at Array.forEach (<anonymous>)
+          at forEach (D:\APP\AI?????V10.0\frontend\app\admin\m
+onitor\page.tsx:143:55)
+          at fetchData (D:\APP\AI?????V10.0\frontend\app\admin
+\monitor\page.tsx:204:9)
+          at commitHookEffectListMount (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:23189:
+26)
+          at commitPassiveMountOnFiber (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24970:
+11)
+          at commitPassiveMountEffects_complete (D:\APP\AI?????
+V10.0\frontend\node_modules\react-dom\cjs\react-dom.development.
+js:24930:9)
+          at commitPassiveMountEffects_begin (D:\APP\AI?????V1
+0.0\frontend\node_modules\react-dom\cjs\react-dom.development.js:
+24917:7)
+          at commitPassiveMountEffects (D:\APP\AI?????V10.0\fr
+ontend\node_modules\react-dom\cjs\react-dom.development.js:24905:
+3)
+          at flushPassiveEffectsImpl (D:\APP\AI?????V10.0\fron
+tend\node_modules\react-dom\cjs\react-dom.development.js:27078:3)
+          at flushPassiveEffects (D:\APP\AI?????V10.0\frontend
+\node_modules\react-dom\cjs\react-dom.development.js:27023:14)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react-d
+om\cjs\react-dom.development.js:26808:9
+          at flushActQueue (D:\APP\AI?????V10.0\frontend\node_
+modules\react\cjs\react.development.js:2667:24)
+          at recursivelyFlushAsyncActWork (D:\APP\AI?????V10.0
+\frontend\node_modules\react\cjs\react.development.js:2633:9)
+          at D:\APP\AI?????V10.0\frontend\node_modules\react\c
+js\react.development.js:2545:15
+
+    [0m [90m 195 |[39m             }
+     [90m 196 |[39m         } [36mcatch[39m (err) {
+    [31m[1m>[22m[39m[90m 197 |[39m             console[33m
+.[39merror([32m'Fetch table data exception:'[39m[33m,[39m er
+r)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 198 |[39m         } [36mfinally[39m {
+     [90m 199 |[39m             setLoading([36mfalse[39m)[33
+m;[39m
+     [90m 200 |[39m         }[0m
+
+      at error (app/admin/monitor/page.tsx:197:21)
+      at fetchData (app/admin/monitor/page.tsx:204:9)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/re
+act-dom.development.js:23189:26)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/re
+act-dom.development.js:24970:11)
+      at commitPassiveMountEffects_complete (node_modules/react-d
+om/cjs/react-dom.development.js:24930:9)
+      at commitPassiveMountEffects_begin (node_modules/react-dom/
+cjs/react-dom.development.js:24917:7)
+      at commitPassiveMountEffects (node_modules/react-dom/cjs/re
+act-dom.development.js:24905:3)
+      at flushPassiveEffectsImpl (node_modules/react-dom/cjs/reac
+t-dom.development.js:27078:3)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-do
+m.development.js:27023:14)
+      at node_modules/react-dom/cjs/react-dom.development.js:2680
+8:9
+      at flushActQueue (node_modules/react/cjs/react.development.
+js:2667:24)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/rea
+ct.development.js:2633:9)
+      at node_modules/react/cjs/react.development.js:2545:15
+
+  ??MonitorPage ???箇?頝臬?皜祈岫 ??TC-1201: 隤輻 get_category_counts RP
+C ????JSON ?拐辣
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "get_category_counts"
+
+    Number of calls: 0
+
+    Ignored nodes: comments, script, style
+    [36m<html>[39m
+      [36m<head />[39m
+      [36m<body>[39m
+        [36m<div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-h-screen bg-[#020617] text-
+slate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-7xl mx-auto mb-10 flex 
+flex-col md:flex-row md:items-end md:justify-between gap-6"[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-3 m
+b-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 bg-blue-500/10 roun
+ded-lg border border-blue-500/20"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5 text-blue-400
+"[39m
+                      [33mdata-testid[39m=[32m"icon-database"
+[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mdata-testid[39m=[32m"pro-badge"[39m
+                  [36m>[39m
+                    [0mDeveloper Center[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"text-4xl font-bold bg-gra
+dient-to-r from-white to-slate-400 bg-clip-text text-transparent"
+[39m
+                [36m>[39m
+                  [0m?豢???銝剖?[0m
+                [36m</h1>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"p-2 bg-slate-900 border bor
+der-white/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33mclass[39m=[32m"w-5 h-5 "[39m
+                  [33mdata-testid[39m=[32m"icon-refreshccw"[3
+9m
+                [36m/>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-7xl mx-auto grid grid-c
+ols-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"text-left transition-all du
+ration-300 group scale-[1.02] z-10"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-4 border shadow-2xl tra
+nsition-all duration-500 flex flex-col justify-between h-full gro
+up-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] border-blue-500/
+30 bg-white/[0.08] shadow-blue-500/10"[39m
+                  [33mdata-testid[39m=[32m"glass-card"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2 w-fit rounded-xl 
+mb-3 transition-colors duration-300 bg-blue-500/10 text-blue-400"
+[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"w-5 h-5"[39m
+                        [33mdata-testid[39m=[32m"icon-trending
+up"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-2xl font-bold fo
+nt-mono tracking-tight mb-1 transition-colors text-white"[39m
+                    [36m>[39m
+                      [0m3,418,073[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mt-2"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-xs font-semibold
+ tracking-wide truncate text-white"[39m
+                    [36m>[39m
+                      [0m?啁銵?[0m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-[9px] font-bold 
+tracking-widest opacity-40 uppercase text-white"[39m
+                    [36m>[39m
+                      [0mTWSE[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"text-left transition-all du
+ration-300 group scale-100 hover:scale-[1.01]"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-4 border shadow-2xl tra
+nsition-all duration-500 flex flex-col justify-between h-full gro
+up-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] border-white/5 o
+pacity-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                  [33mdata-testid[39m=[32m"glass-card"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2 w-fit rounded-xl 
+mb-3 transition-colors duration-300 bg-slate-800 text-slate-500 g
+roup-hover:bg-slate-700"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"w-5 h-5"[39m
+                        [33mdata-testid[39m=[32m"icon-barchart
+2"[39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-2xl font-bold fo
+nt-mono tracking-tight mb-1 transition-colors text-slate-400"[39
+m
+                    [36m>[39m
+                      [0m1,970,461[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"mt-2"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-xs font-semibold
+ tracking-wide truncate text-slate-500"[39m
+                    [36m>[39m
+                      [0m蝢?銵?[0m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-[9px] font-bold 
+tracking-widest opacity-40 uppercase text-slate-400"[39m
+                    [36m>[39m
+                      [0mUS Equities[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"text-left transition-all du
+ration-300 group scale-100 hover:scale-[1.01]"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-4 border shadow-2xl tra
+nsition-all duration-500 flex flex-col justify-between h-full gro
+up-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] border-white/5 o
+pacity-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                  [33mdata-testid[39m=[32m"glass-card"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"p-2 w-fit rounded-xl 
+mb-3 transition-colors duration-300 bg-slate-800 text-slate-500 g
+roup-hover:bg-slate-700"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33mclass[39m=[32m"w-5 h-5"[39m
+                        [33mdata-testid[39m=[32m"icon-globe"[
+39m
+                      [36m/>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-2xl font-bold fo
+nt-mono tracking-tight mb-1 transition-colors text-slate-400"[39
+m
+                    [36m>[39m
+                      [0m4[0m
+                ...
+
+    [0m [90m 151 |[39m
+     [90m 152 |[39m             [36mawait[39m waitFor(() [33
+m=>[39m {
+    [31m[1m>[22m[39m[90m 153 |[39m                 expect(m
+ockRpc)[33m.[39mtoHaveBeenCalledWith([32m'get_category_counts'
+[39m)[33m;[39m
+     [90m     |[39m                                 [31m[1m^
+[22m[39m
+     [90m 154 |[39m             })[33m;[39m
+     [90m 155 |[39m         })[33m;[39m
+     [90m 156 |[39m[0m
+
+      at toHaveBeenCalledWith (__tests__/admin/monitor/page.test.
+tsx:153:33)
+      at runWithExpensiveErrorDiagnosticsDisabled (node_modules/@
+testing-library/dom/dist/config.js:47:12)
+      at checkCallback (node_modules/@testing-library/dom/dist/wa
+it-for.js:124:77)
+      at checkRealTimersCallback (node_modules/@testing-library/d
+om/dist/wait-for.js:118:16)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsd
+om/browser/Window.js:579:19)
+
+  ??MonitorPage ????璇辣皜祈岫 ??TC-2101: RPC 餈?蝛箇隞嗆??∠??＊蝷?'...'
+
+    Unable to find an element with the text: .... This could be b
+ecause the text is broken up by multiple elements. In this case, 
+you can provide a function for your text matcher to make your mat
+cher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto mb-10 flex fl
+ex-col md:flex-row md:items-end md:justify-between gap-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3 mb-
+2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-2 bg-blue-500/10 rounde
+d-lg border border-blue-500/20"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-5 h-5 text-blue-400"
+[39m
+                    [33mdata-testid[39m=[32m"icon-database"[3
+9m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"pro-badge"[39m
+                [36m>[39m
+                  [0mDeveloper Center[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-4xl font-bold bg-gradi
+ent-to-r from-white to-slate-400 bg-clip-text text-transparent"[
+39m
+              [36m>[39m
+                [0m?豢???銝剖?[0m
+              [36m</h1>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"p-2 bg-slate-900 border borde
+r-white/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-5 h-5 "[39m
+                [33mdata-testid[39m=[32m"icon-refreshccw"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto grid grid-col
+s-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-[1.02] z-10"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] border-blue-500/30
+ bg-white/[0.08] shadow-blue-500/10"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-blue-500/10 text-blue-400"[
+39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-trendingup
+"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-white"[39m
+                  [36m>[39m
+                    [0m3,418,073[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-white"[39m
+                  [36m>[39m
+                    [0m?啁銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-white"[39m
+                  [36m>[39m
+                    [0mTWSE[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-barchart2"
+[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m1,970,461[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                    [0m蝢?銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-slate-400"[39m
+                  [36m>[39m
+                    [0mUS Equities[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-globe"[39
+m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m4[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                 ...
+
+    [0m [90m 213 |[39m             })[33m;[39m
+     [90m 214 |[39m
+    [31m[1m>[22m[39m[90m 215 |[39m             [36mawait[
+39m waitFor(() [33m=>[39m {
+     [90m     |[39m                          [31m[1m^[22m[3
+9m
+     [90m 216 |[39m                 [36mconst[39m ellipsis [
+33m=[39m screen[33m.[39mgetAllByText([32m'...'[39m)[33m;[3
+9m
+     [90m 217 |[39m                 expect(ellipsis[33m.[39ml
+ength)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m 218 |[39m             })[33m;[39m[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/w
+ait-for.js:163:27)
+      at Object.<anonymous> (__tests__/admin/monitor/page.test.ts
+x:215:26)
+
+  ??MonitorPage ??UI/UX 撽? ??TC-4001: ?璅????潸?蝐?
+    TestingLibraryElementError: Unable to find an element with th
+e text: ADMIN MONITOR V2.0. This could be because the text is bro
+ken up by multiple elements. In this case, you can provide a func
+tion for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto mb-10 flex fl
+ex-col md:flex-row md:items-end md:justify-between gap-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3 mb-
+2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-2 bg-blue-500/10 rounde
+d-lg border border-blue-500/20"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-5 h-5 text-blue-400"
+[39m
+                    [33mdata-testid[39m=[32m"icon-database"[3
+9m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"pro-badge"[39m
+                [36m>[39m
+                  [0mDeveloper Center[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-4xl font-bold bg-gradi
+ent-to-r from-white to-slate-400 bg-clip-text text-transparent"[
+39m
+              [36m>[39m
+                [0m?豢???銝剖?[0m
+              [36m</h1>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"p-2 bg-slate-900 border borde
+r-white/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-5 h-5 "[39m
+                [33mdata-testid[39m=[32m"icon-refreshccw"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto grid grid-col
+s-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-[1.02] z-10"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] border-blue-500/30
+ bg-white/[0.08] shadow-blue-500/10"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-blue-500/10 text-blue-400"[
+39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-trendingup
+"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-white"[39m
+                  [36m>[39m
+                    [0m3,418,073[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-white"[39m
+                  [36m>[39m
+                    [0m?啁銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-white"[39m
+                  [36m>[39m
+                    [0mTWSE[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-barchart2"
+[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m1,970,461[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                    [0m蝢?銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-slate-400"[39m
+                  [36m>[39m
+                    [0mUS Equities[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-globe"[39
+m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m4[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                 ...
+
+    [0m [90m 294 |[39m             expect(screen[33m.[39mget
+ByText([32m'?豢???銝剖?'[39m))[33m.[39mtoBeInTheDocument()[33m
+;[39m
+     [90m 295 |[39m             [90m// expect(screen.getByText
+('Developer Only')).toBeInTheDocument(); // Removed/Changed[39m
+    [31m[1m>[22m[39m[90m 296 |[39m             expect(scree
+n[33m.[39mgetByText([32m'ADMIN MONITOR V2.0'[39m))[33m.[39m
+toBeInTheDocument()[33m;[39m
+     [90m     |[39m                           [31m[1m^[22m[
+39m
+     [90m 297 |[39m         })[33m;[39m
+     [90m 298 |[39m
+     [90m 299 |[39m         [90m// TC-4101: 蝛箸????[39m[0m
+
+      at Object.getElementError (node_modules/@testing-library/do
+m/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+95:19
+      at Object.getByText (__tests__/admin/monitor/page.test.tsx:
+296:27)
+
+  ??MonitorPage ??UI/UX 撽? ??TC-4101: 蝛箸????
+    Unable to find an element with the text: 甇方??”?桀?撠?豢?. Thi
+s could be because the text is broken up by multiple elements. In
+ this case, you can provide a function for your text matcher to m
+ake your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto mb-10 flex fl
+ex-col md:flex-row md:items-end md:justify-between gap-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3 mb-
+2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-2 bg-blue-500/10 rounde
+d-lg border border-blue-500/20"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-5 h-5 text-blue-400"
+[39m
+                    [33mdata-testid[39m=[32m"icon-database"[3
+9m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"pro-badge"[39m
+                [36m>[39m
+                  [0mDeveloper Center[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-4xl font-bold bg-gradi
+ent-to-r from-white to-slate-400 bg-clip-text text-transparent"[
+39m
+              [36m>[39m
+                [0m?豢???銝剖?[0m
+              [36m</h1>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"p-2 bg-slate-900 border borde
+r-white/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-5 h-5 "[39m
+                [33mdata-testid[39m=[32m"icon-refreshccw"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto grid grid-col
+s-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-[1.02] z-10"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] border-blue-500/30
+ bg-white/[0.08] shadow-blue-500/10"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-blue-500/10 text-blue-400"[
+39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-trendingup
+"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-white"[39m
+                  [36m>[39m
+                    [0m3,418,073[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-white"[39m
+                  [36m>[39m
+                    [0m?啁銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-white"[39m
+                  [36m>[39m
+                    [0mTWSE[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-barchart2"
+[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m1,970,461[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                    [0m蝢?銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-slate-400"[39m
+                  [36m>[39m
+                    [0mUS Equities[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-globe"[39
+m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m4[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                 ...
+
+    [0m [90m 314 |[39m             })[33m;[39m
+     [90m 315 |[39m
+    [31m[1m>[22m[39m[90m 316 |[39m             [36mawait[
+39m waitFor(() [33m=>[39m {
+     [90m     |[39m                          [31m[1m^[22m[3
+9m
+     [90m 317 |[39m                 expect(screen[33m.[39mget
+ByText([32m'甇方??”?桀?撠?豢?'[39m))[33m.[39mtoBeInTheDocument(
+)[33m;[39m
+     [90m 318 |[39m             })[33m;[39m
+     [90m 319 |[39m         })[33m;[39m[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/w
+ait-for.js:163:27)
+      at Object.<anonymous> (__tests__/admin/monitor/page.test.ts
+x:316:26)
+
+  ??MonitorPage ??UI/UX 撽? ??TC-4102: ???瑟??
+
+    TestingLibraryElementError: Unable to find an accessible elem
+ent with the role "button" and name `/REFRESH/i`
+
+    Here are the accessible roles:
+
+      heading:
+
+      Name "?豢???銝剖?":
+      [36m<h1[39m
+        [33mclass[39m=[32m"text-4xl font-bold bg-gradient-to-r
+ from-white to-slate-400 bg-clip-text text-transparent"[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+      button:
+
+      Name "":
+      [36m<button[39m
+        [33mclass[39m=[32m"p-2 bg-slate-900 border border-whit
+e/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+      [36m/>[39m
+
+      Name "3,418,073 ?啁銵? TWSE":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-[1.02] z-10"[39m
+      [36m/>[39m
+
+      Name "1,970,461 蝢?銵? US Equities":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "4 ?啁摰? TW Macro":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "41,392 蝢?摰? US Macro":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "385 ?單??勗 Real-time":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "0 ?舐?銵? Forex":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "0 蝬??交? Calendar":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "50,000 憭?摮???Factors":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      Name "1,000 瞍??箏? Genes":
+      [36m<button[39m
+        [33mclass[39m=[32m"text-left transition-all duration-3
+00 group scale-100 hover:scale-[1.01]"[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+      textbox:
+
+      Name "":
+      [36m<input[39m
+        [33mclass[39m=[32m"bg-transparent border-none focus:ri
+ng-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate
+-600"[39m
+        [33mdata-testid[39m=[32m"filter-input"[39m
+        [33mplaceholder[39m=[32m"敹恍祟??(?嗅???..."[39m
+        [33mtype[39m=[32m"text"[39m
+        [33mvalue[39m=[32m""[39m
+      [36m/>[39m
+
+      --------------------------------------------------
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-h-screen bg-[#020617] text-sl
+ate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto mb-10 flex fl
+ex-col md:flex-row md:items-end md:justify-between gap-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3 mb-
+2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"p-2 bg-blue-500/10 rounde
+d-lg border border-blue-500/20"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-5 h-5 text-blue-400"
+[39m
+                    [33mdata-testid[39m=[32m"icon-database"[3
+9m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"pro-badge"[39m
+                [36m>[39m
+                  [0mDeveloper Center[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-4xl font-bold bg-gradi
+ent-to-r from-white to-slate-400 bg-clip-text text-transparent"[
+39m
+              [36m>[39m
+                [0m?豢???銝剖?[0m
+              [36m</h1>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"p-2 bg-slate-900 border borde
+r-white/5 rounded-xl hover:bg-white/10 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"w-5 h-5 "[39m
+                [33mdata-testid[39m=[32m"icon-refreshccw"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-7xl mx-auto grid grid-col
+s-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-[1.02] z-10"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] border-blue-500/30
+ bg-white/[0.08] shadow-blue-500/10"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-blue-500/10 text-blue-400"[
+39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-trendingup
+"[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-white"[39m
+                  [36m>[39m
+                    [0m3,418,073[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-white"[39m
+                  [36m>[39m
+                    [0m?啁銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-white"[39m
+                  [36m>[39m
+                    [0mTWSE[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-barchart2"
+[39m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m1,970,461[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                    [0m蝢?銵?[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-[9px] font-bold tr
+acking-widest opacity-40 uppercase text-slate-400"[39m
+                  [36m>[39m
+                    [0mUS Equities[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"text-left transition-all dura
+tion-300 group scale-100 hover:scale-[1.01]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"p-4 border shadow-2xl trans
+ition-all duration-500 flex flex-col justify-between h-full group
+-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] border-white/5 opa
+city-60 hover:opacity-100 bg-[#0f172a]/40"[39m
+                [33mdata-testid[39m=[32m"glass-card"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-2 w-fit rounded-xl mb
+-3 transition-colors duration-300 bg-slate-800 text-slate-500 gro
+up-hover:bg-slate-700"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mdata-testid[39m=[32m"icon-globe"[39
+m
+                    [36m/>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-2xl font-bold font
+-mono tracking-tight mb-1 transition-colors text-slate-400"[39m
+                  [36m>[39m
+                    [0m4[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-2"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-xs font-semibold t
+racking-wide truncate text-slate-500"[39m
+                  [36m>[39m
+                 ...
+
+    [0m [90m 325 |[39m             })[33m;[39m
+     [90m 326 |[39m
+    [31m[1m>[22m[39m[90m 327 |[39m             [36mconst[
+39m refreshButton [33m=[39m screen[33m.[39mgetByRole([32m'bu
+tton'[39m[33m,[39m { name[33m:[39m [35m/REFRESH/i[39m })[
+33m;[39m
+     [90m     |[39m                                          [
+31m[1m^[22m[39m
+     [90m 328 |[39m             expect(refreshButton)[33m.[39
+mtoBeInTheDocument()[33m;[39m
+     [90m 329 |[39m         })[33m;[39m
+     [90m 330 |[39m     })[33m;[39m[0m
+
+      at Object.getElementError (node_modules/@testing-library/do
+m/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:
+95:19
+      at Object.getByRole (__tests__/admin/monitor/page.test.tsx:
+327:42)
+
+Test Suites: 2 failed, 2 total
+Tests:       9 failed, 20 passed, 29 total
+Snapshots:   0 total
+Time:        12.743 s
+Ran all test suites matching macro/page|admin/monitor/page.

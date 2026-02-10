@@ -25,9 +25,9 @@ BEGIN
         'factors', (SELECT reltuples::BIGINT FROM pg_class WHERE relname = 'stock_factors'),
         'genes', (SELECT reltuples::BIGINT FROM pg_class WHERE relname = 'evolution_genes'),
         
-        -- 待補充 (佔位)
-        'fx', 0,
-        'metals', 0
+        -- 真實數據計數
+        'fx', (SELECT COUNT(*) FROM exchange_rates),
+        'economic_calendar', (SELECT COUNT(*) FROM economic_calendar)
     ) INTO result;
     
     RETURN result;

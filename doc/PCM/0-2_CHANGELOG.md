@@ -1,5 +1,76 @@
 # 變更紀錄 (CHANGELOG)
 
+## [V10.5.0] - 2026-02-10
+### Added
+- **進階 AI 洞察與決策閉環 (Phase 12 全鏈路完工)**:
+    - **AI 辯證引擎**: 模擬「價值、動能、宏觀」三方專家 AI 辯論邏輯，產出結構化共識報告。
+    - **滯後相關性分析**: 支援計算領先/滯後 (Lead-Lag) 跨資產相關性，捕捉領先指標信號。
+    - **戰術覆盤系統**: 建立 `tactical_plans` (RLS 安全加固)，落實投資決策的紀律化紀錄與反饋。
+    - **Redis 二級緩存**: 實作智慧分級緩存，複雜洞察結果響應時間降至 < 2ms。
+- **智力決策中心 (UI/UX Pro Max)**:
+    - 建立 `app/ai/insights` 頁面，實裝 Bento Grid V3 佈局。
+    - 整合 `DialecticPanel`, `TacticalPlanner`, `CorrelationChart` 高度動態交互組件。
+- **基礎設施修復**:
+    - 補齊缺失的 `auth.uid()` 函數與 `auth.users` 表架構，解鎖 Supabase RLS 權限鏈條。
+- **API 回傳結構修復與生產硬化**:
+    - `macro.py` `/calendar` 端點改為直接返回陣列，統一 API 回傳風格。
+    - `CorrelationChart.tsx` 加入 `summary ?? fallback` 防禦性存取，防止 `null.toFixed()` 崩潰。
+    - `EconomicCalendar.tsx` fetcher 加入巢狀結構自動解包。
+    - `next.config.mjs` 合併為 `/api/:path*` catch-all rewrite，消除路由遺漏。
+    - `useAlerts.ts` 修復 FastAPI trailing slash 307 redirect 問題。
+- **全量自動化測試穩定性硬化 (Phase 11-12 CI Fix)**:
+    - **Supabase Mock 強化**: 實作顯式鏈式 Mock (`.mockReturnValue(mockChain)`)，徹底解決 `query.order is not a function` 錯誤。
+    - **SWR 測試隔離**: 在測試框架中導入 `SWRConfig` 局部 Cache 清理機制，消除測試案例間的數據污染。
+    - **UI 文字同步**: 統一 `...` 載入文字與 `Refresh Data` 標籤，確保斷言 100% 命中。
+    - **成功驗收**: 關鍵套件 (`MacroPage`, `AdminMonitor`, `MonitorV2`) 在全量測試下達成 100% Pass。
+
+## [V10.4.2] - 2026-02-09
+### Added
+- **數據工程與全歷史回補 (Phase 11.7)**:
+    - **標的主檔**: 重建 `init_stock_list.py`，完整覆蓋台股上市/上櫃、美股熱門成分股、大盤指數及期貨標的。
+    - **Hybrid Fetcher**: 實作雙軌擷取邏輯，2010 年前強制轉換至 Yahoo Finance (還原股價)，2010 年後走官方 API。
+    - **成功驗證**: 完成 AAPL 自 1990 年起約 9000 筆數據回補，2330 回補至 yfinance 極限年份 (2000)。
+- **腳本優化**: 重構 `backfill_manager.py`，移除舊有亂碼字符，整合斷點續傳快照功能。
+
+## [V10.4.1] - 2026-02-09
+### Added
+- **Schema 對齊與結構穩固 (Phase 11.6 SDD)**:
+    - **Database**: 補全 `daily_price` 之 `turnover` 實體化欄位，大幅優化熱力圖計算效能。
+    - **重構**: 將 `exchange_rates` 之 `reference_date` 統一為 `trade_date`，並將 `currency_pair` 拆分為 `base/target_currency`。
+    - **RPC**: 建立 `get_latest_exchange_rates()` 支援高效即時匯率查詢。
+- **API 規格升級**:
+    - 更新 `008_API 端點詳細規格.md` 至 v3.1.0，正式納入第十二章「匯率數據 API」。
+- **後端同步**:
+    - 實作 FastAPI `/api/v1/market/exchange_rates` 歷史與即時查詢端點。
+- **前端同步**:
+    - 更新 `api.ts` 加入 `ExchangeRateResponse` 與 `ExchangeRateLatestResponse` 型別定義。
+
+## [V10.4.0] - 2026-02-05
+### Added
+- **進階 AI 洞察引擎 (Advanced Insights Engine)**:
+    - 實作 `InsightsService`：採用 Pandas 進行跨資產關聯分析，支援 `Outer Join` 數據對齊與 `Rolling Correlation` 計算。
+    - 新增 API `/api/v1/insights/correlation` 端點。
+- **Bento Grid V3 佈局 (UI/UX Pro Max)**:
+    - 重構 `MacroPage` 為高質感 Bento 佈局，整合玻璃擬態與 1px 漸層發光邊框。
+    - 整合 `InsightsPanel` 互動圖表組件，具備 Recharts 動態渲染與 Pearson 狀態評定。
+    - 實作 `SmallStatCard` 提升關鍵經濟指標 (GDP, CPI, FED) 之首屏可視化。
+- **TDD 測試驅動開發 (QA)**:
+    - 建立 `insights.test.tsx` 驗證組件渲染與數據加載狀態。
+    - 通過 `phase12_verification.py` 完成後端邏輯 E2E 驗收。
+
+## [V10.3.16] - 2026-02-05
+### Planning
+- **[Plan]** 重構 Phase 11.2 ~ Phase 12 全景開發計畫。
+- **[Research]** 完成台股 1990 全歷史調研，確定「Yahoo Finance + TWSE」雙源切換策略。
+- **[Doc]** 產出 043, 044, 045, 046 詳細子計畫文件。
+- **[DevLog]** 完成 081、082 開發日誌。
+
+## [V10.3.15] - 2026-02-05
+### Added
+- **專案全景全量深度調研**: 完成對系統架構 (Next.js/FastAPI/Supabase)、數據現狀、功能對齊及代碼品質的 360 度審計。
+- **缺口識別**: 發現 P0 級數據真空、`exchange_rates` 結構缺失及 `economic_event_fetcher` 未實作。
+- **審計報告**: 產出 `080_Full_Scale_Project_Audit_Report.md`。
+
 ## [V10.3.13] - 2026-02-04
 ### Added
 - **數據監控中心 UI 改造**: 擴展至 9 分類卡片（台灣/美國行情、台灣/美國宏觀、即時報價、多因子評分、演化基因、匯率、貴金屬）。

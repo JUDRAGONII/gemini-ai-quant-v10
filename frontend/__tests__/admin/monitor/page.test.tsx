@@ -6,9 +6,19 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { SWRConfig } from 'swr';
 import MonitorPage from '@/app/admin/monitor/page';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+
+// Wrap render with SWRConfig to clear cache between tests
+const renderWithConfig = (ui: React.ReactElement) => {
+    return render(
+        <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+            {ui}
+        </SWRConfig>
+    );
+};
 
 // Mock Supabase
 jest.mock('@/lib/supabase', () => ({
@@ -21,6 +31,7 @@ jest.mock('@/lib/supabase', () => ({
 // Mock Next.js Navigation
 jest.mock('next/navigation', () => ({
     useRouter: jest.fn(),
+    usePathname: jest.fn(() => '/admin/monitor'),
 }));
 
 // Mock UI components
@@ -60,27 +71,24 @@ describe('MonitorPage', () => {
         });
 
         // Mock Supabase from chain
-        const mockSelect = jest.fn();
-        mockFrom.mockReturnValue({
-            select: mockSelect,
-        });
-
-        mockSelect.mockImplementation((columns, options) => {
-            if (options && options.count) {
-                return Promise.resolve({ count: 100, data: null, error: null });
-            }
-            return {
-                order: jest.fn().mockReturnThis(),
-                limit: jest.fn().mockReturnThis(),
-                eq: jest.fn().mockResolvedValue({
+        const mockChain: any = {
+            select: jest.fn(() => mockChain),
+            eq: jest.fn(() => mockChain),
+            order: jest.fn(() => mockChain),
+            limit: jest.fn(() => mockChain),
+            range: jest.fn(() => mockChain),
+            then: jest.fn((onFulfilled) => {
+                return Promise.resolve(onFulfilled({
                     data: [
                         { id: 1, symbol: '2330', trade_date: '2026-02-04' },
                         { id: 2, symbol: '2317', trade_date: '2026-02-04' }
                     ],
-                    error: null
-                }),
-            };
-        });
+                    error: null,
+                    count: 100
+                }));
+            }),
+        };
+        mockFrom.mockReturnValue(mockChain);
 
         // Mock localStorage
         Object.defineProperty(window, 'localStorage', {
@@ -97,13 +105,13 @@ describe('MonitorPage', () => {
     // ========================================
     describe('基礎路徑測試', () => {
 
-        // TC-1101: 頁面載入後應渲染 9 個分類卡片
+        // TC-1101: 頁面載入後應渲染 8 個分類卡片 (移除 Metals)
         it('TC-1101: 頁面載入後應渲染 9 個分類卡片', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
-            // 驗證 9 個分類名稱
+            // 驗證分類名稱
             expect(screen.getByText('台灣行情')).toBeInTheDocument();
             expect(screen.getByText('美國行情')).toBeInTheDocument();
             expect(screen.getByText('台灣宏觀')).toBeInTheDocument();
@@ -111,14 +119,14 @@ describe('MonitorPage', () => {
             expect(screen.getByText('即時報價')).toBeInTheDocument();
             expect(screen.getByText('多因子評分')).toBeInTheDocument();
             expect(screen.getByText('演化基因')).toBeInTheDocument();
-            expect(screen.getByText('匯率')).toBeInTheDocument();
-            expect(screen.getByText('貴金屬')).toBeInTheDocument();
+            expect(screen.getByText('匯率行情')).toBeInTheDocument();
+            // expect(screen.getByText('貴金屬')).toBeInTheDocument(); // Removed
         });
 
         // TC-1102: 各卡片應顯示正確分類名稱與英文代碼
         it('TC-1102: 各卡片應顯示正確分類名稱與英文代碼', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             // 驗證英文代碼
@@ -126,14 +134,14 @@ describe('MonitorPage', () => {
             expect(screen.getByText('US Equities')).toBeInTheDocument();
             expect(screen.getByText('TW Macro')).toBeInTheDocument();
             expect(screen.getByText('US Macro')).toBeInTheDocument();
-            expect(screen.getByText('FX')).toBeInTheDocument();
-            expect(screen.getByText('Metals')).toBeInTheDocument();
+            expect(screen.getByText('Forex')).toBeInTheDocument(); // Was FX
+            // expect(screen.getByText('Metals')).toBeInTheDocument(); // Removed
         });
 
         // TC-1103: 預設選中第一個分類 (台灣行情)
         it('TC-1103: 預設選中第一個分類 (台灣行情)', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             // 頁面載入時應調用 daily_price 表
@@ -145,7 +153,7 @@ describe('MonitorPage', () => {
         // TC-1201: 調用 get_category_counts RPC 應返回 JSON 物件
         it('TC-1201: 調用 get_category_counts RPC 應返回 JSON 物件', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -156,7 +164,7 @@ describe('MonitorPage', () => {
         // TC-1202: 卡片應顯示對應分類的記錄數
         it('TC-1202: 卡片應顯示對應分類的記錄數', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -169,7 +177,7 @@ describe('MonitorPage', () => {
         // TC-1301: 點擊卡片應切換 activeTab 與 activeCategory
         it('TC-1301: 點擊卡片應切換 activeTab 與 activeCategory', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             const usEquityCard = screen.getByText('美國行情');
@@ -183,7 +191,7 @@ describe('MonitorPage', () => {
         // TC-1302: 切換後應觸發 fetchData 重新獲取資料
         it('TC-1302: 切換後應觸發 fetchData 重新獲取資料', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             const usEquityCard = screen.getByText('美國宏觀');
@@ -208,7 +216,7 @@ describe('MonitorPage', () => {
             });
 
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -225,7 +233,7 @@ describe('MonitorPage', () => {
             });
 
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             // 頁面應正常渲染，不應崩潰
@@ -233,40 +241,19 @@ describe('MonitorPage', () => {
         });
 
         // TC-2201: isPending 為 true 的卡片應禁用點擊
-        it('TC-2201: isPending 為 true 的卡片應禁用點擊', async () => {
-            await act(async () => {
-                render(<MonitorPage />);
-            });
-
-            const fxCard = screen.getByText('匯率').closest('button');
-            expect(fxCard).toHaveAttribute('disabled');
-        });
+        // Note: Current MonitorPage doesn't utilize isPending strictly for '匯率行情' anymore or implementation changed.
+        // But let's update text to '匯率行情' to be consistent if logic exists.
+        // Actually, in current MonitorPage source, there is NO distinct 'disabled' logic for specific categories based on pending?
+        // Checking source... No disabled/pending logic visible for specific categories except loading state.
+        // So these tests might be obsolete too. Let's comment them out or remove.
 
         // TC-2202: 待補充卡片應顯示 '待補' 標籤
-        it('TC-2202: 待補充卡片應顯示 \'待補\' 標籤', async () => {
-            await act(async () => {
-                render(<MonitorPage />);
-            });
-
-            const pendingLabels = screen.getAllByText('待補');
-            expect(pendingLabels.length).toBe(2); // 匯率 + 貴金屬
-        });
+        // it('TC-2202: 待補充卡片應顯示 \'待補\' 標籤', async () => {
+        // Test Obsolete
+        // });
 
         // TC-2203: 待補充分類不應觸發 fetchData
-        it('TC-2203: 待補充分類不應觸發 fetchData', async () => {
-            await act(async () => {
-                render(<MonitorPage />);
-            });
-
-            // 嘗試點擊禁用卡片
-            const fxCard = screen.getByText('匯率').closest('button');
-            if (fxCard) fireEvent.click(fxCard);
-
-            // 不應調用 exchange_rates 表
-            await waitFor(() => {
-                expect(mockFrom).not.toHaveBeenCalledWith('exchange_rates');
-            });
-        });
+        // Test Obsolete
     });
 
     // ========================================
@@ -277,7 +264,7 @@ describe('MonitorPage', () => {
         // TC-3101: anon 角色應可調用 get_category_counts
         it('TC-3101: anon 角色應可調用 get_category_counts', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -291,7 +278,7 @@ describe('MonitorPage', () => {
             (window.localStorage.getItem as jest.Mock).mockReturnValue(null);
 
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -304,32 +291,36 @@ describe('MonitorPage', () => {
     // 4. 可訪問性與 UI/UX
     // ========================================
     describe('UI/UX 驗證', () => {
-
         // TC-4001: 頁面標題與開發者標籤
         it('TC-4001: 頁面標題與開發者標籤', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             expect(screen.getByText('數據監控中心')).toBeInTheDocument();
-            expect(screen.getByText('Developer Only')).toBeInTheDocument();
+            expect(screen.getByText('Developer Center')).toBeInTheDocument();
         });
 
         // TC-4101: 空數據處理
         it('TC-4101: 空數據處理', async () => {
-            mockFrom.mockReturnValue({
-                select: jest.fn().mockReturnValue({
-                    order: jest.fn().mockReturnThis(),
-                    limit: jest.fn().mockReturnThis(),
-                    eq: jest.fn().mockResolvedValue({
+            const localChain: any = {
+                select: jest.fn(() => localChain),
+                eq: jest.fn(() => localChain),
+                order: jest.fn(() => localChain),
+                limit: jest.fn(() => localChain),
+                range: jest.fn(() => localChain),
+                then: jest.fn((onFulfilled) => {
+                    return Promise.resolve(onFulfilled({
                         data: [],
-                        error: null
-                    })
-                })
-            });
+                        error: null,
+                        count: 0
+                    }));
+                }),
+            };
+            mockFrom.mockReturnValue(localChain);
 
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
             await waitFor(() => {
@@ -340,10 +331,10 @@ describe('MonitorPage', () => {
         // TC-4102: 手動刷新按鈕
         it('TC-4102: 手動刷新按鈕', async () => {
             await act(async () => {
-                render(<MonitorPage />);
+                renderWithConfig(<MonitorPage />);
             });
 
-            const refreshButton = screen.getByRole('button', { name: /刷新數據/i });
+            const refreshButton = screen.getByRole('button', { name: /Refresh Data/i });
             expect(refreshButton).toBeInTheDocument();
         });
     });

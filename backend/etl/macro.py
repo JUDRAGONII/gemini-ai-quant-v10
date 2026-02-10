@@ -9,38 +9,39 @@ from backend.lib.config import Config
 logger = logging.getLogger(__name__)
 
 # 指標映射：功能名稱 -> FRED Series ID
-# 依照憲級文件 4.2 擴充
+# 依照憲級文件 4.2 擴充與 SDD 校準
 MACRO_METADATA = {
-    # 利率與貨幣政策
-    "FEDFUNDS": {"id": "FEDFUNDS", "cat": "利率", "country": "US"},
-    "10Y_BOND": {"id": "DGS10", "cat": "利率", "country": "US"},
-    "2Y_BOND": {"id": "DGS2", "cat": "利率", "country": "US"},
-    "M2": {"id": "M2SL", "cat": "貨幣", "country": "US"},
+    "FEDFUNDS": {"id": "FEDFUNDS", "cat": "利率", "country": "US", "name": "Fed Funds Rate"},
+    "10Y_BOND": {"id": "DGS10", "cat": "利率", "country": "US", "name": "10-Year Treasury Yield"},
+    "2Y_BOND": {"id": "DGS2", "cat": "利率", "country": "US", "name": "2-Year Treasury Yield"},
+    "M2": {"id": "M2SL", "cat": "貨幣", "country": "US", "name": "M2 Money Supply"},
     
     # 通貨膨脹
-    "CPI": {"id": "CPIAUCSL", "cat": "通膨", "country": "US"},
-    "CORE_CPI": {"id": "CPILFESL", "cat": "通膨", "country": "US"},
-    "PCE": {"id": "PCECTPI", "cat": "通膨", "country": "US"},
+    "CPI": {"id": "CPIAUCSL", "cat": "通膨", "country": "US", "name": "CPI (All Urban)"},
+    "CORE_CPI": {"id": "CPILFESL", "cat": "通膨", "country": "US", "name": "Core CPI"},
+    "PCE": {"id": "PCECTPI", "cat": "通膨", "country": "US", "name": "PCE Price Index"},
     
     # 就業
-    "UNRATE": {"id": "UNRATE", "cat": "就業", "country": "US"},
-    "PAYEMS": {"id": "PAYEMS", "cat": "就業", "country": "US"},
-    "ICSA": {"id": "ICSA", "cat": "就業", "country": "US"},
+    "UNRATE": {"id": "UNRATE", "cat": "就業", "country": "US", "name": "Unemployment Rate"},
+    "PAYEMS": {"id": "PAYEMS", "cat": "就業", "country": "US", "name": "Non-Farm Payrolls"},
+    "ICSA": {"id": "ICSA", "cat": "就業", "country": "US", "name": "Initial Claims"},
     
     # 成長
-    "GDP": {"id": "GDP", "cat": "成長", "country": "US"},
-    "IPMAN": {"id": "IPMAN", "cat": "成長", "country": "US"},
-    "RSXFS": {"id": "RSXFS", "cat": "成長", "country": "US"},
+    "GDP": {"id": "GDP", "cat": "成長", "country": "US", "name": "Real GDP"},
+    "IPMAN": {"id": "IPMAN", "cat": "成長", "country": "US", "name": "Industrial Production: Manufacturing"},
+    "RSXFS": {"id": "RSXFS", "cat": "成長", "country": "US", "name": "Retail Sales"},
     
     # 風險與信心
-    "VIX": {"id": "VIXCLS", "cat": "風險", "country": "US"},
-    "BAA10Y": {"id": "BAA10Y", "cat": "風險", "country": "US"},
-    "CS_INDEX": {"id": "UMCSENT", "cat": "信心", "country": "US"},
+    "VIX": {"id": "VIXCLS", "cat": "風險", "country": "US", "name": "VIX Volatility Index"},
+    "BAA10Y": {"id": "BAA10Y", "cat": "風險", "country": "US", "name": "BAA Corporate Bond Spread"},
+    "CS_INDEX": {"id": "UMCSENT", "cat": "信心", "country": "US", "name": "Consumer Sentiment"},
+
+    # 指數與商品代碼校正
+    "DXY": {"id": "DTWEXBGS", "cat": "匯率", "country": "US", "name": "Dollar Index"},
+    "GOLD": {"id": "GOLDAMGBD228NLBM", "cat": "商品", "country": "Global", "name": "Gold Price (Fixing)"},
 
     # 台灣宏觀數據 (FRED Source: IMF)
-    # National Accounts: Real Gross Domestic Product for Taiwan Province of China
     "TW_GDP": {"id": "TWNNGDPRPCPPPT", "cat": "成長", "country": "TW", "name": "Taiwan Real GDP (% Change)"},
-    # Prices: Consumer Price Index for Taiwan Province of China
     "TW_CPI": {"id": "TWNPCPIPCPPPT", "cat": "通膨", "country": "TW", "name": "Taiwan CPI (% Change)"},
 }
 

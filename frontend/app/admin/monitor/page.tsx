@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import GlassCard from '@/components/ui/GlassCard';
@@ -21,10 +21,12 @@ import {
     BarChart2,
     Dna,
     DollarSign,
-    Gem
+    Gem,
+    Calendar
 } from 'lucide-react';
+import { useMonitorData } from '@/hooks/useMonitorData';
+import { MonitorCardSkeleton, MonitorProgressSkeleton } from '@/components/ui/MonitorSkeleton';
 
-// 🆕 擴展監控分類配置 (9 大類)
 interface MonitorCategory {
     id: string;
     name: string;
@@ -34,471 +36,360 @@ interface MonitorCategory {
     filter?: Record<string, string>;
     sortColumn: string;
     colorTheme: 'blue' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan' | 'slate';
-    isPending?: boolean; // 待補充標記
 }
 
 const CATEGORIES: MonitorCategory[] = [
-    // 台灣行情
-    {
-        id: 'tw_equity',
-        name: '台灣行情',
-        nameEn: 'TWSE',
-        icon: TrendingUp,
-        table: 'daily_price',
-        filter: { market_type: 'TWSE' },
-        sortColumn: 'trade_date',
-        colorTheme: 'blue'
-    },
-    // 美國行情
-    {
-        id: 'us_equity',
-        name: '美國行情',
-        nameEn: 'US Equities',
-        icon: BarChart2,
-        table: 'daily_price',
-        filter: { market_type: 'TIINGO' },
-        sortColumn: 'trade_date',
-        colorTheme: 'violet'
-    },
-    // 台灣宏觀
-    {
-        id: 'tw_macro',
-        name: '台灣宏觀',
-        nameEn: 'TW Macro',
-        icon: Globe,
-        table: 'macro_indicators',
-        filter: { country: 'TW' },
-        sortColumn: 'reference_date',
-        colorTheme: 'emerald'
-    },
-    // 美國宏觀
-    {
-        id: 'us_macro',
-        name: '美國宏觀',
-        nameEn: 'US Macro',
-        icon: Globe2,
-        table: 'macro_indicators',
-        filter: { country: 'US' },
-        sortColumn: 'reference_date',
-        colorTheme: 'amber'
-    },
-    // 即時報價
-    {
-        id: 'realtime',
-        name: '即時報價',
-        nameEn: 'Real-time',
-        icon: Activity,
-        table: 'market_quotes',
-        sortColumn: 'updated_at',
-        colorTheme: 'rose'
-    },
-    // 多因子評分
-    {
-        id: 'factors',
-        name: '多因子評分',
-        nameEn: 'Factors',
-        icon: Cpu,
-        table: 'stock_factors',
-        sortColumn: 'trade_date',
-        colorTheme: 'cyan'
-    },
-    // 演化基因
-    {
-        id: 'genes',
-        name: '演化基因',
-        nameEn: 'Genes',
-        icon: Dna,
-        table: 'evolution_genes',
-        sortColumn: 'created_at',
-        colorTheme: 'violet'
-    },
-    // 🆕 匯率 (待補充)
-    {
-        id: 'fx',
-        name: '匯率',
-        nameEn: 'FX',
-        icon: DollarSign,
-        table: 'exchange_rates',
-        sortColumn: 'reference_date',
-        colorTheme: 'amber',
-        isPending: true
-    },
-    // 🆕 貴金屬 (待補充)
-    {
-        id: 'metals',
-        name: '貴金屬',
-        nameEn: 'Metals',
-        icon: Gem,
-        table: 'precious_metals',
-        sortColumn: 'reference_date',
-        colorTheme: 'rose',
-        isPending: true
-    },
+    { id: 'tw_equity', name: '台灣行情', nameEn: 'TWSE', icon: TrendingUp, table: 'daily_price', filter: { market_type: 'TWSE' }, sortColumn: 'trade_date', colorTheme: 'blue' },
+    { id: 'us_equity', name: '美國行情', nameEn: 'US Equities', icon: BarChart2, table: 'daily_price', filter: { market_type: 'TIINGO' }, sortColumn: 'trade_date', colorTheme: 'violet' },
+    { id: 'tw_macro', name: '台灣宏觀', nameEn: 'TW Macro', icon: Globe, table: 'macro_indicators', filter: { country: 'TW' }, sortColumn: 'reference_date', colorTheme: 'emerald' },
+    { id: 'us_macro', name: '美國宏觀', nameEn: 'US Macro', icon: Globe2, table: 'macro_indicators', filter: { country: 'US' }, sortColumn: 'reference_date', colorTheme: 'amber' },
+    { id: 'realtime', name: '即時報價', nameEn: 'Real-time', icon: Activity, table: 'market_quotes', sortColumn: 'updated_at', colorTheme: 'rose' },
+    { id: 'fx', name: '匯率行情', nameEn: 'Forex', icon: DollarSign, table: 'exchange_rates', sortColumn: 'trade_date', colorTheme: 'blue' },
+    { id: 'economic_calendar', name: '經濟日曆', nameEn: 'Calendar', icon: Calendar, table: 'economic_calendar', sortColumn: 'scheduled_at', colorTheme: 'emerald' },
+    { id: 'factors', name: '多因子評分', nameEn: 'Factors', icon: Cpu, table: 'stock_factors', sortColumn: 'trade_date', colorTheme: 'cyan' },
+    { id: 'genes', name: '演化基因', nameEn: 'Genes', icon: Dna, table: 'evolution_genes', sortColumn: 'created_at', colorTheme: 'violet' }
 ];
 
-// 色彩主題映射
-const COLOR_THEMES: Record<string, { border: string; bg: string; text: string; icon: string }> = {
-    blue: { border: 'border-blue-500/50', bg: 'bg-blue-500/20', text: 'text-blue-400', icon: 'text-blue-400' },
-    emerald: { border: 'border-emerald-500/50', bg: 'bg-emerald-500/20', text: 'text-emerald-400', icon: 'text-emerald-400' },
-    amber: { border: 'border-amber-500/50', bg: 'bg-amber-500/20', text: 'text-amber-400', icon: 'text-amber-400' },
-    rose: { border: 'border-rose-500/50', bg: 'bg-rose-500/20', text: 'text-rose-400', icon: 'text-rose-400' },
-    violet: { border: 'border-violet-500/50', bg: 'bg-violet-500/20', text: 'text-violet-400', icon: 'text-violet-400' },
-    cyan: { border: 'border-cyan-500/50', bg: 'bg-cyan-500/20', text: 'text-cyan-400', icon: 'text-cyan-400' },
-    slate: { border: 'border-slate-500/50', bg: 'bg-slate-500/20', text: 'text-slate-400', icon: 'text-slate-400' },
+const COLOR_THEMES: Record<string, { border: string; bg: string; text: string; icon: string; shadow: string; glow: string }> = {
+    blue: {
+        border: 'border-blue-500/30',
+        bg: 'bg-blue-500/10',
+        text: 'text-blue-300',
+        icon: 'text-blue-400',
+        shadow: 'shadow-blue-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]'
+    },
+    emerald: {
+        border: 'border-emerald-500/30',
+        bg: 'bg-emerald-500/10',
+        text: 'text-emerald-300',
+        icon: 'text-emerald-400',
+        shadow: 'shadow-emerald-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+    },
+    amber: {
+        border: 'border-amber-500/30',
+        bg: 'bg-amber-500/10',
+        text: 'text-amber-300',
+        icon: 'text-amber-400',
+        shadow: 'shadow-amber-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]'
+    },
+    rose: {
+        border: 'border-rose-500/30',
+        bg: 'bg-rose-500/10',
+        text: 'text-rose-300',
+        icon: 'text-rose-400',
+        shadow: 'shadow-rose-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(244,63,94,0.15)]'
+    },
+    violet: {
+        border: 'border-violet-500/30',
+        bg: 'bg-violet-500/10',
+        text: 'text-violet-300',
+        icon: 'text-violet-400',
+        shadow: 'shadow-violet-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]'
+    },
+    cyan: {
+        border: 'border-cyan-500/30',
+        bg: 'bg-cyan-500/10',
+        text: 'text-cyan-300',
+        icon: 'text-cyan-400',
+        shadow: 'shadow-cyan-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]'
+    },
+    slate: {
+        border: 'border-slate-500/30',
+        bg: 'bg-slate-500/10',
+        text: 'text-slate-300',
+        icon: 'text-slate-400',
+        shadow: 'shadow-slate-500/10',
+        glow: 'group-hover:shadow-[0_0_20px_rgba(148,163,184,0.15)]'
+    },
 };
 
-
 export default function MonitorPage() {
-    const [activeTab, setActiveTab] = useState(CATEGORIES[0].id);
+    const { stats, isLoading: isStatsLoading, refresh } = useMonitorData();
     const [activeCategory, setActiveCategory] = useState<MonitorCategory>(CATEGORIES[0]);
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState<any>({});
-    const [backfillStatus, setBackfillStatus] = useState<any>({});
-    const [filterText, setFilterText] = useState('');
     const [refreshKey, setRefreshKey] = useState(0);
+    const [filterText, setFilterText] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const ITEMS_PER_PAGE = 50;
     const router = useRouter();
 
-    // Security Check: Developer Mode Only
     useEffect(() => {
         const isDev = localStorage.getItem('dev_mode') === 'true';
-        if (!isDev) {
-            router.push('/');
-        }
+        if (!isDev) router.push('/');
     }, [router]);
 
-    // 獲取統計資訊
-    async function fetchStats() {
-        try {
-            // 🆕 改用分類統計 RPC
-            const { data: estCounts, error: rpcError } = await (supabase as any).rpc('get_category_counts');
+    // Reset page when category changes
+    useEffect(() => {
+        setCurrentPage(1);
+        setData([]); // 即時清理舊數據，防止切換類別時顯示陳舊內容
+    }, [activeCategory]);
 
-            if (!rpcError && estCounts) {
-                setStats(estCounts);
-            } else {
-                // 回退至空物件
-                console.warn('RPC get_category_counts failed:', rpcError);
-                setStats({});
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            let query = supabase
+                .from(activeCategory.table)
+                .select('*', { count: 'exact' });
+
+            if (activeCategory.filter) {
+                Object.entries(activeCategory.filter).forEach(([key, value]) => {
+                    query = query.eq(key, value);
+                });
+            }
+
+            // Apply text filter if specific columns match (Basic implementation for common fields)
+            if (filterText) {
+                // Note: This is a simple OR search on common text columns. 
+                // For comprehensive search on all columns, backend support or RPC is better.
+                // Here we keep it simple as per KISS Plan A (Front-end heavy or simple backend params)
+                // However, Supabase OR syntax is tricky. 
+                // Let's implement Server-side pagination but Client-side filtering for the CURRENT PAGE?
+                // No, the user complained about filtering. 
+                // Plan A said: "前端分頁 + 前端增強過濾".
+                // "快速實作... 搜尋僅限已載入資料". 
+                // Wait, if I use .range(), I only load 50 items. Filtering only 50 items is what caused the complaint ("快速過濾功能缺失").
+                // If I want to filter properly with pagination, I need to apply filter to the Supabase query via .or().
+                // But `activeCategory` tables are different, columns are different.
+                // Let's stick to the Plan A description strictly: 
+                // "方案 A ... 缺點: 搜尋僅限已載入資料".
+                // WAIT. If the drawback is "Search only loaded data", and I switch to pagination (loading 50 at a time), then search becomes even worse (only searching 50 items).
+                // The user complained "快速過濾功能缺失" implies they WANT it to work better.
+                // Maybe I should fetch slightly more data or enable a simple Symbol search if possible.
+                // But adhereing to the plan: "Modify query to support pagination".
+                // Let's implement .range() for pagination.
+                // For filtering, if I strictly follow "Client side filtering", I can only filter what I fetch.
+                // But I can try to add a basic symbol/name filter to the Supabase query if those columns exist.
+                // Most tables have 'symbol' or 'code'.
+                if (filterText.length >= 2) {
+                    // Try to filter by symbol or name if applicable, otherwise client side filter on result
+                    // For generic implementation without crashing, we might skip complex OR queries here
+                    // unless we know the schema.
+                    // The user's complaint 1 was "function exists but weak".
+                    // Plan A says "Frontend enhanced filtering".
+                    // Let's stick to doing pagination first, and keep client filtering on the fetched page (or simple server filter).
+                    // Actually, if I fetch 50 items, client filtering is useless for finding item #1000.
+                    // The Plan A drawback "Search only loaded data" explicitly acknowledges this limitation.
+                    // The user approved Plan A. So I will implement Pagination + Client Filter.
+                }
+            }
+
+            // Pagination
+            const from = (currentPage - 1) * ITEMS_PER_PAGE;
+            const to = from + ITEMS_PER_PAGE - 1;
+
+            const { data: result, error, count } = await query
+                .order(activeCategory.sortColumn, { ascending: false })
+                .range(from, to);
+
+            if (!error) {
+                setData(result || []);
+                if (count !== null) setTotalItems(count);
             }
         } catch (err) {
-            console.error('Fetch stats exception:', err);
-        }
-
-        // 🆕 獲取即時回補狀態 (當前代號)
-        const { data: bStatus } = await supabase
-            .from('backfill_status')
-            .select('*');
-        if (bStatus) {
-            const statusMap = bStatus.reduce((acc: any, curr: any) => {
-                acc[curr.id] = curr;
-                return acc;
-            }, {});
-
-            // 獲取標的總量以計算完成度
-            const { count: totalStocks } = await supabase.from('stocks').select('*', { count: 'exact', head: true });
-            statusMap.total_stocks = totalStocks || 1599;
-
-            setBackfillStatus(statusMap);
-        }
-    }
-
-    useEffect(() => {
-        fetchStats();
-
-        // 🆕 每 5 秒自動輪詢一次狀態與統計量
-        const interval = setInterval(fetchStats, 5000);
-        return () => clearInterval(interval);
-    }, [refreshKey]);
-
-    // 獲取具體表數據 (帶篩選條件)
-    async function fetchData() {
-        if (activeCategory.isPending) {
-            // 待補充分類不讀取數據
-            setData([]);
+            console.error('Fetch table data exception:', err);
+        } finally {
             setLoading(false);
-            return;
         }
-
-        setLoading(true);
-
-        let query = supabase
-            .from(activeCategory.table)
-            .select('*')
-            .order(activeCategory.sortColumn, { ascending: false })
-            .limit(50);
-
-        // 套用篩選條件
-        if (activeCategory.filter) {
-            Object.entries(activeCategory.filter).forEach(([key, value]) => {
-                query = query.eq(key, value);
-            });
-        }
-
-        const { data: result, error } = await query;
-
-        if (!error) {
-            setData(result || []);
-        }
-        setLoading(false);
-    }
+    }, [activeCategory, currentPage]);
 
     useEffect(() => {
         fetchData();
-    }, [activeCategory, refreshKey]);
+    }, [activeCategory, refreshKey, currentPage, fetchData]); // Remove filterText from dependency if strictly client side or keep if we want to reset
 
-    const handleManualRefresh = () => {
-        setRefreshKey(prev => prev + 1);
-    };
+    // Helper to format market type
+    function formatMarketType(val: any, key: string): React.ReactNode {
+        if (key === 'market_type') {
+            const MAP: Record<string, string> = {
+                'TWSE': 'TW 🇹🇼',
+                'TIINGO': 'US 🇺🇸',
+                'TAIFEX': 'Taifex 📊',
+            };
+            return MAP[val] || val;
+        }
+        if (val === null || val === undefined) return <span className="opacity-20">-</span>;
+        if (typeof val === 'object') return <span className="text-[10px] opacity-60">{JSON.stringify(val).slice(0, 30)}...</span>;
+        return val;
+    }
 
-    // 計算進度
-    // 🆕 投資導向進度：以「標的覆蓋率」取代「數據筆數」
-    // 目前系統 1599 檔標的主力合約與股票，約 1520 檔已完成歷史回補
-    const completedSymbols = 1520;
-    const totalSymbols = 1599;
-    const progressPercent = Math.round((completedSymbols / totalSymbols) * 100);
-    const isActuallyBackfilling = true;
-    const macroCount = stats['macro_indicators'] || 0;
-
-    // 累積大數據資產：以實體資料庫預估筆數為準
-    const totalDataPoints = (stats['daily_price'] || 0) + (stats['macro_indicators'] || 0);
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200 p-6 md:p-8 font-sans selection:bg-blue-500/30">
-            {/* Header */}
             <div className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <Database className="w-5 h-5 text-blue-400" />
                         </div>
-                        <ProBadge status="info">Developer Only</ProBadge>
+                        <ProBadge status="info">Developer Center</ProBadge>
                     </div>
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
                         數據監控中心
                     </h1>
-                    <p className="text-slate-500 mt-2 font-mono text-sm">
-                        Monitor real-time database state and ETL integrity.
-                    </p>
                 </div>
-
-                <div className="flex items-center gap-4 bg-slate-900/50 p-1 rounded-xl border border-white/5">
-                    <button
-                        onClick={handleManualRefresh}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors text-slate-400 hover:text-white"
-                        title="刷新數據"
-                        aria-label="刷新數據"
-                    >
-                        <RefreshCcw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-                    </button>
-                </div>
+                <button
+                    onClick={() => setRefreshKey(k => k + 1)}
+                    aria-label="Refresh Data"
+                    className="p-2 bg-slate-900 border border-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                >
+                    <RefreshCcw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
             </div>
 
-            {/* 🆕 數據回補執行進度 (Backfill Progress) */}
-            <div className="max-w-7xl mx-auto mb-10">
-                <GlassCard className="p-6 border-emerald-500/20 bg-emerald-500/5 overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Activity className="w-32 h-32 text-emerald-400" />
-                    </div>
+            <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-4 mb-8">
+                {isStatsLoading
+                    ? Array(9).fill(0).map((_, i) => <MonitorCardSkeleton key={i} />)
+                    : CATEGORIES.map((cat) => {
+                        const Icon = cat.icon;
+                        const isActive = activeCategory.id === cat.id;
+                        const theme = COLOR_THEMES[cat.colorTheme];
+                        const count = (stats as any)[cat.id];
 
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Clock className="w-4 h-4 text-emerald-400 animate-pulse" />
-                                <span className="text-emerald-400 font-bold text-sm tracking-wider uppercase">即時數據回補執行中</span>
-                            </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">大規模歷史數據瀑布</h2>
-                            <p className="text-slate-400 text-sm max-w-xl">
-                                正在執行台股 (2010+) 與全球宏觀指標 (1990+) 的全量回補。基於斷點續傳機制，進度將自動累加。
-                            </p>
-
-                            <div className="mt-6 flex items-center gap-6">
-                                <div className="flex flex-col">
-                                    <span className="text-slate-500 text-xs uppercase mb-1">台股回補狀態</span>
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${isActuallyBackfilling ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`}></div>
-                                        <span className={`${isActuallyBackfilling ? 'text-emerald-400' : 'text-slate-500'} font-mono font-bold text-xs`}>
-                                            {isActuallyBackfilling
-                                                ? `同步中 (${backfillStatus['stocks']?.current_symbol || '...'})`
-                                                : '閒置中'}
-                                        </span>
+                        return (
+                            <button
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat)}
+                                className={`text-left transition-all duration-300 group ${isActive ? 'scale-[1.02] z-10' : 'scale-100 hover:scale-[1.01]'}`}
+                            >
+                                <GlassCard className={`p-4 border shadow-2xl transition-all duration-500 flex flex-col justify-between h-full ${theme.glow} ${isActive ? `${theme.border} bg-white/[0.08] ${theme.shadow}` : 'border-white/5 opacity-60 hover:opacity-100 bg-[#0f172a]/40'}`}>
+                                    <div>
+                                        <div className={`p-2 w-fit rounded-xl mb-3 transition-colors duration-300 ${isActive ? theme.bg + ' ' + theme.icon : 'bg-slate-800 text-slate-500 group-hover:bg-slate-700'}`}>
+                                            <Icon className="w-5 h-5" />
+                                        </div>
+                                        <div className={`text-2xl font-bold font-mono tracking-tight mb-1 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                                            {count !== undefined ? count.toLocaleString() : '...'}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="w-px h-8 bg-white/10 hidden md:block"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-slate-500 text-xs uppercase mb-1">宏觀回補狀態</span>
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle2 className={`w-4 h-4 ${macroCount > 0 ? 'text-emerald-500' : 'text-slate-600'}`} />
-                                        <span className="text-slate-200 font-mono text-xs">
-                                            {macroCount > 0
-                                                ? `解析中 (${backfillStatus['macro']?.current_symbol || '...'})`
-                                                : '等待中'}
-                                        </span>
+                                    <div className="mt-2">
+                                        <div className={`text-xs font-semibold tracking-wide truncate ${isActive ? 'text-white' : 'text-slate-500'}`}>{cat.name}</div>
+                                        <div className={`text-[9px] font-bold tracking-widest opacity-40 uppercase ${isActive ? 'text-white' : 'text-slate-400'}`}>{cat.nameEn}</div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="w-full md:w-64 bg-slate-900/80 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
-                            <div className="flex justify-between text-xs mb-2">
-                                <span className="text-slate-500">當前進度 (預估)</span>
-                                <span className="text-emerald-400 font-bold">{progressPercent}%</span>
-                            </div>
-                            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-emerald-500 transition-all duration-1000 ease-out animate-shimmer"
-                                    style={{ width: `${progressPercent}%` }}
-                                ></div>
-                            </div>
-                            <p className="text-[10px] text-slate-400 mt-2 text-center flex items-center justify-center gap-1 font-mono">
-                                <Database className="w-3 h-3" />
-                                累積核心數據資產: {totalDataPoints.toLocaleString()} 筆
-                            </p>
-                        </div>
-                    </div>
-                </GlassCard>
+                                </GlassCard>
+                            </button>
+                        );
+                    })
+                }
             </div>
 
-            {/* 🆕 9 分類卡片網格 */}
-            <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3 mb-8">
-                {CATEGORIES.map((category) => {
-                    const Icon = category.icon;
-                    const isActive = activeTab === category.id;
-                    const theme = COLOR_THEMES[category.colorTheme];
-                    const count = stats[category.id];
-
-                    return (
-                        <button
-                            key={category.id}
-                            onClick={() => {
-                                setActiveTab(category.id);
-                                setActiveCategory(category);
-                            }}
-                            disabled={category.isPending}
-                            className={`text-left transition-all duration-300 transform group cursor-pointer ${category.isPending ? 'opacity-50 cursor-not-allowed' : ''
-                                } ${isActive ? 'scale-[1.02]' : 'hover:translate-y-[-2px]'}`}
-                        >
-                            <GlassCard className={`p-3 border-2 transition-all h-full ${isActive
-                                ? `${theme.border} shadow-lg`
-                                : 'border-white/5 hover:border-white/10'
-                                }`}>
-                                <div className="flex items-start justify-between mb-2">
-                                    <div className={`p-1.5 rounded-lg transition-colors ${isActive ? `${theme.bg} ${theme.icon}` : 'bg-slate-800 text-slate-500 group-hover:text-slate-300'
-                                        }`}>
-                                        <Icon className="w-4 h-4" />
-                                    </div>
-                                </div>
-
-                                {/* 統計數字 */}
-                                <div className={`text-xl font-bold font-mono tracking-tight mb-1 ${category.isPending ? 'text-slate-600' : ''
-                                    }`}>
-                                    {category.isPending
-                                        ? '---'
-                                        : (count !== undefined ? count.toLocaleString() : '...')}
-                                </div>
-
-                                {/* 分類名稱 */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-slate-400'}`}>
-                                            {category.name}
-                                        </span>
-                                        <span className="text-[10px] text-slate-600 font-mono">
-                                            {category.nameEn}
-                                        </span>
-                                    </div>
-                                    {category.isPending && (
-                                        <span className="text-[9px] text-amber-500/80 font-mono px-1 py-0.5 bg-amber-500/10 rounded">
-                                            待補
-                                        </span>
-                                    )}
-                                </div>
-                            </GlassCard>
-                        </button>
-                    );
-                })}
-            </div>
-
-
-            {/* Data Table Area */}
             <div className="max-w-7xl mx-auto">
-                <GlassCard className="overflow-hidden border-white/5">
-                    <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                        <div className="flex items-center gap-2">
+                <GlassCard className="overflow-hidden border-white/5 bg-slate-900/30 backdrop-blur-xl shadow-inner-white">
+                    <div className="p-5 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.01]">
+                        <div className="flex items-center gap-3 w-full sm:w-auto bg-slate-950/50 px-4 py-2 rounded-xl border border-white/5 focus-within:border-blue-500/50 transition-all">
                             <Search className="w-4 h-4 text-slate-500" />
                             <input
-                                id="monitor-search"
-                                name="monitor-search"
                                 type="text"
-                                placeholder="快速過濾 (代號、日期、內容)..."
+                                placeholder="快速篩選 (當前頁)..."
+                                data-testid="filter-input"
                                 value={filterText}
-                                onChange={(e) => setFilterText(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-slate-600"
+                                onChange={e => setFilterText(e.target.value)}
+                                className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"
                             />
                         </div>
-                        <div className="text-xs text-slate-500 font-mono">
-                            Showing last {data.length} entries {filterText && `(Filtered)`}
+                        <div className="text-[10px] font-bold font-mono text-slate-500 tracking-wider flex items-center gap-2">
+                            <Activity className="w-3 h-3 text-blue-500/50" />
+                            PAGE {currentPage} / {totalPages || 1} <span className="opacity-20">|</span> TOTAL: {totalItems.toLocaleString()} ROWS
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[400px]">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center p-20 gap-4">
-                                <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                                <span className="text-sm font-mono text-slate-500 animate-pulse">Loading Database Stream...</span>
-                            </div>
-                        ) : data.length > 0 ? (
-                            <table className="w-full text-left text-sm font-mono">
-                                <thead>
-                                    <tr className="bg-white/[0.03] text-slate-500 border-b border-white/5">
-                                        {Object.keys(data[0]).map(key => (
-                                            <th key={key} className="px-6 py-4 font-medium uppercase tracking-wider text-[10px]">
-                                                {key}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/[0.02]">
-                                    {data
-                                        .filter(row =>
-                                            JSON.stringify(row).toLowerCase().includes(filterText.toLowerCase())
-                                        )
-                                        .map((row, i) => (
-                                            <tr key={i} className="hover:bg-white/[0.01] transition-colors group">
-                                                {Object.values(row).map((val: any, j) => (
-                                                    <td key={j} className="px-6 py-4 text-slate-400 group-hover:text-slate-200">
-                                                        {typeof val === 'object' ? JSON.stringify(val).slice(0, 50) + '...' : String(val)}
+                    <div className="overflow-x-auto custom-scrollbar">
+                        {!loading && data.length > 0 ? (
+                            <>
+                                <table className="w-full text-left text-[11px] font-mono border-collapse">
+                                    <thead>
+                                        <tr className="bg-white/[0.03] text-slate-500">
+                                            {Object.keys(data[0]).map(k => (
+                                                <th key={k} className="px-6 py-4 uppercase tracking-widest font-bold opacity-60 border-b border-white/5 whitespace-nowrap">{k}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/[0.03]">
+                                        {data.filter(r => JSON.stringify(r).toLowerCase().includes(filterText.toLowerCase())).map((row, i) => (
+                                            <tr key={i} className="hover:bg-blue-500/[0.03] transition-colors group">
+                                                {Object.entries(row).map(([k, v], j) => (
+                                                    <td key={j} className="px-6 py-3.5 text-slate-400 group-hover:text-blue-200 transition-colors border-r border-white/[0.01] last:border-r-0">
+                                                        {formatMarketType(v, k)}
                                                     </td>
                                                 ))}
                                             </tr>
                                         ))}
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+
+                                {/* Pagination Controls - Premium Glass Style */}
+                                <div className="p-5 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.02]">
+                                    <button
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
+                                    >
+                                        <ChevronRight className="w-3.5 h-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" /> PREVIOUS
+                                    </button>
+
+                                    <div className="flex gap-1.5 overflow-x-auto pb-2 sm:pb-0">
+                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            let p = i + 1;
+                                            if (currentPage > 3 && totalPages > 5) p = currentPage - 2 + i;
+                                            if (p < 1) p = i + 1;
+                                            if (p > totalPages) return null;
+                                            return (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => setCurrentPage(p)}
+                                                    className={`min-w-[32px] h-8 rounded-lg text-[10px] font-bold flex items-center justify-center transition-all ${currentPage === p ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'hover:bg-white/10 text-slate-500 hover:text-slate-300'}`}
+                                                >
+                                                    {p}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+
+                                    <button
+                                        disabled={currentPage >= totalPages}
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
+                                    >
+                                        NEXT <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
+                                </div>
+                            </>
+                        ) : loading ? (
+                            <div className="p-24 flex flex-col items-center gap-5">
+                                <div className="relative">
+                                    <RefreshCcw className="w-10 h-10 text-blue-500 animate-spin opacity-40" />
+                                    <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-10 animate-pulse"></div>
+                                </div>
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="text-[10px] text-blue-400 font-bold animate-pulse tracking-[0.3em] uppercase">Syncing Database</span>
+                                    <span className="text-[9px] text-slate-600 font-mono italic">Fetching latest financial records...</span>
+                                </div>
+                            </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center p-20 gap-2 opacity-50">
-                                <Database className="w-12 h-12 text-slate-700" />
-                                <span className="text-slate-500">此資料表目前尚無數據</span>
+                            <div className="p-24 text-center">
+                                <AlertCircle className="w-10 h-10 text-slate-700 mx-auto mb-4 opacity-20" />
+                                <div className="text-sm font-medium text-slate-500 tracking-tight">此資料表目前尚無數據</div>
+                                <div className="text-[10px] text-slate-700 mt-1 font-mono uppercase tracking-widest">Verify database tables or check connectivity.</div>
                             </div>
                         )}
                     </div>
                 </GlassCard>
             </div>
+        </div>
+    );
+}
 
-            <style jsx global>{`
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-        }
-        ::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      `}</style>
+function StatusBadge({ label, status }: { label: string, status: 'online' | 'offline' }) {
+    return (
+        <div className="glass px-3 py-1.5 rounded-full flex items-center space-x-2 border border-white/10">
+            <span className={`w-2 h-2 rounded-full ${status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+            <span className="text-xs font-medium text-gray-300">{label}</span>
         </div>
     );
 }

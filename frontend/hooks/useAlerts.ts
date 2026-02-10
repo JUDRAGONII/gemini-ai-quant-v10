@@ -7,7 +7,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function useAlerts() {
     // 1. 獲取警示列表
-    const { data: alerts, error, mutate: alertMutate } = useSWR<MarketAlert[]>('/api/v1/alerts', fetcher, {
+    const { data: alerts, error, mutate: alertMutate } = useSWR<MarketAlert[]>('/api/v1/alerts/', fetcher, {
         revalidateOnFocus: false,
     });
 

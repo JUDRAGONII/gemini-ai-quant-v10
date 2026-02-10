@@ -30,9 +30,28 @@ export interface StockQuote {
     low: number | null;
     close: number | null;
     volume: number | null;
+    turnover?: number | null;
     change_percent: number | null;
     adjusted_close?: number | null;
     market_type?: string;
+}
+
+export interface ExchangeRate {
+    trade_date: string;
+    rate: number;
+    change?: number | null;
+    change_percent?: number | null;
+}
+
+export interface ExchangeRateResponse {
+    base_currency: string;
+    target_currency: string;
+    rates: ExchangeRate[];
+}
+
+export interface ExchangeRateLatestResponse {
+    rates: Record<string, number>;
+    last_updated: string | null;
 }
 
 export interface StockFinancials {
