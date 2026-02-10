@@ -14,18 +14,23 @@ jest.mock('@/hooks/useMonitorData', () => ({
     useMonitorData: jest.fn(),
 }));
 
+// Define mocks outside to share reference
+const mockRange = jest.fn().mockResolvedValue({
+    data: Array(50).fill({}),
+    count: 100,
+    error: null
+});
+
+const mockChain = {
+    select: jest.fn().mockReturnThis(),
+    order: jest.fn().mockReturnThis(),
+    range: mockRange,
+    eq: jest.fn().mockReturnThis(),
+};
+
 jest.mock('@/lib/supabase', () => ({
     supabase: {
-        from: jest.fn(() => ({
-            select: jest.fn().mockReturnThis(),
-            order: jest.fn().mockReturnThis(),
-            range: jest.fn().mockResolvedValue({
-                data: Array(50).fill({}), // Mock return data
-                count: 100,
-                error: null
-            }),
-            eq: jest.fn().mockReturnThis(),
-        })),
+        from: jest.fn(() => mockChain),
     },
 }));
 
@@ -53,8 +58,8 @@ describe('MonitorPage Enhancements', () => {
             render(<MonitorPage />);
 
             await waitFor(() => {
-                const rangeMock = supabase.from('daily_price').select().order().range;
-                expect(rangeMock).toHaveBeenCalledWith(0, 49);
+                const rangeSpy = mockRange; // Use the shared mock
+                expect(rangeSpy).toHaveBeenCalledWith(0, 49);
             });
         });
 
@@ -134,7 +139,7 @@ describe('MonitorPage Enhancements', () => {
             });
 
             // Filter for TSLA
-            const input = screen.getByPlaceholderText(/快速過濾/);
+            const input = screen.getByTestId('filter-input');
             fireEvent.change(input, { target: { value: 'Tesla' } });
 
             expect(screen.queryByText('Apple')).not.toBeInTheDocument();

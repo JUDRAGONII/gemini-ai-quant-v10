@@ -126,11 +126,11 @@ export default function MonitorPage() {
         if (!isDev) router.push('/');
     }, [router]);
 
-    // Reset page when category or filter changes
+    // Reset page when category changes
     useEffect(() => {
         setCurrentPage(1);
         setData([]); // 即時清理舊數據，防止切換類別時顯示陳舊內容
-    }, [activeCategory, filterText]);
+    }, [activeCategory]);
 
     async function fetchData() {
         setLoading(true);
@@ -286,6 +286,7 @@ export default function MonitorPage() {
                             <input
                                 type="text"
                                 placeholder="快速篩選 (當前頁)..."
+                                data-testid="filter-input"
                                 value={filterText}
                                 onChange={e => setFilterText(e.target.value)}
                                 className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"

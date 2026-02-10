@@ -86,7 +86,7 @@ export default function CorrelationChart({
                             itemStyle={{ color: '#10b981' }}
                             labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
                         />
-                        <ReferenceLine y={0} stroke="#ffffff10" dashOffset={4} />
+                        <ReferenceLine y={0} stroke="#ffffff10" strokeDasharray="4 4" />
                         <ReferenceLine y={summary.mean ?? 0} stroke="#10b981" strokeDasharray="5 5" label={{ value: '均值', position: 'right', fill: '#10b98155', fontSize: 10 }} />
                         <Area
                             type="monotone"

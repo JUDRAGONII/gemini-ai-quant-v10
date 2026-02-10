@@ -6,7 +6,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 // Mock Supabase
 jest.mock('@supabase/auth-helpers-nextjs', () => ({
     createClientComponentClient: jest.fn(),
-}));
+}), { virtual: true });
 
 // Mock SWR or other hooks if used
 jest.mock('swr', () => ({
