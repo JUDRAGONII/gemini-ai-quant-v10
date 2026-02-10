@@ -22,7 +22,7 @@ export default function StrategyHubPage() {
 
     useEffect(() => {
         runBacktest(symbol, threshold);
-    }, [symbol]);
+    }, [symbol, threshold, runBacktest]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();

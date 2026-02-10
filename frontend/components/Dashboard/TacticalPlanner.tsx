@@ -167,7 +167,7 @@ export default function TacticalPlanner() {
                                             <span className="text-sm font-mono text-green-400">{plan.take_profit}</span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-slate-400 italic line-clamp-2">" {plan.reason} "</p>
+                                    <p className="text-xs text-slate-400 italic line-clamp-2">&quot; {plan.reason} &quot;</p>
                                 </div>
                             )) : <div className="py-12 border-2 border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center grayscale opacity-50">
                                 <Target className="w-10 h-10 mb-2 text-slate-600" />

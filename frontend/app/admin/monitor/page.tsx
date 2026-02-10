@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import GlassCard from '@/components/ui/GlassCard';
@@ -132,7 +132,7 @@ export default function MonitorPage() {
         setData([]); // 即時清理舊數據，防止切換類別時顯示陳舊內容
     }, [activeCategory]);
 
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             let query = supabase
@@ -202,7 +202,7 @@ export default function MonitorPage() {
 
     useEffect(() => {
         fetchData();
-    }, [activeCategory, refreshKey, currentPage]); // Remove filterText from dependency if strictly client side or keep if we want to reset
+    }, [activeCategory, refreshKey, currentPage, fetchData]); // Remove filterText from dependency if strictly client side or keep if we want to reset
 
     // Helper to format market type
     function formatMarketType(val: any, key: string): React.ReactNode {
