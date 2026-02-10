@@ -198,7 +198,7 @@ export default function MonitorPage() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [activeCategory, currentPage]);
 
     useEffect(() => {
         fetchData();
