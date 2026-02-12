@@ -6,7 +6,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface MacroIndicatorProps {
-    name: string;
+    name: React.ReactNode;
     code: string;
     value: number;
     unit: string;

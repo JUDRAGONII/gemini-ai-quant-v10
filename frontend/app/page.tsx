@@ -5,6 +5,7 @@ import MacroChart from '@/components/MacroChart';
 import { MobileNav } from '@/components/layout';
 import Sidebar from '@/components/layout/Sidebar';
 import Link from 'next/link';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 // 獲取數據的伺服器端邏輯 (與原版一致)
 async function getIndicatorHistory(code: string, limit: number = 20) {
@@ -59,6 +60,7 @@ export default async function Home() {
                                 <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2">
                                     <span className="gradient-text">市場導航儀</span>
                                 </h1>
+                                <p className="text-[11px] text-cyan-500/50 font-mono uppercase tracking-[0.3em] mb-2">Market Navigator</p>
                                 <p className="text-gray-400 text-lg font-light tracking-wide max-w-md">
                                     即時監控全局宏觀指標，驅動精準 AI 決策路徑
                                 </p>
@@ -77,7 +79,13 @@ export default async function Home() {
                                 <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
                                     <TrendingUp size={24} />
                                 </div>
-                                <span>宏觀趨勢動態</span>
+                                <Bilingual
+                                    zh="宏觀趨勢動態"
+                                    en="Macro Trends"
+                                    mode="stacked"
+                                    zhClassName="text-2xl font-bold text-white/90"
+                                    enClassName="text-[10px] uppercase tracking-widest font-mono text-cyan-500/50"
+                                />
                             </h2>
                             <Link href="/macro" className="text-cyan-400 text-sm hover:underline">查看全部數據 →</Link>
                         </div>
@@ -97,7 +105,13 @@ export default async function Home() {
                                 <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                     <FileText size={24} />
                                 </div>
-                                <span>智庫辯論報告</span>
+                                <Bilingual
+                                    zh="智庫辯論報告"
+                                    en="AI Reports"
+                                    mode="stacked"
+                                    zhClassName="text-2xl font-bold text-white/90"
+                                    enClassName="text-[10px] uppercase tracking-widest font-mono text-blue-500/50"
+                                />
                             </h2>
                             <div className="space-y-6">
                                 {reports.length > 0 ? (
@@ -114,7 +128,13 @@ export default async function Home() {
 
                         {/* System Health */}
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-white/90">系統效能中心</h2>
+                            <Bilingual
+                                zh="系統效能中心"
+                                en="System Health"
+                                mode="stacked"
+                                zhClassName="text-2xl font-bold text-white/90"
+                                enClassName="text-[10px] uppercase tracking-widest font-mono text-emerald-500/50"
+                            />
                             <div className="glass p-8 rounded-2xl space-y-6 border-white/10 bg-white/[0.02]">
                                 <HealthRow label="Gemini 2.0" value="Active" icon={<Cpu size={16} />} />
                                 <HealthRow label="Sync Hub" value="Stable" icon={<Layers size={16} />} />

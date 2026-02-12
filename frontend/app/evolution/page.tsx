@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import { MobileNav } from "@/components/layout";
 import { Dna, FlaskConical, Play } from "lucide-react";
+import Sidebar from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { Bilingual } from "@/components/ui/Bilingual";
+import { EvolutionVisualizer } from "@/components/AI/EvolutionVisualizer";
 
 export default function EvolutionPage() {
     return (
@@ -22,13 +24,24 @@ export default function EvolutionPage() {
                     {/* 頁面標題與狀態欄 (In-page Header) */}
                     <header className="flex justify-between items-start mb-8">
                         <div>
-                            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-3">
+                            <Bilingual
+                                zh="演化運算分析"
+                                en="Evolutionary Engine"
+                                mode="stacked"
+                                zhClassName="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-3"
+                                enClassName="text-xs font-medium text-slate-500 uppercase tracking-[0.3em] font-mono mt-1"
+                            >
                                 <Dna size={32} className="text-violet-400" />
-                                演化運算分析 (Evolution)
-                            </h1>
-                            <p className="text-gray-400 mt-2">
-                                基於 DEAP 框架的遺傳演算法策略優化引擎
-                            </p>
+                            </Bilingual>
+                            <div className="mt-2">
+                                <Bilingual
+                                    zh="基於 DEAP 框架的遺傳演算法策略優化引擎"
+                                    en="Genetic algorithm strategy optimization engine based on DEAP framework."
+                                    mode="stacked"
+                                    zhClassName="text-gray-300 text-sm"
+                                    enClassName="text-[10px] text-gray-500 italic mt-0.5"
+                                />
+                            </div>
                         </div>
                         <div className="flex space-x-4">
                             <StatusBadge label="AI Worker" status="online" />
@@ -36,22 +49,9 @@ export default function EvolutionPage() {
                         </div>
                     </header>
 
-                    {/* Placeholder Content */}
-                    <div className="glass p-12 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center space-y-6">
-                        <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center border border-white/10 relative">
-                            <FlaskConical size={48} className="text-fuchsia-400" />
-                            <div className="absolute inset-0 rounded-full border border-fuchsia-500/30 animate-ping"></div>
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-white mb-2">策略演化中...</h2>
-                            <p className="text-gray-400 max-w-md mx-auto">
-                                演化引擎正在後台運行基因演算法，尋找最佳交易策略參數組合。前台介面即將開放。
-                            </p>
-                        </div>
-                        <button className="px-6 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-fuchsia-600/20 flex items-center gap-2 cursor-pointer">
-                            <Play size={18} fill="currentColor" />
-                            啟動模擬演化
-                        </button>
+                    {/* Evolution Visualizer Section */}
+                    <div className="mt-8">
+                        <EvolutionVisualizer />
                     </div>
                 </main>
             </div>
@@ -64,7 +64,13 @@ function StatusBadge({ label, status }: { label: string, status: 'online' | 'off
     return (
         <div className="glass px-3 py-1.5 rounded-full flex items-center space-x-2 border border-white/10">
             <span className={`w-2 h-2 rounded-full ${status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
-            <span className="text-xs font-medium text-gray-300">{label}</span>
+            <Bilingual
+                zh={label}
+                en={status.toUpperCase()}
+                mode="inline"
+                zhClassName="text-xs font-medium text-gray-300"
+                enClassName="text-[8px] font-mono tracking-tighter opacity-40 ml-1"
+            />
         </div>
     );
 }

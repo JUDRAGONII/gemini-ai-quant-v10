@@ -17,8 +17,9 @@ import {
     SearchIcon,
     Flame,
     Zap,
-    Cpu
+    Cpu,
 } from "lucide-react";
+import { Bilingual } from "@/components/ui/Bilingual";
 import useSWR from "swr";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "@/components/layout/Sidebar";
@@ -29,14 +30,14 @@ import { MacroIndicatorCard } from "@/components/macro/MacroIndicatorCard";
 import InsightsPanel from "@/components/macro/InsightsPanel";
 
 // 指標配置映射
-const INDICATOR_CONFIG: Record<string, { name: string, color: string, category: string, unit: string }> = {
-    GDP: { name: "實質 GDP 年增率", color: "blue", category: "經濟成長", unit: "%" },
-    CPI: { name: "消費者物價指數", color: "rose", category: "通貨膨脹", unit: "Index" },
-    VIX: { name: "恐慌指數", color: "amber", category: "市場情緒", unit: "pts" },
-    GOLD: { name: "黃金現貨", color: "amber", category: "大宗商品", unit: "USD/oz" },
-    DXY: { name: "美元指數", color: "blue", category: "金融匯率", unit: "pts" },
-    UNRATE: { name: "失業率", color: "violet", category: "勞動市場", unit: "%" },
-    FEDFUNDS: { name: "基準利率", color: "emerald", category: "政策利率", unit: "%" },
+const INDICATOR_CONFIG: Record<string, { name: string, nameEn: string, color: string, category: string, unit: string }> = {
+    GDP: { name: "實質 GDP 年增率", nameEn: "Real GDP Growth", color: "blue", category: "經濟成長", unit: "%" },
+    CPI: { name: "消費者物價指數", nameEn: "CPI YoY", color: "rose", category: "通貨膨脹", unit: "Index" },
+    VIX: { name: "恐慌指數", nameEn: "VIX Volatility Index", color: "amber", category: "市場情緒", unit: "pts" },
+    GOLD: { name: "黃金現貨", nameEn: "Gold Price", color: "amber", category: "大宗商品", unit: "USD/oz" },
+    DXY: { name: "美元指數", nameEn: "US Dollar Index", color: "blue", category: "金融匯率", unit: "pts" },
+    UNRATE: { name: "失業率", nameEn: "Unemployment Rate", color: "violet", category: "勞動市場", unit: "%" },
+    FEDFUNDS: { name: "基準利率", nameEn: "Fed Funds Rate", color: "emerald", category: "政策利率", unit: "%" },
 };
 
 // 指標圖標
@@ -104,9 +105,13 @@ export default function MacroPage() {
                                     Global Macro Insights V3
                                 </span>
                             </div>
-                            <h1 className="text-4xl font-black bg-gradient-to-r from-white via-white to-slate-500 bg-clip-text text-transparent tracking-tighter">
-                                宏觀大數據導航
-                            </h1>
+                            <Bilingual
+                                zh="宏觀大數據導航"
+                                en="Macro Data Navigator"
+                                mode="stacked"
+                                zhClassName="text-4xl font-black bg-gradient-to-r from-white via-white to-slate-500 bg-clip-text text-transparent tracking-tighter"
+                                enClassName="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500/60 font-mono mt-1"
+                            />
                             <p className="text-slate-500 text-sm max-w-xl leading-relaxed">
                                 匯聚全球頂尖經濟引擎數據。透過
                                 <span className="text-blue-400/80 font-bold mx-1">Pearson Correlation</span>
@@ -120,8 +125,8 @@ export default function MacroPage() {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-2 rounded-xl text-xs font-bold transition-all duration-500 ${activeTab === tab
-                                            ? "bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-105 z-10"
-                                            : "text-slate-500 hover:text-slate-300"
+                                        ? "bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-105 z-10"
+                                        : "text-slate-500 hover:text-slate-300"
                                         }`}
                                 >
                                     {tab === "TW" ? "TAIWAN" : tab === "US" ? "USA" : "WORLD"}
@@ -202,7 +207,15 @@ export default function MacroPage() {
                                             <MacroIndicatorCard
                                                 key={indicator.indicator_code}
                                                 code={indicator.indicator_code}
-                                                name={indicator.name}
+                                                name={
+                                                    <Bilingual
+                                                        zh={indicator.name}
+                                                        en={indicator.nameEn}
+                                                        mode="stacked"
+                                                        zhClassName="text-xs font-bold text-slate-300 group-hover:text-white transition-colors"
+                                                        enClassName="text-[8px] opacity-40 group-hover:opacity-60 transition-opacity uppercase tracking-tighter"
+                                                    />
+                                                }
                                                 value={indicator.value}
                                                 unit={indicator.unit}
                                                 color={indicator.color}

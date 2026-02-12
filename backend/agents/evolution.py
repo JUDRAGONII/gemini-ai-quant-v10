@@ -59,30 +59,84 @@ class EvolutionEngine:
         return (fitness,)
 
     def run(self, backtest_engine: BacktestEngine):
-        """執行演化流程"""
+        """執行演化流程並持久化歷史紀錄"""
         logger.info(f"Starting Evolution: PopSize={self.population_size}, Gen={self.generations}")
         
         # 註冊評估函數
         self.toolbox.register("evaluate", self.evaluate_individual, backtest_engine=backtest_engine)
         
         pop = self.toolbox.population(n=self.population_size)
-        hof = tools.HallOfFame(1) # 儲存最強個體
+        hof = tools.HallOfFame(1)
         
         # 統計資訊
         stats = tools.Statistics(lambda ind: ind.fitness.values)
         stats.register("avg", np.mean)
         stats.register("max", np.max)
+        
+        from ..lib.supabase_client import get_supabase
+        supabase = get_supabase()
 
-        # 執行簡單 GA
-        pop, log = algorithms.eaSimple(
-            pop, self.toolbox, 
-            cxpb=0.5, mutpb=0.2, 
-            ngen=self.generations, 
-            stats=stats, halloffame=hof, 
-            verbose=True
-        )
+        # 初始評估
+        invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+        fitnesses = self.toolbox.map(self.toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+        
+        if hof is not None:
+            hof.update(pop)
+
+        logbook = tools.Logbook()
+        record = stats.compile(pop) if stats else {}
+        logbook.record(gen=0, **record)
+
+        # 演化主迴圈
+        for gen in range(1, self.generations + 1):
+            # 選取下一代
+            offspring = self.toolbox.select(pop, len(pop))
+            offspring = list(map(self.toolbox.clone, offspring))
+
+            # 交叉與突變
+            for child1, child2 in zip(offspring[::2], offspring[1::2]):
+                if random.random() < 0.5: # cxpb
+                    self.toolbox.mate(child1, child2)
+                    del child1.fitness.values
+                    del child2.fitness.values
+
+            for mutant in offspring:
+                if random.random() < 0.2: # mutpb
+                    self.toolbox.mutate(mutant)
+                    del mutant.fitness.values
+
+            # 評估失效個體
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = self.toolbox.map(self.toolbox.evaluate, invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+
+            # 更新族群
+            pop[:] = offspring
+            if hof is not None:
+                hof.update(pop)
+
+            # 紀錄統計
+            record = stats.compile(pop) if stats else {}
+            logbook.record(gen=gen, **record)
+            
+            # 持久化至資料庫
+            try:
+                best_ind = hof[0]
+                supabase.table("evolution_history").upsert({
+                    "generation": gen,
+                    "best_genome": [float(g) for g in best_ind],
+                    "avg_fitness": float(record["avg"]),
+                    "max_fitness": float(record["max"])
+                }).execute()
+                logger.info(f"Gen {gen}: Statistics persisted.")
+            except Exception as e:
+                logger.error(f"Failed to persist generation {gen}: {e}")
 
         best_ind = hof[0]
         logger.info(f"Evolution Completed. Best Fitness: {best_ind.fitness.values[0]}")
         
-        return best_ind, log
+        return best_ind, logbook
+```

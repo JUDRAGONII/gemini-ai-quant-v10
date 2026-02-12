@@ -4,6 +4,7 @@ import React from "react";
 import { DollarSign, TrendingUp, Layers, BarChart } from "lucide-react";
 import ChipChart from "@/components/ChipChart";
 import { MOCK_CHIPS_DATA } from "@/data/mockChips";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 /**
  * 籌碼分析 - 總覽頁
@@ -12,13 +13,15 @@ import { MOCK_CHIPS_DATA } from "@/data/mockChips";
 
 // 統計卡片組件
 function StatCard({
-    label,
+    labelZh,
+    labelEn,
     value,
     icon,
     color,
     isPrice = false,
 }: {
-    label: string;
+    labelZh: string;
+    labelEn: string;
     value: number;
     icon: React.ReactElement;
     color: string;
@@ -38,9 +41,13 @@ function StatCard({
     return (
         <div className="glass p-5 rounded-xl border border-white/5 flex items-center justify-between hover:bg-white/5 transition cursor-pointer">
             <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">
-                    {label}
-                </p>
+                <Bilingual
+                    zh={labelZh}
+                    en={labelEn}
+                    mode="stacked"
+                    zhClassName="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1"
+                    enClassName="text-[8px] opacity-40 uppercase tracking-widest font-mono"
+                />
                 <p className={`text-2xl font-bold font-mono ${valueColor}`}>
                     {displayValue}
                 </p>
@@ -73,25 +80,29 @@ export default function ChipsOverviewPage() {
             {/* 統計卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    label="外資買賣超 (Foreign)"
+                    labelZh="外資買賣超"
+                    labelEn="FOREIGN"
                     value={foreignChange}
                     icon={<DollarSign />}
                     color="text-cyan-400"
                 />
                 <StatCard
-                    label="投信買賣超 (Trust)"
+                    labelZh="投信買賣超"
+                    labelEn="TRUST"
                     value={trustChange}
                     icon={<TrendingUp />}
                     color="text-pink-400"
                 />
                 <StatCard
-                    label="融資餘額 (Margin)"
+                    labelZh="融資餘額"
+                    labelEn="MARGIN"
                     value={lastDay.margin_balance}
                     icon={<Layers />}
                     color="text-yellow-400"
                 />
                 <StatCard
-                    label="收盤價 (Close)"
+                    labelZh="收盤價"
+                    labelEn="CLOSE"
                     value={lastDay.price}
                     icon={<BarChart />}
                     color="text-emerald-400"
@@ -106,7 +117,13 @@ export default function ChipsOverviewPage() {
 
                 <h2 className="text-xl font-bold text-white mb-6 flex items-center space-x-2">
                     <BarChart className="text-pink-500" />
-                    <span>法人動向 vs 股價趨勢</span>
+                    <Bilingual
+                        zh="法人動向 vs 股價趨勢"
+                        en="Institutional Flow vs Price Trend"
+                        mode="inline"
+                        zhClassName="text-xl font-bold"
+                        enClassName="text-[10px] opacity-30 uppercase tracking-widest font-mono ml-2"
+                    />
                 </h2>
 
                 <ChipChart data={MOCK_CHIPS_DATA} />

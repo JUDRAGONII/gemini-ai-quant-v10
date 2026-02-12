@@ -22,13 +22,16 @@ import {
     Layers,
     Briefcase,
     Sparkles,
-    Search
+    Search,
+    BrainCircuit
 } from "lucide-react";
+import { Bilingual } from "../ui/Bilingual";
 
 interface NavLinkProps {
     href: string;
     icon: React.ReactNode;
-    label: string;
+    zh: string;
+    en: string;
     active?: boolean;
     onClick?: () => void;
 }
@@ -36,7 +39,7 @@ interface NavLinkProps {
 /**
  * 導航連結項目
  */
-function NavLink({ href, icon, label, active = false, onClick }: NavLinkProps) {
+function NavLink({ href, icon, zh, en, active = false, onClick }: NavLinkProps) {
     return (
         <Link
             href={href}
@@ -55,7 +58,13 @@ function NavLink({ href, icon, label, active = false, onClick }: NavLinkProps) {
                 size: 22,
                 className: "flex-shrink-0"
             })}
-            <span className="font-medium text-base">{label}</span>
+            <Bilingual
+                zh={zh}
+                en={en}
+                mode="stacked"
+                zhClassName="font-medium text-base"
+                enClassName="text-[9px] uppercase opacity-40 font-mono tracking-widest"
+            />
         </Link>
     );
 }
@@ -82,16 +91,17 @@ export function MobileNav() {
     const closeDrawer = () => setIsOpen(false);
 
     const navItems = [
-        { href: "/", icon: <Home />, label: "總覽 (Overview)" },
-        { href: "/chips", icon: <Layers />, label: "籌碼分析 (Chips)" },
-        { href: "/stocks", icon: <TrendingUp />, label: "市場動態 (Market)" },
-        { href: "/portfolios", icon: <Briefcase />, label: "投資組合 (Portfolios)" },
-        { href: "/macro", icon: <Activity />, label: "宏觀指標 (Macro)" },
-        { href: "/evolution", icon: <BarChart3 />, label: "演化分析 (Evolution)" },
-        { href: "/ai/strategy", icon: <Sparkles />, label: "智慧策略 (Strategy)" },
-        { href: "/ai/search", icon: <Search />, label: "AI 搜尋 (Semantic)" },
-        { href: "/ai/ranking", icon: <FileText />, label: "決策報告 (Reports)" },
-        { href: "/settings", icon: <Settings />, label: "系統設定 (Settings)" },
+        { href: "/", icon: <Home />, zh: "總覽", en: "Overview" },
+        { href: "/ai/insights", icon: <BrainCircuit />, zh: "智力洞察", en: "Insights" },
+        { href: "/chips", icon: <Layers />, zh: "籌碼分析", en: "Chips" },
+        { href: "/stocks", icon: <TrendingUp />, zh: "市場動態", en: "Market" },
+        { href: "/portfolios", icon: <Briefcase />, zh: "投資組合", en: "Portfolios" },
+        { href: "/macro", icon: <Activity />, zh: "宏觀指標", en: "Macro" },
+        { href: "/evolution", icon: <BarChart3 />, zh: "演化分析", en: "Evolution" },
+        { href: "/ai/strategy", icon: <Sparkles />, zh: "智慧策略", en: "Strategy" },
+        { href: "/ai/search", icon: <Search />, zh: "AI 搜尋", en: "Semantic" },
+        { href: "/ai/ranking", icon: <FileText />, zh: "決策報告", en: "Reports" },
+        { href: "/settings", icon: <Settings />, zh: "系統設定", en: "Settings" },
     ];
 
     return (
@@ -144,7 +154,7 @@ export function MobileNav() {
             >
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
-                    <span className="text-lg font-bold text-white">選單 (Menu)</span>
+                    <Bilingual zh="選單" en="Menu" mode="inline" zhClassName="text-lg font-bold text-white" enClassName="text-xs uppercase opacity-40 font-mono tracking-widest" />
                     <button
                         onClick={closeDrawer}
                         className="p-2 rounded-lg bg-white/5 hover:bg-white/10 
@@ -163,7 +173,8 @@ export function MobileNav() {
                             key={item.href}
                             href={item.href}
                             icon={item.icon}
-                            label={item.label}
+                            zh={item.zh}
+                            en={item.en}
                             active={pathname === item.href ||
                                 (item.href !== "/" && pathname.startsWith(item.href))}
                             onClick={closeDrawer}

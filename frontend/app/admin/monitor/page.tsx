@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import GlassCard from '@/components/ui/GlassCard';
 import ProBadge from '@/components/ui/ProBadge';
+import { Bilingual } from '@/components/ui/Bilingual';
 import {
     Database,
     TrendingUp,
@@ -229,11 +230,22 @@ export default function MonitorPage() {
                         <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <Database className="w-5 h-5 text-blue-400" />
                         </div>
-                        <ProBadge status="info">Developer Center</ProBadge>
+                        <Bilingual
+                            zh="開發者中心"
+                            en="Developer Center"
+                            mode="inline"
+                            zhClassName="text-[10px] font-bold"
+                            enClassName="text-[8px] opacity-50 uppercase tracking-widest"
+                            className="bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-blue-400"
+                        />
                     </div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                        數據監控中心
-                    </h1>
+                    <Bilingual
+                        zh="數據監控中心"
+                        en="Data Monitor Center"
+                        mode="stacked"
+                        zhClassName="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent"
+                        enClassName="text-xs font-medium text-slate-500 uppercase tracking-[0.3em] font-mono mt-1"
+                    />
                 </div>
                 <button
                     onClick={() => setRefreshKey(k => k + 1)}
@@ -269,8 +281,13 @@ export default function MonitorPage() {
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <div className={`text-xs font-semibold tracking-wide truncate ${isActive ? 'text-white' : 'text-slate-500'}`}>{cat.name}</div>
-                                        <div className={`text-[9px] font-bold tracking-widest opacity-40 uppercase ${isActive ? 'text-white' : 'text-slate-400'}`}>{cat.nameEn}</div>
+                                        <Bilingual
+                                            zh={cat.name}
+                                            en={cat.nameEn}
+                                            mode="stacked"
+                                            zhClassName={`text-xs font-semibold tracking-wide truncate ${isActive ? 'text-white' : 'text-slate-500'}`}
+                                            enClassName={`text-[9px] font-bold tracking-widest opacity-40 uppercase ${isActive ? 'text-white' : 'text-slate-400'}`}
+                                        />
                                     </div>
                                 </GlassCard>
                             </button>
@@ -282,21 +299,43 @@ export default function MonitorPage() {
             <div className="max-w-7xl mx-auto">
                 <GlassCard className="overflow-hidden border-white/5 bg-slate-900/30 backdrop-blur-xl shadow-inner-white">
                     <div className="p-5 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.01]">
-                        <div className="flex items-center gap-3 w-full sm:w-auto bg-slate-950/50 px-4 py-2 rounded-xl border border-white/5 focus-within:border-blue-500/50 transition-all">
-                            <Search className="w-4 h-4 text-slate-500" />
-                            <input
-                                type="text"
-                                placeholder="快速篩選 (當前頁)..."
-                                data-testid="filter-input"
-                                value={filterText}
-                                onChange={e => setFilterText(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"
+                        <div className="flex items-center gap-3">
+                            <Bilingual
+                                zh="數據檢索"
+                                en="Data Query"
+                                mode="stacked"
+                                zhClassName="text-sm font-bold text-white/80"
+                                enClassName="text-[8px] uppercase tracking-wider opacity-40 font-mono"
                             />
+                            <div className="flex items-center gap-3 w-full sm:w-auto bg-slate-950/50 px-4 py-2 rounded-xl border border-white/5 focus-within:border-blue-500/50 transition-all ml-2">
+                                <Search className="w-4 h-4 text-slate-500" />
+                                <input
+                                    type="text"
+                                    placeholder="快速篩選 (當前頁 / Quick Filter)..."
+                                    data-testid="filter-input"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"
+                                />
+                            </div>
                         </div>
-                        <div className="text-[10px] font-bold font-mono text-slate-500 tracking-wider flex items-center gap-2">
-                            <Activity className="w-3 h-3 text-blue-500/50" />
-                            PAGE {currentPage} / {totalPages || 1} <span className="opacity-20">|</span> TOTAL: {totalItems.toLocaleString()} ROWS
-                        </div>
+                        <Bilingual
+                            zh={`第 ${currentPage} / ${totalPages || 1} 頁`}
+                            en={`PAGE ${currentPage} / ${totalPages || 1}`}
+                            mode="stacked"
+                            zhClassName="text-[10px] font-bold text-slate-400"
+                            enClassName="text-[8px] font-mono tracking-widest text-slate-500"
+                            className="items-end"
+                        />
+                        <div className="h-4 w-px bg-white/5 mx-1" />
+                        <Bilingual
+                            zh={`總計 ${totalItems.toLocaleString()} 筆數據`}
+                            en={`TOTAL: ${totalItems.toLocaleString()} ROWS`}
+                            mode="stacked"
+                            zhClassName="text-[10px] font-bold text-slate-400"
+                            enClassName="text-[8px] font-mono tracking-widest text-slate-500"
+                            className="items-end"
+                        />
                     </div>
 
                     <div className="overflow-x-auto custom-scrollbar">
@@ -330,7 +369,15 @@ export default function MonitorPage() {
                                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                         className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
                                     >
-                                        <ChevronRight className="w-3.5 h-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" /> PREVIOUS
+                                        <ChevronRight className="w-3.5 h-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" />
+                                        <Bilingual
+                                            zh="上一頁"
+                                            en="PREVIOUS"
+                                            mode="stacked"
+                                            zhClassName="text-[10px] font-bold"
+                                            enClassName="text-[7px] tracking-widest"
+                                            className="items-start"
+                                        />
                                     </button>
 
                                     <div className="flex gap-1.5 overflow-x-auto pb-2 sm:pb-0">
@@ -356,7 +403,15 @@ export default function MonitorPage() {
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
                                     >
-                                        NEXT <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                        <Bilingual
+                                            zh="下一頁"
+                                            en="NEXT"
+                                            mode="stacked"
+                                            zhClassName="text-[10px] font-bold"
+                                            enClassName="text-[7px] tracking-widest"
+                                            className="items-end"
+                                        />
+                                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                                     </button>
                                 </div>
                             </>

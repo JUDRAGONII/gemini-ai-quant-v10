@@ -1,4 +1,59 @@
-# 變更紀錄 (CHANGELOG)
+# AI 投資分析儀 V10.0 變更紀錄 (CHANGELOG)
+
+**文件編號**：DOC-V10.0-CHANGELOG
+**版本**：2.0.0
+**最後更新**：2026-02-12
+**狀態**：正式 (Official)
+
+---
+
+## [V10.5.2] - 2026-02-12
+### Updated
+- **PCM 文件重構**:
+  - Phase Control Matrix 補全 P11/P12/P13 詳細內容 (v1.4.0)
+  - DEV_SUMMARY 全面擴展，新增 Phase 11-13 詳細摘要 (v2.0.0)
+  - CHANGELOG 日期順序重新整理，確保chronological order
+
+## [V10.5.1] - 2026-02-12
+### Added
+- **Phase 13.5 雙語 UI 轉型完工**:
+  - **雙語組件**: 建立 `Bilingual.tsx` 支持 `stacked`, `inline`, `suffix` 三種模式。
+  - **全域導航**: 重構 `Sidebar` 與 `MobileNav` 資料結構，完美隔離中英文字串。
+  - **Level 1 滲透**: 完成 Monitor (數據監控)、Strategy (智慧策略)、Insights (智力決策) 及 Chips/Macro/Evolution 等六大核心頁面的 UI 雙語化。
+  - **Level 2 滲透**: Radar/Debate/ProButton 動態組件雙語化。
+  - **視覺優化**: 微調英文樣式（小字、大寫、寬間距），符合 Rich Aesthetics 專業感。
+  - **測試交付**: `Bilingual.test.tsx`: 5/5 PASS，TypeScript: 0 errors
+
+## [V10.4.0] - 2026-02-12
+### Added
+- **法人級風險風控系統 (Phase 13.4)**:
+  - **後端**: 實作 `RiskService` 模擬 Greeks (Delta, Gamma, Theta, Vega) 與 Barra 風格因子分解。
+  - **API**: 新增 `GET /api/v1/professional/risk-matrix` 端點，支援 Redis 快取 (TTL 1hr)。
+  - **前端**: 開發 `GreeksMonitor` 熱圖組件與 `PsychologyHub` 行為偏誤分析。
+  - **頁面**: 建立 `/ai/risk` 風控終端主頁面，整合專業級風控指標。
+  - **壓力測試**: 支援歷史極端場景分析 (2008 金融海嘯、2020 COVID)。
+  - **驗證**: `verify_rtss$py$` 通過，TypeScript 0 errors。
+
+## [V10.3.4] - 2026-02-12
+### Added
+- **演化策略基因組視覺化 (Phase 13.3 完工)**:
+    - **GenomeMap**: 實作 26 階基因組映射雷達圖，將虛擬參數轉化為具備業務意義的視覺標籤。
+    - **FitnessHistory**: 實作演化適應度遷移趨勢圖，動態監控策略收斂進程。
+    - **持久化機制**: 建立 `evolution_history` 資料表 (float8[]) 與對應 RLS 門禁政策。
+    - **引擎重構**: 修改 `EvolutionEngine.run` 實現手動迭代持久化。
+    - **API 路由器**: 新增 `/api/v1/evolution/history` 與 `/api/v1/evolution/best` 端點。
+    - **數據鉤子**: 封裝 `useEvolution` SWR Hook，支援演化進程實時監控。
+- **介面整合**: 在 `/evolution` 頁面部署進階視覺化終端，取代佔位符。
+
+## [V10.3.3] - 2026-02-11
+### V10.5.1 (2026-02-11) - Phase 13.5 Level 1 雙語滲透完工
+- **雙語組件**: 建立 `Bilingual.tsx` 支持 `stacked`, `inline`, `suffix` 三種模式。
+- **全域導航**: 重構 `Sidebar` 與 `MobileNav` 資料結構，完美隔離中英文字串。
+- **Level 1 滲透**: 完成 Monitor (數據監控)、Strategy (智慧策略)、Insights (智力決策) 及 Chips/Macro/Evolution 等六大核心頁面的 UI 雙語化。
+- **視覺優化**: 微調英文樣式（小字、大寫、寬間距），符合 Rich Aesthetics 專業感。
+- **測試交付**:
+    - `Bilingual.test.tsx`: 5/5 PASS — 覆蓋三種模式與自訂樣式
+    - TypeScript: `tsc --noEmit` → 0 errors
 
 ## [V10.5.0] - 2026-02-10
 ### Added
