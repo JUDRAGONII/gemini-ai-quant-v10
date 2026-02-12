@@ -8,21 +8,19 @@
 ---
 
 ## [V10.5.2] - 2026-02-12
-### Updated
-- **PCM 文件重構**:
-  - Phase Control Matrix 補全 P11/P12/P13 詳細內容 (v1.4.0)
-  - DEV_SUMMARY 全面擴展，新增 Phase 11-13 詳細摘要 (v2.0.0)
-  - CHANGELOG 日期順序重新整理，確保chronological order
+### Added
+- **AI 監控中心 (Phase 13.6 完工)**:
+  - **聚合端點**: 實作 `/api/v1/monitor/dashboard` 整合全系統健康指標。
+  - **戰情室 UI**: 開發 `CommandCenterPage` 與 `SystemHealth`, `LiveAlert`, `RiskRadar`, `EvoTrend` 模組。
+  - **性能硬化**: 部署 O(1) 統計 RPC 並修正 Kong CORS 配置。
+  - **環境修復**: 遷移 `aioredis` -> `redis.asyncio`，補齊 `psutil` Mock。
+- **文件歸檔**: 補全 PCM (v1.4.0) 與 DEV_SUMMARY (v2.0.0) 的 P11-13 細節。
 
 ## [V10.5.1] - 2026-02-12
 ### Added
 - **Phase 13.5 雙語 UI 轉型完工**:
-  - **雙語組件**: 建立 `Bilingual.tsx` 支持 `stacked`, `inline`, `suffix` 三種模式。
-  - **全域導航**: 重構 `Sidebar` 與 `MobileNav` 資料結構，完美隔離中英文字串。
-  - **Level 1 滲透**: 完成 Monitor (數據監控)、Strategy (智慧策略)、Insights (智力決策) 及 Chips/Macro/Evolution 等六大核心頁面的 UI 雙語化。
-  - **Level 2 滲透**: Radar/Debate/ProButton 動態組件雙語化。
-  - **視覺優化**: 微調英文樣式（小字、大寫、寬間距），符合 Rich Aesthetics 專業感。
-  - **測試交付**: `Bilingual.test.tsx`: 5/5 PASS，TypeScript: 0 errors
+  - **全域滲透**: Monitor, Strategy, Insights 等核心頁面 100% 雙語化。
+  - **組件庫**: 建立 `Bilingual.tsx` 與雙語 `Sidebar` / `MobileNav`。
 
 ## [V10.4.0] - 2026-02-12
 ### Added
@@ -139,14 +137,16 @@
 - **宏觀數據品質修復**: 過濾 `macro_indicators` 表中的 IMF 未來預測數據，ETL 邏輯新增 `reference_date > today` 檢查。
 - **資料庫清理**: 一次性刪除 8 筆異常記錄 (2027-2030 年)。
 
-## [V10.3.11] - 2026-02-04
-
-### Fixed
-- **前端熱修復**: 解決 Docker 環境下找不到 `swr` 模組的問題，並通過刷新匿名磁碟卷解決快取衝突。
-- **環境同步**: 透過 `npm install swr` 與 `docker-compose up -d --renew-anon-volumes` 強制同步依賴。
-
+## [V10.3.11] - 2026-02-12
 ### Added
-- **Docker 優化**: 建立 `frontend/.dockerignore` 排除 `node_modules` 與 `.next` 目錄，大幅提升 Docker Build Context 傳輸效率。
+- **Phase 13.5 雙語 UI 轉型完工**:
+  - **雙語組件**: 建立 `Bilingual.tsx` 支持 `stacked`, `inline`, `suffix` 三種模式。
+  - **全域導航**: 重構 `Sidebar` 與 `MobileNav` 資料結構，完美隔離中英文字串。
+  - **Level 1 滲透**: 完成 Monitor (數據監控)、Strategy (智慧策略)、Insights (智力決策) 及 Chips/Macro/Evolution 等六大核心頁面的 UI 雙語化。
+- **視覺優化**: 微調英文樣式（小字、大寫、寬間距），符合 Rich Aesthetics 專業感。
+- **測試交付**:
+    - `Bilingual.test.tsx`: 5/5 PASS — 覆蓋三種模式與自訂樣式
+    - TypeScript: `tsc --noEmit` → 0 errors
 
 ## [V10.3.10] - 2026-02-04
 ### Added
@@ -519,7 +519,31 @@
 
 ### Fixed
 - **數據監控中心 (Monitor Center) 修正**:
-    - **行情數據顯示**: 修正 RLS 權限策略，解決 `daily_price` 在前端計數為 0 的問題。
+    - **行情數據顯示**: 註冊新路由後，應立即測試 `main.py` 全局路徑與 Router 局部路徑的拼接結果。
+
+---
+
+### 2026-02-12 Phase 13.6 網路層與數據庫超時教訓
+
+### 問題現象
+1. **CORS Error**: 前端請求 `supabase-rpc` 被 Kong 攔截。
+2. **504 Gateway Timeout**: `get_category_counts` RPC 響應超過 60 秒。
+3. **Module Not Found (Persistent)**: 已補齊組件但 Next.js HMR 持續報錯。
+
+### 底層根本原因
+1. **Kong 插件缺失**: `kong.yml` 預設未啟用 CORS 插件，拒絕非同源請求。
+2. **大表 Count(*) 慢查詢**: `daily_price` 已累積百萬級數據，同步執行專屬 Filter 的 `count(*)` 極慢。
+3. **HMR 快取僵死**: Next.js 在 Docker 卷掛載環境下，偶發性無法偵測到新產生的 `card.tsx` 檔案。
+
+### 解決方案
+1. **配置硬化**: 在 `kong.yml` 加入 `cors` 插件配置。
+2. **架構優化**: 建立 `category_stats` 統計快取表，將 RPC 改為 O(1) 讀取。
+3. **強制同步**: 手動刪除 `.next` 快取並執行 `docker-compose restart`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 涉及 Supabase RPC 統計時，若底層表數據超 50 萬筆，必須使用統計快取表。
+- [ ] 調整閘道後，優先驗證 OPTIONS 預檢請求的 Headers。
+- [ ] 新增原子組件若未能即時生效，應採取「清快取 + 重啟容器」的物理修復法。
     - **進度比例校準**: 將預估目標值由 10 萬調升至 500 萬筆，使進度條精確反映大規模回補狀態。
 - **導入路徑優化**: 修正 `backend` 模組在 Docker 容器內外的導入依賴問題。
 

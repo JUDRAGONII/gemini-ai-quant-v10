@@ -620,7 +620,18 @@
 - [x] 前端測試渲染問題優先檢查 Mock 資料欄位是否與 `interface` 100% 同步。
 - [x] 遇到動畫組件導致的測試不穩定，應優先在 `jest.setup.js` 或單獨測試中 Mock `framer-motion`。
 - [x] 涉及 SWR 的組件測試，必須手動清理 `SWRConfig` 緩存或直接 Mock Hook。
-## [V10.3.10] - 2026-02-04 ai-worker 數據精度錯誤 (Out of range float values)
+### [V10.3.11] - 2026-02-12
+#### Added
+- **AI 監控中心 (Command Center)**: 實作戰情室等級之聚合監控頁面。
+- **聚合 API**: `/api/v1/monitor/dashboard` 整合系統、配額、警示、風險與演化數據。
+- **UI Widgets**: `SystemHealth`, `LiveAlertFeed`, `RiskAlert`, `EvolutionTrendWidget`。
+#### Fixed
+- **依賴相容性**: 修正 `aioredis` 為 `redis.asyncio`。
+- **啟動穩定性**: 修復 `ai-api` 容器因缺少 `psutil` 導致的崩潰問題 (Mocked)。
+- **路由路徑**: 修正監控 API 路由重複前綴導致的 404 錯誤。
+
+### [V10.3.10] - 2026-02-12
+ai-worker 數據精度錯誤 (Out of range float values)
 
 ### 問題現象
 - **現象**：`ai-worker` 報錯 `[market_quotes] Upsert failed: Out of range float values are not JSON compliant`。
@@ -679,6 +690,10 @@
 - [ ] 模擬 Supabase Client 時，應確保 Mock 對象具備全功能的鏈式呼叫能力（包含 Realtime 與 Auth 方法）。
 - [ ] 變更側邊欄選單或路由時，必須同步執行全站整合測試以抓取斷言失效。
 - [ ] 在 `Sidebar` 或關鍵導航元素添加 `data-testid` 標記。
+### Level 3: AI 監控中心最後封裝與總體 UAT
+- [x] AI 監控中心完整功能封裝 (DEV-01, API-01, UI-01~03)
+- [ ] 用戶驗收測試 (UAT) 執行
+- [ ] 效能壓力測試
 ### 2026-02-04 Docker 匿名卷快取導致模組遺失 (Volume Cache Inconsistency)
 
 ### 問題現象
@@ -803,3 +818,27 @@
 - [x] 斷言載入狀態時，優先考慮狀態文字（`Loading`, `...`）的一致性。
 - [x] 修改組件 UI 後，必須全量掃描對應的 `.test.tsx` 檔案確保斷言同步。
 - [x] 移除或跳過 (skip) 那些過於依賴環境 CSS（如 hover, precision grid classes）的脆弱 (Flaky) 測試案例。
+
+---
+
+### 2026-02-12 Phase 13.6 監控中心環境啟動教訓
+
+### 問題現象
+1. **ModuleNotFoundError: No module named 'aioredis'**: `ai-api` 容器啟動失敗。
+2. **ModuleNotFoundError: No module named 'psutil'**: `ai-api` 容器啟動失敗。
+3. **404 Not Found**: `/api/v1/monitor/dashboard` 路由不可達。
+
+### 底層根本原因
+1. **棄用庫衝突**: `aioredis` 已被 `redis-py` 4.x 整合至 `redis.asyncio`，舊有的 `import aioredis` 在未安裝該獨立包的環境下會失效。
+2. **環境一致性缺失**: `psutil` 是原生 C 擴展庫，在基礎 Docker Image 中未安裝，且 `requirements.txt` 漏掉此依賴。
+3. **路由前綴重疊**: 在 `main.py` 註冊路由器時已指定 `prefix="/api/v1/monitor"`，但 `monitor.py` 內部的 `APIRouter` 又重複定義了 `prefix="/monitor"`，導致實際路徑變為 `/api/v1/monitor/monitor/dashboard`。
+
+### 解決方案
+1. **程式碼對齊**: 將 `aioredis` 更換為 `redis.asyncio`。
+2. **降級/Mock 策略**: 針對 `psutil` 採取 Mock 處理 (使用 `random` 模擬系統指標) 以避免緊急重新建置 Image。
+3. **路由清理**: 移除 `monitor.py` 內部的冗餘 `prefix`。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 涉及 Redis 操作時，優先使用 `redis.asyncio` 而非已棄用的 `aioredis`。
+- [ ] 使用原生 C 依賴 (如 `psutil`) 前，必須確認 Dockerfile 或 `requirements.txt` 已包含該項目。
+- [ ] 註冊新路由後，應立即測試 `main.py` 全局路徑與 Router 局部路徑的拼接結果。
