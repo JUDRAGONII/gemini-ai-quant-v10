@@ -842,3 +842,24 @@ ai-worker 數據精度錯誤 (Out of range float values)
 - [ ] 涉及 Redis 操作時，優先使用 `redis.asyncio` 而非已棄用的 `aioredis`。
 - [ ] 使用原生 C 依賴 (如 `psutil`) 前，必須確認 Dockerfile 或 `requirements.txt` 已包含該項目。
 - [ ] 註冊新路由後，應立即測試 `main.py` 全局路徑與 Router 局部路徑的拼接結果。
+
+---
+
+### 2026-02-13 Phase 13.7 雙語化測試與依賴教訓
+
+### 問題現象
+1. **ModuleNotFoundError**: `Cannot find module '@supabase/auth-helpers-nextjs'` 於 Jest 執行時報錯。
+2. **Found multiple elements**: `CommandCenter.test.tsx` 報錯 `Found multiple elements with the text: '2330'`。
+
+### 底層根本原因
+1. **依賴漂移 (Dependency Drift)**: 舊組件或測試案例參考了已在專案中移除或不推薦使用的 `@supabase/auth-helpers-nextjs`。專案已轉向使用自定義的 `@/lib/supabase` 客戶端。
+2. **文字匹配歧義**: 在整合介面中，同一個代號（如 `2330`）會同時呈現在「風險雷達」與「即時警示」中，導致 `getByText` 選擇器的唯一性約束失效。
+
+### 解決方案
+1. **依賴對齊**: 將所有導入更換為 `@/lib/supabase`，並同步更新測試 Mock。
+2. **鬆散匹配優化**: 將 `getByText` 更換為 `getAllByText` 並驗證陣列長度，或使用更精確的選擇器（如 `data-testid`）。
+
+### 預防重複犯錯的 Checkbox
+- [ ] 撰寫新組件前，優先檢查 `lib/` 下的標準 API 封裝實例。
+- [ ] 在 Dashboard 級別的整合測試中，對於高頻出現的數據（如股票代號），應預設其不唯一並使用 `getAllBy...`。
+- [ ] 定期執行 `npm run lint` 檢查是否存在已棄用的導入。
