@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Progress } from '@/components/ui';
+import { Bilingual } from '@/components/ui/Bilingual';
 import { Activity, Server, Database, Cpu } from 'lucide-react';
 import { SystemHealth, QuotaStatus } from '@/types/api';
 
@@ -20,9 +21,10 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
     return (
         <Card className="h-full bg-slate-900/50 border-slate-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    SYSTEM HEALTH
+                <CardTitle className="text-sm font-medium text-slate-400">
+                    <Bilingual zh="系統健康度" en="SYSTEM HEALTH" mode="inline">
+                        <Activity className="w-4 h-4 text-emerald-400" />
+                    </Bilingual>
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -30,7 +32,10 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <div className="flex justify-between text-xs text-slate-400">
-                            <span className="flex items-center gap-1"><Cpu className="w-3 h-3" /> CPU Load</span>
+                            <span className="flex items-center gap-1">
+                                <Cpu className="w-3 h-3" />
+                                <Bilingual zh="CPU 負載" en="CPU Load" mode="suffix" />
+                            </span>
                             <span className={system.cpu_usage > 80 ? 'text-red-400' : 'text-emerald-400'}>
                                 {system.cpu_usage}%
                             </span>
@@ -39,7 +44,10 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                     </div>
                     <div className="space-y-2">
                         <div className="flex justify-between text-xs text-slate-400">
-                            <span className="flex items-center gap-1"><Server className="w-3 h-3" /> RAM Usage</span>
+                            <span className="flex items-center gap-1">
+                                <Server className="w-3 h-3" />
+                                <Bilingual zh="RAM 佔用" en="RAM Usage" mode="suffix" />
+                            </span>
                             <span className={system.ram_usage > 80 ? 'text-red-400' : 'text-emerald-400'}>
                                 {system.ram_usage}%
                             </span>
@@ -54,9 +62,10 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                 {/* API Quota */}
                 <div className="space-y-4 pt-2 border-t border-slate-800">
                     <div className="flex items-center justify-between">
-                        <div className="text-xs font-medium text-slate-300 flex items-center gap-2">
-                            <Database className="w-3 h-3 text-blue-400" />
-                            API QUOTA
+                        <div className="text-xs font-medium text-slate-300">
+                            <Bilingual zh="API 配額" en="API QUOTA" mode="inline">
+                                <Database className="w-3 h-3 text-blue-400" />
+                            </Bilingual>
                         </div>
                         <div className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${quota.status === 'Healthy' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                             }`}>
@@ -99,7 +108,7 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                 {/* Uptime */}
                 <div className="pt-2 border-t border-slate-800 text-center">
                     <span className="text-[10px] text-slate-600 font-mono">
-                        UPTIME: {Math.floor(system.uptime_seconds / 3600)}h {Math.floor((system.uptime_seconds % 3600) / 60)}m
+                        <Bilingual zh="運行時間" en="UPTIME" mode="suffix" />: {Math.floor(system.uptime_seconds / 3600)}h {Math.floor((system.uptime_seconds % 3600) / 60)}m
                     </span>
                 </div>
             </CardContent>

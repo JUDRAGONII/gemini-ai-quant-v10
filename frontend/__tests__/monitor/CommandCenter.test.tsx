@@ -9,15 +9,15 @@ jest.mock('../../lib/monitorRepository');
 const mockGetDashboardSummary = MonitorRepository.getDashboardSummary as jest.MockedFunction<typeof MonitorRepository.getDashboardSummary>;
 
 // Mock Supabase
-jest.mock('@supabase/auth-helpers-nextjs', () => ({
-    createClientComponentClient: () => ({
+jest.mock('../../lib/supabase', () => ({
+    supabase: {
         channel: () => ({
             on: () => ({
                 subscribe: () => { },
             }),
         }),
         removeChannel: () => { },
-    }),
+    },
 }));
 
 // Mock ResizeObserver for Recharts
@@ -68,7 +68,7 @@ describe('CommandCenterPage', () => {
         jest.clearAllMocks();
     });
 
-    it('renders loading state initially', async () => {
+    it('TC-1001: renders loading state initially', async () => {
         // Delay resolution of the promise
         mockGetDashboardSummary.mockReturnValue(new Promise(() => { }));
 
@@ -76,7 +76,7 @@ describe('CommandCenterPage', () => {
         expect(screen.getByText(/INITIALIZING AI COMMAND CENTER/i)).toBeInTheDocument();
     });
 
-    it('renders dashboard widgets after data fetch', async () => {
+    it('TC-4001: renders dashboard widgets after data fetch with bilingual text', async () => {
         mockGetDashboardSummary.mockResolvedValue(mockData);
 
         await act(async () => {
@@ -88,17 +88,24 @@ describe('CommandCenterPage', () => {
             expect(screen.getByText(/AI 監控中心/i)).toBeInTheDocument();
         });
 
-        // Check Widgets
+        // Check Widgets (Bilingual Checks)
+        expect(screen.getByText(/系統健康度/i)).toBeInTheDocument();
         expect(screen.getByText(/SYSTEM HEALTH/i)).toBeInTheDocument();
+
+        expect(screen.getByText(/風險雷達/i)).toBeInTheDocument();
         expect(screen.getByText(/RISK RADAR/i)).toBeInTheDocument();
+
+        expect(screen.getByText(/演化趨勢/i)).toBeInTheDocument();
         expect(screen.getByText(/EVOLUTION TREND/i)).toBeInTheDocument();
+
+        expect(screen.getByText(/即時警示流/i)).toBeInTheDocument();
         expect(screen.getByText(/LIVE ALERTS/i)).toBeInTheDocument();
 
         // Check Data Content
         expect(screen.getByText('45%')).toBeInTheDocument(); // CPU
         expect(screen.getByText('3')).toBeInTheDocument(); // Risk Count
 
-        // Check Tickers
-        expect(screen.getByText('2330')).toBeInTheDocument();
+        // Check Tickers (Use getAllByText since it appears in both Risk and Alerts)
+        expect(screen.getAllByText('2330').length).toBeGreaterThanOrEqual(1);
     });
 });

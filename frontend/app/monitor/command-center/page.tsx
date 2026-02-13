@@ -65,17 +65,32 @@ export default function CommandCenterPage() {
             {/* Header */}
             <header className="flex justify-between items-center mb-6 pl-2 border-l-4 border-blue-500">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-                        AI 監控中心
+                    <Bilingual
+                        zh="AI 監控中心"
+                        en="AI Command Center"
+                        mode="inline"
+                        zhClassName="text-2xl font-bold tracking-tight text-white"
+                        enClassName="text-xs font-mono text-slate-500 ml-2"
+                    >
                         <span className="text-xs font-normal text-slate-500 font-mono px-2 py-0.5 border border-slate-800 rounded bg-slate-900">
-                            v10.3.6
+                            v10.3.14
                         </span>
-                    </h1>
-                    <div className="text-xs text-slate-400 font-mono mt-1 flex items-center gap-2">
+                    </Bilingual>
+                    <div className="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        SYSTEM OPERATIONAL
+                        <Bilingual
+                            zh="系統運行中"
+                            en="SYSTEM OPERATIONAL"
+                            mode="inline"
+                            enClassName="text-[9px] opacity-60"
+                        />
                         <span className="text-slate-600">|</span>
-                        LAST UPDATE: {lastUpdated.toLocaleTimeString()}
+                        <Bilingual
+                            zh="最後更新"
+                            en="LAST UPDATE"
+                            mode="inline"
+                            enClassName="text-[9px] opacity-60"
+                        />: {lastUpdated.toLocaleTimeString()}
                     </div>
                 </div>
                 <div className="flex items-center gap-4">

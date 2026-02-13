@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { ShieldAlert, AlertOctagon } from 'lucide-react';
+import { Bilingual } from '@/components/ui/Bilingual';
 import { RiskSummary } from '@/types/api';
 
 interface RiskAlertWidgetProps {
@@ -15,13 +16,12 @@ export const RiskAlertWidget: React.FC<RiskAlertWidgetProps> = ({ risk }) => {
 
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-slate-400 flex items-center justify-between">
-                    <span className="flex items-center gap-2">
+                    <Bilingual zh="風險雷達" en="RISK RADAR" mode="inline">
                         <ShieldAlert className="w-4 h-4 text-rose-400" />
-                        RISK RADAR
-                    </span>
+                    </Bilingual>
                     {risk.high_risk_count > 0 && (
                         <span className="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-mono animate-pulse">
-                            CRITICAL
+                            嚴重 (CRITICAL)
                         </span>
                     )}
                 </CardTitle>
@@ -31,8 +31,8 @@ export const RiskAlertWidget: React.FC<RiskAlertWidgetProps> = ({ risk }) => {
                     <span className="text-4xl font-bold text-white font-mono">
                         {risk.high_risk_count}
                     </span>
-                    <span className="text-xs text-slate-500 mb-1.5">
-                        High Risk Tickers
+                    <span className="text-xs text-slate-500 mb-1.5 ml-1">
+                        <Bilingual zh="高風險標的" en="High Risk Tickers" mode="stacked" />
                     </span>
                 </div>
 
@@ -40,7 +40,7 @@ export const RiskAlertWidget: React.FC<RiskAlertWidgetProps> = ({ risk }) => {
                     {risk.tickers.length === 0 ? (
                         <div className="text-emerald-400 text-xs flex items-center gap-1.5 p-2 bg-emerald-500/5 rounded border border-emerald-500/10">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            All Systems Normal
+                            <Bilingual zh="系統運作正常" en="All Systems Normal" mode="inline" />
                         </div>
                     ) : (
                         <div className="flex flex-wrap gap-2">

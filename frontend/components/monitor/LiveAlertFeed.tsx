@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, ScrollArea } from '@/components/ui';
+import { Bilingual } from '@/components/ui/Bilingual';
 import { Bell, CheckCircle, AlertTriangle, AlertOctagon } from 'lucide-react';
 import { MarketAlert } from '@/types/api';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'; // Or use your supabase client
+import { supabase } from '@/lib/supabase';
 
 interface LiveAlertFeedProps {
     initialAlerts: MarketAlert[];
@@ -10,7 +11,6 @@ interface LiveAlertFeedProps {
 
 export const LiveAlertFeed: React.FC<LiveAlertFeedProps> = ({ initialAlerts }) => {
     const [alerts, setAlerts] = useState<MarketAlert[]>(initialAlerts);
-    const supabase = createClientComponentClient();
 
     useEffect(() => {
         setAlerts(initialAlerts);
@@ -50,12 +50,11 @@ export const LiveAlertFeed: React.FC<LiveAlertFeedProps> = ({ initialAlerts }) =
         <Card className="h-full flex flex-col bg-slate-900/50 border-slate-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-slate-400 flex items-center justify-between">
-                    <span className="flex items-center gap-2">
+                    <Bilingual zh="即時警示流" en="LIVE ALERTS" mode="inline">
                         <Bell className="w-4 h-4 text-blue-400" />
-                        LIVE ALERTS
-                    </span>
+                    </Bilingual>
                     <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded font-mono animate-pulse">
-                        REALTIME
+                        實時 (REALTIME)
                     </span>
                 </CardTitle>
             </CardHeader>
@@ -63,8 +62,8 @@ export const LiveAlertFeed: React.FC<LiveAlertFeedProps> = ({ initialAlerts }) =
                 <ScrollArea className="h-[400px] px-4">
                     <div className="space-y-4 py-4">
                         {alerts.length === 0 ? (
-                            <div className="text-center text-slate-600 text-xs py-10">
-                                No active alerts
+                            <div className="text-center text-slate-600 text-xs py-10 italic">
+                                <Bilingual zh="目前無警示訊息" en="No active alerts" mode="stacked" />
                             </div>
                         ) : (
                             alerts.map((alert) => (

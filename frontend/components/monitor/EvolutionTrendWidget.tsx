@@ -2,6 +2,7 @@
 // [REBUILD_TRIGGER: 2026-02-12T14:28:00]
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Bilingual } from '@/components/ui/Bilingual';
 import { Network } from 'lucide-react';
 import {
     AreaChart,
@@ -28,8 +29,9 @@ export const EvolutionTrendWidget: React.FC<EvolutionTrendWidgetProps> = ({ data
         <Card className="h-full bg-slate-900/50 border-slate-800 backdrop-blur-sm flex flex-col">
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                    <Network className="w-4 h-4 text-purple-400" />
-                    EVOLUTION TREND
+                    <Bilingual zh="演化趨勢" en="EVOLUTION TREND" mode="inline">
+                        <Network className="w-4 h-4 text-purple-400" />
+                    </Bilingual>
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-[150px] p-0 relative">

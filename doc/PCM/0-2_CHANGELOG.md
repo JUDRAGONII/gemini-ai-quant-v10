@@ -7,6 +7,14 @@
 
 ---
 
+## [V10.5.3] - 2026-02-13
+### Added
+- **AI 監控中心全景雙語化 (Phase 13.7 完工)**:
+  - **雙語轉型**: 全面導入 `Bilingual` 組件支撐 `CommandCenterPage`, `SystemHealth`, `RiskRadar`, `EvoTrend`, `LiveAlert` 之繁體中文指標與英文副標標籤。
+  - **測試對齊**: 更新 `CommandCenter.test.tsx` 斷言邏輯，支援雙語文字匹配，並採用 `TC-XXXX` 規範編號。
+### Fixed
+- **Supabase 導入修正**: 將 `LiveAlertFeed` 的 `@supabase/auth-helpers-nextjs` 導入修正為專案標準的 `@/lib/supabase`，解決模組缺失導致的測試失敗。
+
 ## [V10.5.2] - 2026-02-12
 ### Added
 - **AI 監控中心 (Phase 13.6 完工)**:

@@ -139,4 +139,3 @@ class EvolutionEngine:
         logger.info(f"Evolution Completed. Best Fitness: {best_ind.fitness.values[0]}")
         
         return best_ind, logbook
-```
