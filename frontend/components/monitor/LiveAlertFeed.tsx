@@ -36,7 +36,7 @@ export const LiveAlertFeed: React.FC<LiveAlertFeedProps> = ({ initialAlerts }) =
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [supabase]);
+    }, []); // supabase is module-level constant, not a reactive dep
 
     const getIcon = (severity: string) => {
         switch (severity) {

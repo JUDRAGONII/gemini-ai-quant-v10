@@ -45,6 +45,7 @@ export default function CommandCenterPage() {
         if (!loading) { // Don't trigger if initial loading
             fetchData();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshTrigger]);
 
     if (loading && !data) {

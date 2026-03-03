@@ -69,7 +69,7 @@ export const PsychologyHub: React.FC<PsychologyHubProps> = ({ biases, isLoading 
                             <div className="flex gap-2.5">
                                 <Lightbulb className="text-amber-400 shrink-0 mt-0.5" size={14} />
                                 <p className="text-[11px] leading-relaxed text-slate-400 italic">
-                                    "{bias.suggestion}"
+                                    &quot;{bias.suggestion}&quot;
                                 </p>
                             </div>
                         </div>

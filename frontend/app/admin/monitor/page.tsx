@@ -146,41 +146,9 @@ export default function MonitorPage() {
                 });
             }
 
-            // Apply text filter if specific columns match (Basic implementation for common fields)
-            if (filterText) {
-                // Note: This is a simple OR search on common text columns. 
-                // For comprehensive search on all columns, backend support or RPC is better.
-                // Here we keep it simple as per KISS Plan A (Front-end heavy or simple backend params)
-                // However, Supabase OR syntax is tricky. 
-                // Let's implement Server-side pagination but Client-side filtering for the CURRENT PAGE?
-                // No, the user complained about filtering. 
-                // Plan A said: "前端分頁 + 前端增強過濾".
-                // "快速實作... 搜尋僅限已載入資料". 
-                // Wait, if I use .range(), I only load 50 items. Filtering only 50 items is what caused the complaint ("快速過濾功能缺失").
-                // If I want to filter properly with pagination, I need to apply filter to the Supabase query via .or().
-                // But `activeCategory` tables are different, columns are different.
-                // Let's stick to the Plan A description strictly: 
-                // "方案 A ... 缺點: 搜尋僅限已載入資料".
-                // WAIT. If the drawback is "Search only loaded data", and I switch to pagination (loading 50 at a time), then search becomes even worse (only searching 50 items).
-                // The user complained "快速過濾功能缺失" implies they WANT it to work better.
-                // Maybe I should fetch slightly more data or enable a simple Symbol search if possible.
-                // But adhereing to the plan: "Modify query to support pagination".
-                // Let's implement .range() for pagination.
-                // For filtering, if I strictly follow "Client side filtering", I can only filter what I fetch.
-                // But I can try to add a basic symbol/name filter to the Supabase query if those columns exist.
-                // Most tables have 'symbol' or 'code'.
-                if (filterText.length >= 2) {
-                    // Try to filter by symbol or name if applicable, otherwise client side filter on result
-                    // For generic implementation without crashing, we might skip complex OR queries here
-                    // unless we know the schema.
-                    // The user's complaint 1 was "function exists but weak".
-                    // Plan A says "Frontend enhanced filtering".
-                    // Let's stick to doing pagination first, and keep client filtering on the fetched page (or simple server filter).
-                    // Actually, if I fetch 50 items, client filtering is useless for finding item #1000.
-                    // The Plan A drawback "Search only loaded data" explicitly acknowledges this limitation.
-                    // The user approved Plan A. So I will implement Pagination + Client Filter.
-                }
-            }
+            // Apply text filter
+            // Note: Currently managed fully on client-side within the 50 items loaded,
+            // to avoid overly complex backend generic queries.
 
             // Pagination
             const from = (currentPage - 1) * ITEMS_PER_PAGE;
