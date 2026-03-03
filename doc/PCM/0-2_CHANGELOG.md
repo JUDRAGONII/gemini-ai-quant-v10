@@ -7,6 +7,17 @@
 
 ---
 
+## [V10.6.5] - 2026-03-03
+### Fixed
+- **CI Build Check 修復 (7 檔)**:
+  - `InfoCard.tsx`: `label` 型別放寬為 `React.ReactNode` 以支援 Bilingual 元件
+  - `MacroIndicatorCard.tsx`: 補上遺漏的 `import { Bilingual }`
+  - `macro/page.tsx`: 修正錯誤的 Bilingual render-prop 語法
+  - `admin/monitor/page.tsx`: 移除 `fetchData` 內 35 行無用 `filterText` 閒置邏輯
+  - `command-center/page.tsx`: 加 eslint-disable 繞過合理的 exhaustive-deps 警告
+  - `PsychologyHub.tsx`: 轉義 JSX 中的引號字元
+  - `LiveAlertFeed.tsx`: 移除 `supabase` 模組級常量的多餘 useEffect 依賴
+
 ## [V10.6.4] - 2026-03-03
 ### Added
 - **智慧排名全繁體中文化與真實數據對接 (Phase 14.11 完工)**:
