@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import PortfolioPerformanceChart from '@/components/Chart/PortfolioPerformanceChart';
 import { formatErrorMessage } from '@/lib/errorUtils';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface Holding {
     id: string;
@@ -217,7 +218,7 @@ export default function PortfolioDetailPage() {
     if (error || !portfolio) {
         return (
             <div className="p-8 text-center">
-                <h2 className="text-xl font-bold text-red-400">無法載入投資組合</h2>
+                <h2 className="text-xl font-bold text-red-400"><Bilingual zh="無法載入投資組合" en="Failed to load portfolio" /></h2>
                 <p className="text-gray-400 mt-2">{error || 'Portfolio not found'}</p>
             </div>
         );
@@ -237,7 +238,7 @@ export default function PortfolioDetailPage() {
                 <div>
                     <h1 className="text-2xl font-bold">{portfolio.name}</h1>
                     <p className="text-gray-400 text-sm">
-                        {portfolio.holdings.length} 檔持股 | 總成本 {totalCost.toLocaleString()} {portfolio.currency}
+                        {portfolio.holdings.length} <Bilingual zh="檔持股 | 總成本" en="Holdings | Total Cost" mode="inline" /> {totalCost.toLocaleString()} {portfolio.currency}
                     </p>
                 </div>
             </div>
@@ -259,25 +260,25 @@ export default function PortfolioDetailPage() {
                     className="grid grid-cols-1 md:grid-cols-4 gap-4"
                 >
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
-                        <p className="text-sm text-gray-400 mb-1">總價值</p>
+                        <p className="text-sm text-gray-400 mb-1"><Bilingual zh="總價值" en="Total Value" /></p>
                         <p className="text-2xl font-bold text-white font-mono">
                             {summary.total_value.toLocaleString("zh-TW")}
                         </p>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
-                        <p className="text-sm text-gray-400 mb-1">總成本</p>
+                        <p className="text-sm text-gray-400 mb-1"><Bilingual zh="總成本" en="Total Cost" /></p>
                         <p className="text-2xl font-bold text-gray-300 font-mono">
                             {summary.total_cost.toLocaleString("zh-TW")}
                         </p>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
-                        <p className="text-sm text-gray-400 mb-1">報酬金額</p>
+                        <p className="text-sm text-gray-400 mb-1"><Bilingual zh="報酬金額" en="Return" /></p>
                         <p className={`text-2xl font-bold font-mono ${summary.return_amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {summary.return_amount >= 0 ? '+' : ''}{summary.return_amount.toLocaleString("zh-TW")}
                         </p>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
-                        <p className="text-sm text-gray-400 mb-1">報酬率</p>
+                        <p className="text-sm text-gray-400 mb-1"><Bilingual zh="報酬率" en="Return Rate" /></p>
                         <p className={`text-2xl font-bold font-mono ${summary.return_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {summary.return_rate >= 0 ? '+' : ''}{summary.return_rate.toFixed(2)}%
                         </p>
@@ -302,7 +303,7 @@ export default function PortfolioDetailPage() {
                     />
                 ) : (
                     <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm">
-                        <p className="text-gray-400 text-center">暫無績效數據，請新增持股後再試</p>
+                        <p className="text-gray-400 text-center"><Bilingual zh="暫無績效數據，請新增持股後再試" en="No performance data available, please add holdings to try again" /></p>
                     </div>
                 )}
             </motion.div>
@@ -316,7 +317,7 @@ export default function PortfolioDetailPage() {
                 >
                     <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                         <PieChart className="w-5 h-5 text-emerald-400" />
-                        持股分布
+                        <Bilingual zh="持股分布" en="Holdings Distribution" />
                     </h2>
                     <div className="space-y-3">
                         {topHoldings.map((holding, index) => (
@@ -355,7 +356,7 @@ export default function PortfolioDetailPage() {
             >
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Plus className="w-5 h-5 text-indigo-400" />
-                    新增持股
+                    <Bilingual zh="新增持股" en="Add Holding" />
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -413,7 +414,7 @@ export default function PortfolioDetailPage() {
                         className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {addingStock ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-                        新增
+                        <Bilingual zh="新增" en="Add" />
                     </button>
                 </div>
             </motion.div>
@@ -427,28 +428,28 @@ export default function PortfolioDetailPage() {
                 <div className="p-6 border-b border-white/10">
                     <h2 className="text-lg font-semibold flex items-center gap-2">
                         <BarChart3 className="w-5 h-5 text-amber-400" />
-                        持股列表
+                        <Bilingual zh="持股列表" en="Holdings List" />
                     </h2>
                 </div>
 
                 {portfolio.holdings.length === 0 ? (
                     <div className="p-12 text-center">
                         <Wallet className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                        <p className="text-gray-400">尚未加入任何持股</p>
-                        <p className="text-sm text-gray-500 mt-1">在上方新增您的持股</p>
+                        <p className="text-gray-400"><Bilingual zh="尚未加入任何持股" en="No holdings added yet" /></p>
+                        <p className="text-sm text-gray-500 mt-1"><Bilingual zh="在上方新增您的持股" en="Add your holdings above" /></p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">股票</th>
-                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">買入日期</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">買入價格</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">股數</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">總成本</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">報酬率</th>
-                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">動作</th>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400"><Bilingual zh="股票" en="Stock" /></th>
+                                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400"><Bilingual zh="買入日期" en="Buy Date" /></th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400"><Bilingual zh="買入價格" en="Buy Price" /></th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400"><Bilingual zh="股數" en="Shares" /></th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400"><Bilingual zh="總成本" en="Total Cost" /></th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400"><Bilingual zh="報酬率" en="Return Rate" /></th>
+                                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400"><Bilingual zh="動作" en="Action" /></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">

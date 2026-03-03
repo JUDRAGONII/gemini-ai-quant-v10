@@ -8,6 +8,7 @@
 
 import React from "react";
 import { Loader2 } from "lucide-react";
+import { Bilingual } from "./Bilingual";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
@@ -26,6 +27,12 @@ interface ProButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     rightIcon?: React.ReactNode;
     /** 是否佔滿寬度 */
     fullWidth?: boolean;
+    /** 繁體中文文案 (優先於 children) */
+    zh?: string;
+    /** 英文文案 (優先於 children) */
+    en?: string;
+    /** 雙語模式 */
+    mode?: "stacked" | "inline" | "suffix";
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -69,6 +76,9 @@ export function ProButton({
     leftIcon,
     rightIcon,
     fullWidth = false,
+    zh,
+    en,
+    mode = "inline",
     disabled,
     className = "",
     ...props
@@ -95,7 +105,19 @@ export function ProButton({
             ) : (
                 leftIcon
             )}
-            <span>{children}</span>
+
+            {zh && en ? (
+                <Bilingual
+                    zh={zh}
+                    en={en}
+                    mode={mode}
+                    zhClassName="font-bold"
+                    enClassName={mode === "stacked" ? "text-[8px] opacity-60 font-mono tracking-tighter" : "text-xs opacity-50 font-mono ml-1"}
+                />
+            ) : (
+                <span>{children}</span>
+            )}
+
             {!isLoading && rightIcon}
         </button>
     );

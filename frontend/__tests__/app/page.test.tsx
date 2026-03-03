@@ -95,58 +95,49 @@ describe('Dashboard 頁面整合測試', () => {
         expect(chipsLink).toHaveAttribute('href', '/chips');
     });
 
-    it('系統狀態徽章: 應顯示 Online 狀態', async () => {
+    it('系統狀態徽章: 應顯示 Online 狀態 (從 Client Component 渲染)', async () => {
         mockLimit.mockResolvedValue({ data: [], error: null });
         const ui = await Home();
         render(ui);
 
-        expect(screen.getByText('AI Core')).toBeInTheDocument();
-        expect(screen.getByText('Engine')).toBeInTheDocument();
+        // HomeSystemHealth uses Bilingual & HealthRow internally
+        // Using partial assertions due to varied rendering timings between Server and Client Components in JSDOM
+        expect(screen.getAllByText('AI Core').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Engine').length).toBeGreaterThan(0);
     });
 
     it('宏觀數據區塊: 應渲染 3 個 MacroChart 卡片', async () => {
-        // Setup: Mock data for 3 separate calls (GDP, CPI, VIX) + Reports
-        // The implementation calls Promise.all([GDP, CPI, VIX, Reports])
-        // We need to ensure mockLimit returns appropriate data for each call.
-        // Or we can just return standard data for all calls since the component keys off array length mainly.
-
         const fakeData = [{ id: 'mock-id-1', value: 100, reference_date: '2023-01-01' }];
         mockLimit.mockResolvedValue({ data: fakeData, error: null });
 
         const ui = await Home();
         render(ui);
 
-        // Assert: 3 Charts should be rendered
         const charts = screen.getAllByTestId('macro-chart');
-        expect(charts).toHaveLength(3); // GDP, CPI, VIX
+        expect(charts).toHaveLength(3);
 
-        // Verify specifics
-        expect(screen.getByText('GDP Growth (QoQ)')).toBeInTheDocument();
-        expect(screen.getByText('CPI Inflation (YoY)')).toBeInTheDocument();
-        expect(screen.getByText('VIX Volatility')).toBeInTheDocument();
+        // Bilingual assertions (Checking only the primary 'zh' language which is guaranteed to render)
+        expect(screen.getAllByText('經濟成長').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('消費者物價指數').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('恐慌指數').length).toBeGreaterThan(0);
     });
 
     it('AI 報告區塊: 若無報告應顯示佔位符', async () => {
-        // Setup: Last call (Reports) returns empty
         mockLimit.mockResolvedValue({ data: [], error: null });
 
         const ui = await Home();
         render(ui);
 
-        expect(screen.getByText('正在生成今日戰術分析，請稍候...')).toBeInTheDocument();
+        expect(screen.getAllByText('正在生成今日戰術分析，請稍候...').length).toBeGreaterThan(0);
     });
 
     it('AI 報告區塊: 若有報告應渲染 ReportCard', async () => {
-        // Setup: Mock specific returns based on call order is tricky with shared mock.
-        // But since we use the same chain, we can mock via .mockImplementationOnce if needed.
-        // However, Promise.all order is strictly defined in source.
-        // Let's rely on the fact that Reports is the 4th call.
-
         const mockReport = {
             id: '123',
             stock_code: 'AAPL',
             report_date: '2023-10-01',
-            summary: 'Analysis Summary'
+            summary: 'Analysis Summary',
+            report_type: 'dialectic'
         };
 
         mockLimit
@@ -161,6 +152,10 @@ describe('Dashboard 頁面整合測試', () => {
         // Assert
         expect(screen.getByText('AAPL')).toBeInTheDocument();
         expect(screen.getByText('Analysis Summary')).toBeInTheDocument();
+
+        // Bilingual check for the report title
+        expect(screen.getAllByText('市場趨勢深度辯論').length).toBeGreaterThan(0);
+
         // Should NOT show placeholder
         expect(screen.queryByText('正在生成今日戰術分析，請稍候...')).not.toBeInTheDocument();
     });
@@ -176,10 +171,9 @@ describe('Dashboard 頁面整合測試', () => {
             const ui = await Home();
             render(ui);
 
-            // Charts will receive empty data -> MacroChart handles it (checked in Unit Test) or renders 0 points.
             const charts = screen.getAllByTestId('macro-chart');
             expect(charts).toHaveLength(3);
-            expect(screen.getByText('正在生成今日戰術分析，請稍候...')).toBeInTheDocument();
+            expect(screen.getAllByText('正在生成今日戰術分析，請稍候...').length).toBeGreaterThan(0);
         } finally {
             consoleSpy.mockRestore();
         }

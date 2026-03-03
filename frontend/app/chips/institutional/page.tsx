@@ -17,7 +17,8 @@ import {
     Cell,
 } from "recharts";
 import { Building2, TrendingUp, TrendingDown, Users } from "lucide-react";
-import { MOCK_INSTITUTIONAL_DATA, MOCK_OWNERSHIP_DATA } from "@/data/mockMargin";
+import { useChipsData } from "@/hooks/useChipsData";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 /**
  * 三大法人詳細頁
@@ -33,7 +34,7 @@ const StatCard = ({
     color,
     bgColor,
 }: {
-    label: string;
+    label: React.ReactNode;
     value: string | number;
     icon: React.ElementType;
     color: string;
@@ -53,7 +54,7 @@ const StatCard = ({
                 </div>
             </div>
             <div className={`text-2xl font-bold ${textColor}`}>
-                {sign}{typeof value === "number" ? value.toLocaleString() : value} 億
+                {sign}{typeof value === "number" ? (value / 100000000).toLocaleString(undefined, { maximumFractionDigits: 1 }) : value} 億
             </div>
         </div>
     );
@@ -106,45 +107,75 @@ const renderCustomLabel = ({
 };
 
 export default function InstitutionalPage() {
-    // 計算最新數據
-    const latestData = MOCK_INSTITUTIONAL_DATA[MOCK_INSTITUTIONAL_DATA.length - 1];
+    const { chipsData, isLoading, isError } = useChipsData("2330", 30); // 預設台積電
 
-    // 計算近7日累計
-    const last7Days = MOCK_INSTITUTIONAL_DATA.slice(-7);
+    if (isLoading) {
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
+
+    if (isError || chipsData.length === 0) {
+        return (
+            <div className="flex h-64 items-center justify-center text-red-400">
+                <Bilingual zh="無法載入資料" en="Failed to load data" />
+            </div>
+        );
+    }
+
+    // 計算最新數據
+    const latestData = chipsData[chipsData.length - 1];
+
+    // 計算近7日累計 (安全截取最多7日)
+    const last7Days = chipsData.slice(-7);
     const sum7 = {
         foreign: last7Days.reduce((acc, d) => acc + d.foreign, 0),
         trust: last7Days.reduce((acc, d) => acc + d.trust, 0),
         dealer: last7Days.reduce((acc, d) => acc + d.dealer, 0),
     };
 
+    // 計算持股比例概況 (用近 30 日累積變化示意)
+    const totalPos = Math.max(0, sum7.foreign) + Math.max(0, sum7.trust) + Math.max(0, sum7.dealer);
+    const mockOwnership = totalPos === 0 ? [
+        { name: "外資", value: 33, color: "#06B6D4" },
+        { name: "投信", value: 33, color: "#EC4899" },
+        { name: "自營商", value: 34, color: "#F59E0B" }
+    ] : [
+        { name: "外資", value: Math.max(0, sum7.foreign), color: "#06B6D4" },
+        { name: "投信", value: Math.max(0, sum7.trust), color: "#EC4899" },
+        { name: "自營商", value: Math.max(0, sum7.dealer), color: "#F59E0B" }
+    ];
+
     return (
         <div className="space-y-8">
             {/* 統計卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    label="外資買賣超 (今日)"
+                    label={<Bilingual zh="外資買賣超 (今日)" en="Foreign Net (Today)" mode="inline" />}
                     value={latestData.foreign}
                     icon={Building2}
                     color="text-cyan-400"
                     bgColor="bg-cyan-500/10"
                 />
                 <StatCard
-                    label="投信買賣超 (今日)"
+                    label={<Bilingual zh="投信買賣超 (今日)" en="Trust Net (Today)" mode="inline" />}
                     value={latestData.trust}
                     icon={TrendingUp}
                     color="text-pink-400"
                     bgColor="bg-pink-500/10"
                 />
                 <StatCard
-                    label="自營商買賣超 (今日)"
+                    label={<Bilingual zh="自營商買賣超 (今日)" en="Dealer Net (Today)" mode="inline" />}
                     value={latestData.dealer}
                     icon={TrendingDown}
                     color="text-amber-400"
                     bgColor="bg-amber-500/10"
                 />
                 <StatCard
-                    label="三大法人合計 (今日)"
-                    value={latestData.total}
+                    label={<Bilingual zh="三大法人合計 (今日)" en="Total Net (Today)" mode="inline" />}
+                    value={latestData.total_institutional}
                     icon={Users}
                     color="text-emerald-400"
                     bgColor="bg-emerald-500/10"
@@ -155,11 +186,11 @@ export default function InstitutionalPage() {
             <div className="glass p-6 rounded-xl border border-white/10">
                 <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
                     <Building2 size={20} className="text-cyan-400" />
-                    三大法人買賣超趨勢 (30 日)
+                    <Bilingual zh="三大法人買賣超趨勢 (30 日)" en="Institutional Flow Trend (30 Days)" mode="inline" />
                 </h3>
                 <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={MOCK_INSTITUTIONAL_DATA}>
+                        <ComposedChart data={chipsData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis
                                 dataKey="date"
@@ -169,19 +200,20 @@ export default function InstitutionalPage() {
                             <YAxis
                                 yAxisId="left"
                                 tick={{ fill: "#6B7280", fontSize: 11 }}
-                                label={{ value: "億元", angle: -90, position: "insideLeft", fill: "#6B7280" }}
+                                tickFormatter={(v) => `${(v / 100000000).toFixed(0)}億`}
                             />
                             <YAxis
                                 yAxisId="right"
                                 orientation="right"
                                 tick={{ fill: "#6B7280", fontSize: 11 }}
+                                domain={['auto', 'auto']}
                             />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend />
                             <Bar
                                 yAxisId="left"
                                 dataKey="foreign"
-                                name="外資"
+                                name="外資 (Foreign)"
                                 stackId="a"
                                 fill="#06B6D4"
                                 radius={[2, 2, 0, 0]}
@@ -189,7 +221,7 @@ export default function InstitutionalPage() {
                             <Bar
                                 yAxisId="left"
                                 dataKey="trust"
-                                name="投信"
+                                name="投信 (Trust)"
                                 stackId="a"
                                 fill="#EC4899"
                                 radius={[2, 2, 0, 0]}
@@ -197,7 +229,7 @@ export default function InstitutionalPage() {
                             <Bar
                                 yAxisId="left"
                                 dataKey="dealer"
-                                name="自營商"
+                                name="自營商 (Dealer)"
                                 stackId="a"
                                 fill="#F59E0B"
                                 radius={[2, 2, 0, 0]}
@@ -206,7 +238,7 @@ export default function InstitutionalPage() {
                                 yAxisId="right"
                                 type="monotone"
                                 dataKey="price"
-                                name="股價"
+                                name="股價 (Price)"
                                 stroke="#10B981"
                                 strokeWidth={2}
                                 dot={false}
@@ -221,25 +253,25 @@ export default function InstitutionalPage() {
                 {/* 近 7 日累計 */}
                 <div className="glass p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-semibold text-gray-200 mb-4">
-                        近 7 日累計買賣超
+                        <Bilingual zh="近 7 日累計買賣超" en="7-Day Cumulative Net Flow" mode="inline" />
                     </h3>
                     <div className="space-y-4">
                         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                            <span className="text-cyan-400 font-medium">外資</span>
+                            <span className="text-cyan-400 font-medium"><Bilingual zh="外資" en="Foreign" mode="inline" /></span>
                             <span className={`font-bold ${sum7.foreign >= 0 ? "text-red-400" : "text-green-400"}`}>
-                                {sum7.foreign >= 0 ? "+" : ""}{sum7.foreign.toLocaleString()} 億
+                                {sum7.foreign >= 0 ? "+" : ""}{sum7.foreign.toLocaleString()}
                             </span>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                            <span className="text-pink-400 font-medium">投信</span>
+                            <span className="text-pink-400 font-medium"><Bilingual zh="投信" en="Trust" mode="inline" /></span>
                             <span className={`font-bold ${sum7.trust >= 0 ? "text-red-400" : "text-green-400"}`}>
-                                {sum7.trust >= 0 ? "+" : ""}{sum7.trust.toLocaleString()} 億
+                                {sum7.trust >= 0 ? "+" : ""}{sum7.trust.toLocaleString()}
                             </span>
                         </div>
                         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                            <span className="text-amber-400 font-medium">自營商</span>
+                            <span className="text-amber-400 font-medium"><Bilingual zh="自營商" en="Dealer" mode="inline" /></span>
                             <span className={`font-bold ${sum7.dealer >= 0 ? "text-red-400" : "text-green-400"}`}>
-                                {sum7.dealer >= 0 ? "+" : ""}{sum7.dealer.toLocaleString()} 億
+                                {sum7.dealer >= 0 ? "+" : ""}{sum7.dealer.toLocaleString()}
                             </span>
                         </div>
                     </div>
@@ -249,13 +281,13 @@ export default function InstitutionalPage() {
                 <div className="glass p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
                         <Users size={20} className="text-emerald-400" />
-                        法人持股比例
+                        <Bilingual zh="法人動能佔比 (近7日)" en="Institutional Momentum Ratio (7D)" mode="inline" />
                     </h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={MOCK_OWNERSHIP_DATA}
+                                    data={mockOwnership}
                                     cx="50%"
                                     cy="50%"
                                     labelLine={false}
@@ -265,7 +297,7 @@ export default function InstitutionalPage() {
                                     dataKey="value"
                                     animationDuration={800}
                                 >
-                                    {MOCK_OWNERSHIP_DATA.map((entry, index) => (
+                                    {mockOwnership.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
@@ -279,13 +311,6 @@ export default function InstitutionalPage() {
                         </ResponsiveContainer>
                     </div>
                 </div>
-            </div>
-
-            {/* 數據說明 */}
-            <div className="glass p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                <p className="text-amber-400/80 text-sm text-center">
-                    ⚠️ 此頁面使用模擬數據展示，待 Crawler 擴充後接入真實三大法人買賣超資料。
-                </p>
             </div>
         </div>
     );

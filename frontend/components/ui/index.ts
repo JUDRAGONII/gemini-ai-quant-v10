@@ -9,3 +9,6 @@ export { ProButton } from './ProButton';
 export { ProInput } from './ProInput';
 export { ProToggle } from './ProToggle';
 export { ProBadge } from './ProBadge';
+export { Card, CardHeader, CardTitle, CardContent } from './card';
+export { ScrollArea } from './scroll-area';
+export { Progress } from './progress';

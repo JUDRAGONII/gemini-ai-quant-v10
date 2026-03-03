@@ -5,6 +5,7 @@ import { ShieldCheck, Target, Search, Loader2, BrainCircuit, TrendingUp, Info, Z
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIPredictionIndicator } from '@/components/AI/AIPredictionIndicator';
 import { StrategyMetricsGrid } from '@/components/AI/StrategyMetricsGrid';
+import { Bilingual } from '@/components/ui/Bilingual';
 import PortfolioPerformanceChart from '@/components/Chart/PortfolioPerformanceChart';
 import { useBacktest } from '@/hooks/useBacktest';
 import { useAIPrediction } from '@/hooks/useAIPrediction';
@@ -77,13 +78,23 @@ export default function StrategyHubPage() {
             <section className="flex flex-col gap-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
-                            智慧策略看板 <span className="text-sm font-medium text-emerald-500/60 uppercase tracking-widest ml-2">Strategy Hub</span>
-                        </h1>
-                        <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
+                        <Bilingual
+                            zh="智慧策略看板"
+                            en="Strategy Hub"
+                            mode="stacked"
+                            zhClassName="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase"
+                            enClassName="text-sm font-medium text-emerald-500/60 uppercase tracking-widest mt-1"
+                        />
+                        <div className="text-gray-400 mt-4 flex items-center text-sm font-medium">
                             <ShieldCheck className="w-4 h-4 mr-2 text-emerald-400" />
-                            基於 AI 預測核心與全向量化回測引擎的策略驗證中心
-                        </p>
+                            <Bilingual
+                                zh="基於 AI 預測核心與全向量化回測引擎的策略驗證中心"
+                                en="Strategy verification center based on AI prediction engine and vectorized backtesting system."
+                                mode="stacked"
+                                zhClassName="text-gray-300"
+                                enClassName="text-[10px] text-gray-500 italic mt-0.5"
+                            />
+                        </div>
                     </div>
 
                     <form onSubmit={handleSearch} className="relative w-full md:w-64 group">
@@ -119,8 +130,23 @@ export default function StrategyHubPage() {
                                 <BrainCircuit className="w-8 h-8 text-emerald-400" />
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1 block">當前分析標的 ACTIVE ASSET</span>
-                                <h2 className="text-3xl font-black text-white">{symbol} <span className="text-sm font-medium text-gray-500 ml-2">分析引擎已就緒</span></h2>
+                                <Bilingual
+                                    zh="當前分析標的"
+                                    en="ACTIVE ASSET"
+                                    mode="stacked"
+                                    zhClassName="text-[10px] font-bold text-emerald-500 uppercase tracking-wider"
+                                    enClassName="text-[8px] font-mono tracking-widest opacity-50"
+                                />
+                                <h2 className="text-3xl font-black text-white flex items-baseline gap-3">
+                                    {symbol}
+                                    <Bilingual
+                                        zh="分析引擎已就緒"
+                                        en="Engine Ready"
+                                        mode="inline"
+                                        zhClassName="text-sm font-medium text-gray-500"
+                                        enClassName="text-[10px] uppercase tracking-widest opacity-30 ml-1"
+                                    />
+                                </h2>
                             </div>
                         </div>
 
@@ -163,7 +189,13 @@ export default function StrategyHubPage() {
                                     ) : (
                                         <Zap className="w-5 h-5 fill-current" />
                                     )}
-                                    執行回測分析 RUN BACKTEST
+                                    <Bilingual
+                                        zh="執行回測分析"
+                                        en="RUN BACKTEST"
+                                        mode="stacked"
+                                        zhClassName="text-sm font-black"
+                                        enClassName="text-[8px] tracking-[0.2em]"
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -176,7 +208,13 @@ export default function StrategyHubPage() {
                 <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
                     <h2 className="text-xl font-bold flex items-center gap-3 text-white">
                         <TrendingUp className="w-5 h-5 text-emerald-400" />
-                        策略績效回測 <span className="text-xs font-medium text-gray-500 uppercase tracking-widest font-mono">Backtest Results</span>
+                        <Bilingual
+                            zh="策略績效回測"
+                            en="Backtest Results"
+                            mode="inline"
+                            zhClassName="text-xl font-bold"
+                            enClassName="text-[10px] font-mono tracking-widest opacity-40 uppercase ml-2"
+                        />
                     </h2>
                 </div>
                 <div className="p-8">
@@ -203,7 +241,13 @@ export default function StrategyHubPage() {
             <div className="space-y-4">
                 <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2 ml-4">
                     <Target className="w-4 h-4" />
-                    策略關鍵指標 KPI METRICS
+                    <Bilingual
+                        zh="策略關鍵指標"
+                        en="KPI METRICS"
+                        mode="inline"
+                        zhClassName="text-sm font-bold"
+                        enClassName="text-[10px] tracking-widest ml-1"
+                    />
                 </h3>
                 <AnimatePresence mode="wait">
                     {backtestData && (

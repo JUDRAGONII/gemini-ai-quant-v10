@@ -72,6 +72,11 @@ jest.mock("recharts", () => ({
     LinearGradient: ({ children }) => <linearGradient>{children}</linearGradient>,
     Stop: () => <stop />,
     ComposedChart: ({ children }) => <svg data-testid="composed-chart">{children}</svg>,
+    RadarChart: ({ children }) => <svg data-testid="radar-chart">{children}</svg>,
+    Radar: () => <path data-testid="radar" />,
+    PolarGrid: () => <g data-testid="polar-grid" />,
+    PolarAngleAxis: () => <g data-testid="polar-angle-axis" />,
+    PolarRadiusAxis: () => <g data-testid="polar-radius-axis" />,
 }));
 
 // 4. ResizeObserver Polyfill (Recharts 依賴)

@@ -102,31 +102,144 @@ class InsightsService:
 
     async def get_dialectic_consensus(self, ticker: str) -> Dict[str, Any]:
         """
-        模擬多代理人辯證引擎 (對標 5.5 節)。
-        現階段採用預定義邏輯與提示詞結構，為後續 LLM 接入預留。
+        多代理人辯證引擎 (Phase 13.2 升級版)。
+        串接 Gemini LLM + 18 因子數據，產出結構化多空辯論結果。
+        快取 TTL: 30 分鐘（5-Key 池充足，不需保守快取）。
         """
         cache_key = f"insights:dialectic:{ticker}"
         cached = self.redis.get(cache_key)
-        if cached: return json.loads(cached)
+        if cached:
+            result = json.loads(cached)
+            result["cached"] = True
+            return result
 
-        # 獲取基礎指標 (Mocking logic for now, connecting to real factor db)
-        factors = self.supabase.table("stock_factors").select("*").eq("stock_code", ticker).order("trade_date", desc=True).limit(1).execute()
-        
-        # 這裡未來會調用 Multi-Agent 辯論。目前先產出基於因子的結構化分析。
+        # 1. 取得 18 因子評分作為辯論 Context
+        scores_data = self._get_factor_context(ticker)
+
+        # 2. 取得近期市場數據 Context
+        market_ctx = self._get_market_summary(ticker)
+
+        # 3. 呼叫 Multi-Agent 辯論
+        from backend.lib.llm import get_llm
+        llm = get_llm()
+
+        context = f"股票代碼: {ticker}\n{scores_data}\n{market_ctx}"
+
+        # 多頭代理人
+        bull_prompt = f"""你是一位「多頭分析師」(Bull Analyst)。
+背景資料:
+{context}
+
+請用繁體中文，提出 3 個看好此標的的論點。
+格式要求 (純 JSON，不要 markdown):
+{{"opinion": "看多", "confidence": 0-100, "arguments": ["論點1", "論點2", "論點3"]}}"""
+
+        # 空頭代理人
+        bear_prompt = f"""你是一位「空頭分析師」(Bear Analyst)。
+背景資料:
+{context}
+
+請用繁體中文，提出 3 個看空此標的的風險。
+格式要求 (純 JSON，不要 markdown):
+{{"opinion": "看空", "confidence": 0-100, "arguments": ["風險1", "風險2", "風險3"]}}"""
+
+        # 合成代理人
+        bull_raw = llm.generate_content(bull_prompt)
+        bear_raw = llm.generate_content(bear_prompt)
+
+        synthesis_prompt = f"""你是一位「量化基金 CIO」(Chief Investment Officer)。
+多頭觀點: {bull_raw}
+空頭觀點: {bear_raw}
+18因子評分: {scores_data}
+
+請綜合多空雙方觀點，給出最終判決。
+格式要求 (純 JSON，不要 markdown):
+{{"verdict": "看多/看空/中性", "confidence": 0-100, "rationale": "一句話總結", "key_factor": "最關鍵因素"}}"""
+
+        synthesis_raw = llm.generate_content(synthesis_prompt)
+
+        # 4. 解析 LLM 輸出 (容錯處理)
+        bull_data = self._safe_parse_json(bull_raw, {"opinion": "看多", "confidence": 60, "arguments": ["數據解析中..."]})
+        bear_data = self._safe_parse_json(bear_raw, {"opinion": "看空", "confidence": 50, "arguments": ["數據解析中..."]})
+        synthesis_data = self._safe_parse_json(synthesis_raw, {"verdict": "中性", "confidence": 55, "rationale": "待分析", "key_factor": "N/A"})
+
         consensus = {
             "ticker": ticker,
-            "consensus": "謹慎看多" if len(factors.data) > 0 else "中性待觀察",
+            "consensus": synthesis_data.get("verdict", "中性"),
+            "conviction": synthesis_data.get("confidence", 50) / 100,
+            "rationale": synthesis_data.get("rationale", ""),
+            "key_factor": synthesis_data.get("key_factor", ""),
             "agents": [
-                {"name": "價值派 AI", "opinion": "看多", "reason": "估值低於歷史均值"},
-                {"name": "動能派 AI", "opinion": "中性", "reason": "近期量能萎縮"},
-                {"name": "宏觀派 AI", "opinion": "看多", "reason": "美聯儲降息預期支撐資產價格"}
+                {
+                    "name": "多頭分析師",
+                    "role": "bull",
+                    "opinion": bull_data.get("opinion", "看多"),
+                    "confidence": bull_data.get("confidence", 50),
+                    "arguments": bull_data.get("arguments", [])
+                },
+                {
+                    "name": "空頭分析師",
+                    "role": "bear",
+                    "opinion": bear_data.get("opinion", "看空"),
+                    "confidence": bear_data.get("confidence", 50),
+                    "arguments": bear_data.get("arguments", [])
+                }
             ],
-            "conviction": 0.72,
-            "updated_at": datetime.now().isoformat()
+            "updated_at": datetime.now().isoformat(),
+            "cached": False
         }
 
-        self.redis.setex(cache_key, 43200, json.dumps(consensus)) # 緩存 12 小時
+        # 30 分鐘快取
+        self.redis.setex(cache_key, 1800, json.dumps(consensus))
         return consensus
+
+    def _get_factor_context(self, ticker: str) -> str:
+        """取得 18 因子評分作為 LLM Context"""
+        try:
+            res = self.supabase.table("stock_scores_18") \
+                .select("composite_score, v_avg, g_avg, q_avg, m_avg") \
+                .eq("symbol", ticker) \
+                .order("trade_date", desc=True) \
+                .limit(1).execute()
+
+            if res.data:
+                d = res.data[0]
+                return (f"18因子評分: 綜合={d.get('composite_score', 'N/A')}, "
+                        f"價值={d.get('v_avg', 'N/A')}, 成長={d.get('g_avg', 'N/A')}, "
+                        f"品質={d.get('q_avg', 'N/A')}, 動能={d.get('m_avg', 'N/A')}")
+        except Exception:
+            pass
+        return "18因子評分: 尚無資料"
+
+    def _get_market_summary(self, ticker: str) -> str:
+        """取得近期市場摘要"""
+        try:
+            res = self.supabase.table("daily_price") \
+                .select("trade_date, close_price, volume") \
+                .eq("stock_code", ticker) \
+                .order("trade_date", desc=True) \
+                .limit(5).execute()
+
+            if res.data:
+                prices = [f"{r['trade_date']}: ${r['close_price']}" for r in res.data]
+                return f"近期收盤價: {', '.join(prices)}"
+        except Exception:
+            pass
+        return "近期市場數據: 尚無資料"
+
+    @staticmethod
+    def _safe_parse_json(raw: str, fallback: Dict) -> Dict:
+        """安全解析 LLM 回傳的 JSON（容錯處理）"""
+        if not raw:
+            return fallback
+        try:
+            # 嘗試清理 markdown code block
+            cleaned = raw.strip()
+            if cleaned.startswith("```"):
+                cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0]
+            return json.loads(cleaned)
+        except (json.JSONDecodeError, ValueError):
+            return fallback
 
     async def _fetch_asset_data(self, asset_key: str, days: int) -> List[Dict[str, Any]]:
         parts = asset_key.split(":")

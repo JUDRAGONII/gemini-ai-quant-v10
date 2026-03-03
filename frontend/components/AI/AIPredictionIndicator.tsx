@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BrainCircuit, TrendingUp, AlertCircle } from 'lucide-react';
+import { Bilingual } from '../ui/Bilingual';
 
 interface AIPredictionIndicatorProps {
     alpha: number;
@@ -38,9 +39,10 @@ export const AIPredictionIndicator: React.FC<AIPredictionIndicatorProps> = ({
             className={`relative bg-gradient-to-br from-white/10 to-transparent border border-white/20 rounded-3xl p-6 backdrop-blur-xl shadow-2xl ${glowClass}`}
         >
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 flex items-center">
-                    <BrainCircuit className="w-4 h-4 mr-2 text-indigo-400" /> AI 預測核心 (5D Alpha)
-                </h3>
+                <div className="text-sm font-bold uppercase tracking-wider text-gray-400 flex items-center">
+                    <BrainCircuit className="w-4 h-4 mr-2 text-indigo-400" />
+                    <Bilingual zh="AI 預測核心 (5D Alpha)" en="AI Prediction Core (5D Alpha)" mode="inline" />
+                </div>
                 {isPositive ? (
                     <TrendingUp className="w-5 h-5 text-emerald-400" />
                 ) : (
@@ -68,10 +70,14 @@ export const AIPredictionIndicator: React.FC<AIPredictionIndicatorProps> = ({
                         {alpha > 0 ? '+' : ''}{(alpha * 100).toFixed(2)}%
                     </span>
                     <div className="mt-2 text-xs text-gray-400 flex items-center justify-center gap-4">
-                        <span className="flex items-center">
+                        <div className="flex items-center">
                             <span className="w-2 h-2 rounded-full bg-indigo-400 mr-2" />
-                            標的前景: {isPositive ? '看多 (Bullish)' : '偏弱 (Bearish)'}
-                        </span>
+                            <Bilingual
+                                zh={`標的前景: ${isPositive ? '看多 (Bullish)' : '偏弱 (Bearish)'}`}
+                                en={`Outlook: ${isPositive ? 'Bullish' : 'Bearish'}`}
+                                mode="inline"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

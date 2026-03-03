@@ -13,10 +13,10 @@ import {
     ResponsiveContainer,
     ReferenceLine
 } from 'recharts';
-import { ChipData } from '@/data/mockChips';
+import { ChipDailyData } from '@/hooks/useChipsData';
 
 interface ChipChartProps {
-    data: ChipData[];
+    data: ChipDailyData[];
 }
 
 export default function ChipChart({ data }: ChipChartProps) {
@@ -65,8 +65,8 @@ export default function ChipChart({ data }: ChipChartProps) {
                     <ReferenceLine y={0} yAxisId="left" stroke="#6B7280" />
 
                     {/* Bars for Institutional Investors */}
-                    <Bar yAxisId="left" dataKey="foreign_investors" name="外資 (Foreign)" fill="url(#colorForeign)" barSize={20} />
-                    <Bar yAxisId="left" dataKey="investment_trust" name="投信 (Trust)" fill="url(#colorTrust)" barSize={20} />
+                    <Bar yAxisId="left" dataKey="foreign" name="外資 (Foreign)" fill="url(#colorForeign)" barSize={20} />
+                    <Bar yAxisId="left" dataKey="trust" name="投信 (Trust)" fill="url(#colorTrust)" barSize={20} />
 
                     {/* Line for Stock Price */}
                     <Line

@@ -6,6 +6,7 @@ import { Trash2, PieChart, Loader2, Wallet, Briefcase, PlusCircle } from 'lucide
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatErrorMessage } from '@/lib/errorUtils';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface Portfolio {
     id: string;
@@ -106,11 +107,11 @@ export default function PortfoliosPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter">
-                            我的投資組合 <span className="text-sm font-medium text-emerald-500/60 uppercase tracking-widest ml-2">My Portfolios</span>
+                            <Bilingual zh="我的投資組合" en="My Portfolios" mode="inline" /> <span className="text-sm font-medium text-emerald-500/60 uppercase tracking-widest ml-2">My Portfolios</span>
                         </h1>
                         <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
                             <Briefcase className="w-4 h-4 mr-2 text-emerald-400" />
-                            管理您的多維度投資組合，實時追蹤資產績效表現
+                            <Bilingual zh="管理您的多維度投資組合，實時追蹤資產績效表現" en="Manage your multi-dimensional portfolios and track performance in real-time" />
                         </p>
                     </div>
                 </div>
@@ -123,7 +124,7 @@ export default function PortfoliosPage() {
                     className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-sm flex items-center"
                 >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    錯誤: {error}
+                    <Bilingual zh="錯誤:" en="Error:" mode="inline" /> {error}
                 </motion.div>
             )}
 
@@ -137,8 +138,8 @@ export default function PortfoliosPage() {
 
                 <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
                     <div className="flex-1 w-full space-y-2">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 ml-1">
-                            名稱 <span className="text-[8px] opacity-40">Portfolio Name</span>
+                        <label className="text-xl font-bold flex items-center gap-2 text-white ml-1">
+                            <Bilingual zh="名稱" en="Portfolio Name" mode="inline" />
                         </label>
                         <input
                             type="text"
@@ -150,8 +151,8 @@ export default function PortfoliosPage() {
                     </div>
 
                     <div className="flex-1 w-full space-y-2">
-                        <label className="text-[10px] font-bold uppercase text-gray-400 ml-1">
-                            描述 <span className="text-[8px] opacity-40">Description</span>
+                        <label className="text-xl font-bold flex items-center gap-2 text-white ml-1">
+                            <Bilingual zh="描述" en="Description" mode="inline" />
                         </label>
                         <input
                             type="text"
@@ -170,7 +171,7 @@ export default function PortfoliosPage() {
                         {creating ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                             <>
                                 <PlusCircle className="w-4 h-4 mr-2" />
-                                建立 <span className="text-[10px] font-normal ml-1 opacity-70">CREATE</span>
+                                <Bilingual zh="建立" en="CREATE" mode="inline" /> <span className="text-[10px] font-normal ml-1 opacity-70">CREATE</span>
                             </>
                         )}
                     </button>
@@ -189,7 +190,7 @@ export default function PortfoliosPage() {
                         <div className="p-2 bg-amber-500/10 rounded-lg">
                             <PieChart className="w-5 h-5 text-amber-400" />
                         </div>
-                        持有列表 <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">Active Portfolios ({portfolios.length})</span>
+                        <Bilingual zh="持有列表" en="ACTIVE PORTFOLIOS" mode="inline" /> <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">({portfolios.length})</span>
                     </h2>
                 </div>
 
@@ -198,8 +199,8 @@ export default function PortfoliosPage() {
                         <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
                             <Wallet className="w-10 h-10 text-gray-600" />
                         </div>
-                        <p className="text-gray-400 text-xl font-bold">尚未建立任何投資組合</p>
-                        <p className="text-gray-600 mt-2">建立一個投資組合來開始您的 AI 自動化監控旅程</p>
+                        <p className="text-gray-400 text-xl font-bold"><Bilingual zh="尚未建立任何投資組合" en="No portfolios created yet" /></p>
+                        <p className="text-gray-600 mt-2"><Bilingual zh="建立一個投資組合來開始您的 AI 自動化監控旅程" en="Create a portfolio to start your AI-automated monitoring journey" /></p>
                     </div>
                 ) : (
                     <div className="divide-y divide-white/5">
@@ -230,7 +231,7 @@ export default function PortfoliosPage() {
                                             </div>
                                             <div className="flex items-center gap-4 text-xs font-medium">
                                                 <span className="text-gray-500">
-                                                    建立於 <span className="text-gray-400 font-mono">{new Date(portfolio.created_at).toLocaleDateString()}</span>
+                                                    <Bilingual zh="建立於" en="Created at" mode="inline" /> <span className="text-gray-400 font-mono">{new Date(portfolio.created_at).toLocaleDateString()}</span>
                                                 </span>
                                                 {portfolio.description && (
                                                     <span className="text-gray-600 italic">

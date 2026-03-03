@@ -15,9 +15,11 @@ import {
     Search,
     Sparkles,
     Briefcase,
-    BrainCircuit
+    BrainCircuit,
+    Shield
 } from "lucide-react";
 import { AlertBadge } from "../Market/AlertBadge";
+import { Bilingual } from "../ui/Bilingual";
 
 /**
  * 統一側邊欄組件 (Unified Sidebar)
@@ -25,16 +27,17 @@ import { AlertBadge } from "../Market/AlertBadge";
  */
 
 const MENU_ITEMS = [
-    { label: "首頁面板 (Overview)", href: "/", icon: Home, matchExact: true },
-    { label: "智力洞察 (Insights)", href: "/ai/insights", icon: BrainCircuit }, // 新增
-    { label: "籌碼分析 (Chips)", href: "/chips", icon: Layers },
-    { label: "市場動態 (Market)", href: "/stocks", icon: TrendingUp },
-    { label: "投資組合 (Portfolios)", href: "/portfolios", icon: Briefcase },
-    { label: "宏觀指標 (Macro)", href: "/macro", icon: Activity },
-    { label: "演化分析 (Evolution)", href: "/evolution", icon: BarChart3 },
-    { label: "智慧策略 (Strategy)", href: "/ai/strategy", icon: Sparkles },
-    { label: "AI 搜尋 (Search)", href: "/ai/search", icon: Search },
-    { label: "智慧排名 (Ranking)", href: "/ai/ranking", icon: FileText },
+    { zh: "首頁面板", en: "Overview", href: "/", icon: Home, matchExact: true },
+    { zh: "智力洞察", en: "Insights", href: "/ai/insights", icon: BrainCircuit },
+    { zh: "風險監控", en: "Risk Monitor", href: "/ai/risk", icon: Shield },
+    { zh: "籌碼分析", en: "Chips", href: "/chips", icon: Layers },
+    { zh: "市場動態", en: "Market", href: "/stocks", icon: TrendingUp },
+    { zh: "投資組合", en: "Portfolios", href: "/portfolios", icon: Briefcase },
+    { zh: "宏觀指標", en: "Macro", href: "/macro", icon: Activity },
+    { zh: "演化分析", en: "Evolution", href: "/evolution", icon: BarChart3 },
+    { zh: "智慧策略", en: "Strategy", href: "/ai/strategy", icon: Sparkles },
+    { zh: "AI 搜尋", en: "Search", href: "/ai/search", icon: Search },
+    { zh: "智慧排名", en: "Ranking", href: "/ai/ranking", icon: FileText },
 ];
 
 function NavItem({
@@ -64,14 +67,13 @@ function NavItem({
                     className={`transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"
                         }`}
                 />
-                <div className="flex flex-col">
-                    <span className="font-bold tracking-tight text-sm">
-                        {item.label.split(' (')[0]}
-                    </span>
-                    <span className="text-[9px] uppercase opacity-40 font-mono tracking-widest -mt-1">
-                        {item.label.split(' (')[1]?.replace(')', '')}
-                    </span>
-                </div>
+                <Bilingual
+                    zh={item.zh}
+                    en={item.en}
+                    mode="stacked"
+                    zhClassName="font-bold tracking-tight text-sm"
+                    enClassName="text-[9px] uppercase opacity-40 font-mono tracking-widest"
+                />
 
                 {/* Hover Glow Effect */}
                 {!isActive && (
@@ -123,7 +125,7 @@ export default function Sidebar() {
             {/* Bottom Section */}
             <div className="mt-auto pt-6 border-t border-white/5 space-y-2">
                 <NavItem
-                    item={{ label: "系統設定 (Settings)", href: "/settings", icon: Settings, matchExact: false }}
+                    item={{ zh: "系統設定", en: "Settings", href: "/settings", icon: Settings, matchExact: false }}
                     isActive={pathname.startsWith("/settings")}
                 />
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import GlassCard from '@/components/ui/GlassCard';
 import ProBadge from '@/components/ui/ProBadge';
+import { Bilingual } from '@/components/ui/Bilingual';
 import {
     Database,
     TrendingUp,
@@ -145,41 +146,9 @@ export default function MonitorPage() {
                 });
             }
 
-            // Apply text filter if specific columns match (Basic implementation for common fields)
-            if (filterText) {
-                // Note: This is a simple OR search on common text columns. 
-                // For comprehensive search on all columns, backend support or RPC is better.
-                // Here we keep it simple as per KISS Plan A (Front-end heavy or simple backend params)
-                // However, Supabase OR syntax is tricky. 
-                // Let's implement Server-side pagination but Client-side filtering for the CURRENT PAGE?
-                // No, the user complained about filtering. 
-                // Plan A said: "前端分頁 + 前端增強過濾".
-                // "快速實作... 搜尋僅限已載入資料". 
-                // Wait, if I use .range(), I only load 50 items. Filtering only 50 items is what caused the complaint ("快速過濾功能缺失").
-                // If I want to filter properly with pagination, I need to apply filter to the Supabase query via .or().
-                // But `activeCategory` tables are different, columns are different.
-                // Let's stick to the Plan A description strictly: 
-                // "方案 A ... 缺點: 搜尋僅限已載入資料".
-                // WAIT. If the drawback is "Search only loaded data", and I switch to pagination (loading 50 at a time), then search becomes even worse (only searching 50 items).
-                // The user complained "快速過濾功能缺失" implies they WANT it to work better.
-                // Maybe I should fetch slightly more data or enable a simple Symbol search if possible.
-                // But adhereing to the plan: "Modify query to support pagination".
-                // Let's implement .range() for pagination.
-                // For filtering, if I strictly follow "Client side filtering", I can only filter what I fetch.
-                // But I can try to add a basic symbol/name filter to the Supabase query if those columns exist.
-                // Most tables have 'symbol' or 'code'.
-                if (filterText.length >= 2) {
-                    // Try to filter by symbol or name if applicable, otherwise client side filter on result
-                    // For generic implementation without crashing, we might skip complex OR queries here
-                    // unless we know the schema.
-                    // The user's complaint 1 was "function exists but weak".
-                    // Plan A says "Frontend enhanced filtering".
-                    // Let's stick to doing pagination first, and keep client filtering on the fetched page (or simple server filter).
-                    // Actually, if I fetch 50 items, client filtering is useless for finding item #1000.
-                    // The Plan A drawback "Search only loaded data" explicitly acknowledges this limitation.
-                    // The user approved Plan A. So I will implement Pagination + Client Filter.
-                }
-            }
+            // Apply text filter
+            // Note: Currently managed fully on client-side within the 50 items loaded,
+            // to avoid overly complex backend generic queries.
 
             // Pagination
             const from = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -229,11 +198,22 @@ export default function MonitorPage() {
                         <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <Database className="w-5 h-5 text-blue-400" />
                         </div>
-                        <ProBadge status="info">Developer Center</ProBadge>
+                        <Bilingual
+                            zh="開發者中心"
+                            en="Developer Center"
+                            mode="inline"
+                            zhClassName="text-[10px] font-bold"
+                            enClassName="text-[8px] opacity-50 uppercase tracking-widest"
+                            className="bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-blue-400"
+                        />
                     </div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                        數據監控中心
-                    </h1>
+                    <Bilingual
+                        zh="數據監控中心"
+                        en="Data Monitor Center"
+                        mode="stacked"
+                        zhClassName="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent"
+                        enClassName="text-xs font-medium text-slate-500 uppercase tracking-[0.3em] font-mono mt-1"
+                    />
                 </div>
                 <button
                     onClick={() => setRefreshKey(k => k + 1)}
@@ -269,8 +249,13 @@ export default function MonitorPage() {
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <div className={`text-xs font-semibold tracking-wide truncate ${isActive ? 'text-white' : 'text-slate-500'}`}>{cat.name}</div>
-                                        <div className={`text-[9px] font-bold tracking-widest opacity-40 uppercase ${isActive ? 'text-white' : 'text-slate-400'}`}>{cat.nameEn}</div>
+                                        <Bilingual
+                                            zh={cat.name}
+                                            en={cat.nameEn}
+                                            mode="stacked"
+                                            zhClassName={`text-xs font-semibold tracking-wide truncate ${isActive ? 'text-white' : 'text-slate-500'}`}
+                                            enClassName={`text-[9px] font-bold tracking-widest opacity-40 uppercase ${isActive ? 'text-white' : 'text-slate-400'}`}
+                                        />
                                     </div>
                                 </GlassCard>
                             </button>
@@ -282,21 +267,43 @@ export default function MonitorPage() {
             <div className="max-w-7xl mx-auto">
                 <GlassCard className="overflow-hidden border-white/5 bg-slate-900/30 backdrop-blur-xl shadow-inner-white">
                     <div className="p-5 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.01]">
-                        <div className="flex items-center gap-3 w-full sm:w-auto bg-slate-950/50 px-4 py-2 rounded-xl border border-white/5 focus-within:border-blue-500/50 transition-all">
-                            <Search className="w-4 h-4 text-slate-500" />
-                            <input
-                                type="text"
-                                placeholder="快速篩選 (當前頁)..."
-                                data-testid="filter-input"
-                                value={filterText}
-                                onChange={e => setFilterText(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"
+                        <div className="flex items-center gap-3">
+                            <Bilingual
+                                zh="數據檢索"
+                                en="Data Query"
+                                mode="stacked"
+                                zhClassName="text-sm font-bold text-white/80"
+                                enClassName="text-[8px] uppercase tracking-wider opacity-40 font-mono"
                             />
+                            <div className="flex items-center gap-3 w-full sm:w-auto bg-slate-950/50 px-4 py-2 rounded-xl border border-white/5 focus-within:border-blue-500/50 transition-all ml-2">
+                                <Search className="w-4 h-4 text-slate-500" />
+                                <input
+                                    type="text"
+                                    placeholder="快速篩選 (當前頁 / Quick Filter)..."
+                                    data-testid="filter-input"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    className="bg-transparent border-none focus:ring-0 text-sm w-full sm:w-64 text-slate-300 placeholder:text-slate-600"
+                                />
+                            </div>
                         </div>
-                        <div className="text-[10px] font-bold font-mono text-slate-500 tracking-wider flex items-center gap-2">
-                            <Activity className="w-3 h-3 text-blue-500/50" />
-                            PAGE {currentPage} / {totalPages || 1} <span className="opacity-20">|</span> TOTAL: {totalItems.toLocaleString()} ROWS
-                        </div>
+                        <Bilingual
+                            zh={`第 ${currentPage} / ${totalPages || 1} 頁`}
+                            en={`PAGE ${currentPage} / ${totalPages || 1}`}
+                            mode="stacked"
+                            zhClassName="text-[10px] font-bold text-slate-400"
+                            enClassName="text-[8px] font-mono tracking-widest text-slate-500"
+                            className="items-end"
+                        />
+                        <div className="h-4 w-px bg-white/5 mx-1" />
+                        <Bilingual
+                            zh={`總計 ${totalItems.toLocaleString()} 筆數據`}
+                            en={`TOTAL: ${totalItems.toLocaleString()} ROWS`}
+                            mode="stacked"
+                            zhClassName="text-[10px] font-bold text-slate-400"
+                            enClassName="text-[8px] font-mono tracking-widest text-slate-500"
+                            className="items-end"
+                        />
                     </div>
 
                     <div className="overflow-x-auto custom-scrollbar">
@@ -330,7 +337,15 @@ export default function MonitorPage() {
                                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                         className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
                                     >
-                                        <ChevronRight className="w-3.5 h-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" /> PREVIOUS
+                                        <ChevronRight className="w-3.5 h-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" />
+                                        <Bilingual
+                                            zh="上一頁"
+                                            en="PREVIOUS"
+                                            mode="stacked"
+                                            zhClassName="text-[10px] font-bold"
+                                            enClassName="text-[7px] tracking-widest"
+                                            className="items-start"
+                                        />
                                     </button>
 
                                     <div className="flex gap-1.5 overflow-x-auto pb-2 sm:pb-0">
@@ -356,7 +371,15 @@ export default function MonitorPage() {
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         className="w-full sm:w-auto px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all text-[10px] font-bold tracking-widest group"
                                     >
-                                        NEXT <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                        <Bilingual
+                                            zh="下一頁"
+                                            en="NEXT"
+                                            mode="stacked"
+                                            zhClassName="text-[10px] font-bold"
+                                            enClassName="text-[7px] tracking-widest"
+                                            className="items-end"
+                                        />
+                                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                                     </button>
                                 </div>
                             </>

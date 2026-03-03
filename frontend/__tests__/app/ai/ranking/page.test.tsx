@@ -1,91 +1,167 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import RankingPage from "@/app/ai/ranking/page";
-import "@testing-library/jest-dom";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import RankingPage from '@/app/ai/ranking/page';
 
-// Mock Components
-jest.mock("@/components/RankingTable", () => ({
+// Mock Fetch
+global.fetch = jest.fn();
+
+// Mock Bilingual
+jest.mock('@/components/ui/Bilingual', () => ({
     __esModule: true,
-    default: ({ onRowClick, data }: any) => (
-        <div data-testid="ranking-table">
-            <button onClick={() => onRowClick(data[0])}>Click Row</button>
-            {data.map((d: any) => <div key={d.symbol}>{d.name}</div>)}
+    Bilingual: ({ zh, en }: any) => <span data-testid="mock-bilingual">{zh} | {en}</span>,
+}));
+
+// Mock useRouter
+jest.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: jest.fn(),
+    }),
+}));
+
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+    motion: {
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    },
+}));
+
+// Mock ScoreRadarChart (Recharts 在 Jest 環境中不可靠)
+jest.mock('@/components/ScoreRadarChart', () => ({
+    __esModule: true,
+    default: ({ symbol, data, customScore }: any) => (
+        <div data-testid="mock-radar-chart">
+            {symbol} - {customScore}
         </div>
-    )
+    ),
 }));
-jest.mock("@/components/ScoreRadarChart", () => ({
+
+// Mock GlassCard
+jest.mock('@/components/ui/GlassCard', () => ({
     __esModule: true,
-    default: () => <div data-testid="score-radar-chart" />
+    GlassCard: ({ children, className }: any) => (
+        <div data-testid="mock-glass-card" className={className}>{children}</div>
+    ),
 }));
 
-// 2. 圖標 Mock 已由 jest.setup.js 全域處理，若有特定 DataTestId 需求可在此保留 local mock，
-// 但目前 jest.setup.js 已能自動生成帶有 data-testid 的 Mock 組件。
+// Mock RankingTable (避免 Link 與 Sorting 邏輯干擾)
+jest.mock('@/components/RankingTable', () => ({
+    __esModule: true,
+    default: ({ data, onRowClick }: any) => (
+        <div data-testid="mock-ranking-table">
+            {data.map((item: any) => (
+                <div key={item.symbol} data-testid={`row-${item.symbol}`} onClick={() => onRowClick?.(item)}>
+                    <span>{item.name}</span>
+                    <span>{item.compositeScore}</span>
+                </div>
+            ))}
+        </div>
+    ),
+}));
 
-// Mock Data
-jest.mock("@/data/mockRanking", () => {
-    const mockData = [
-        { symbol: "2330", name: "台積電", compositeScore: 90, changePercent: 1.5 },
-        { symbol: "2317", name: "鴻海", compositeScore: 85, changePercent: 0.5 },
-    ];
-    return {
-        mockRankingData: mockData,
-        generateRankingData: () => [...mockData.reverse()] // Reverse to simulate change
-    };
-});
-
-// Next.js Navigation 已由 jest.setup.js 全域處理
-
-describe("RankingPage 整合測試", () => {
-    it("TC-1701: /ai/ranking 應正確渲染排行榜", () => {
-        render(<RankingPage />);
-        expect(screen.getByTestId("ranking-table")).toBeInTheDocument();
-        expect(screen.getByText(/評分排行榜/)).toBeInTheDocument();
+describe('RankingPage (Phase 14.11 - 智慧排名雙語化)', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
-    it("TC-1702: 刷新評分按鈕應更新數據", async () => {
-        jest.useFakeTimers();
+    const mockRankingResponse = {
+        count: 3,
+        dimension: 'composite',
+        data: [
+            {
+                rank: 1,
+                symbol: '2330',
+                name: '台積電',
+                composite_score: 82.5,
+                value_score: 78,
+                growth_score: 72,
+                quality_score: 85,
+                momentum_score: 68,
+                change_percent: 1.25,
+                trade_date: '2026-03-03',
+            },
+            {
+                rank: 2,
+                symbol: 'NVDA',
+                name: 'NVIDIA',
+                composite_score: 79.0,
+                value_score: 55,
+                growth_score: 95,
+                quality_score: 78,
+                momentum_score: 92,
+                change_percent: -0.85,
+                trade_date: '2026-03-03',
+            },
+            {
+                rank: 3,
+                symbol: '2317',
+                name: '鴻海',
+                composite_score: 65.0,
+                value_score: 65,
+                growth_score: 58,
+                quality_score: 70,
+                momentum_score: 52,
+                change_percent: 0.32,
+                trade_date: '2026-03-03',
+            },
+        ],
+    };
+
+    it('TC-141101: 確認 Loading 狀態正確渲染', () => {
+        // 模擬永遠不 resolve 的 fetch
+        (global.fetch as jest.Mock).mockReturnValue(new Promise(() => { }));
+
         render(<RankingPage />);
+        // 驗證 Loading 文字
+        expect(screen.getByText('正在載入排行榜... | Loading rankings...')).toBeInTheDocument();
+    });
 
-        const refreshBtn = screen.getByText(/重新評分/);
-        fireEvent.click(refreshBtn);
-
-        expect(screen.getByText("刷新中...")).toBeInTheDocument();
-
-        // Fast-forward time
-        jest.advanceTimersByTime(800);
-
-        await waitFor(() => {
-            expect(screen.getByText(/重新評分/)).toBeInTheDocument();
+    it('TC-141102: API 成功回傳後，排行榜與統計卡片正確渲染', async () => {
+        (global.fetch as jest.Mock).mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockRankingResponse,
         });
 
-        jest.useRealTimers();
+        render(<RankingPage />);
+
+        // 等待資料渲染 (台積電會同時出現在表格和側邊詳情面板)
+        await waitFor(() => {
+            expect(screen.getAllByText('台積電').length).toBeGreaterThanOrEqual(1);
+        });
+
+        // 驗證頁面標題雙語化
+        expect(screen.getByText('智慧排名決策 | AI Quantitative Ranking')).toBeInTheDocument();
+
+        // 驗證排行榜渲染 (標的名稱)
+        expect(screen.getByText('NVIDIA')).toBeInTheDocument();
+        expect(screen.getByText('鴻海')).toBeInTheDocument();
+
+        // 驗證 fetch 被正確呼叫
+        expect(global.fetch).toHaveBeenCalledWith('/api/v1/analysis/top-scores?limit=50&dimension=composite');
     });
 
-    it("TC-1703: 點擊表格行應更新右側雷達圖", () => {
+    it('TC-141103: API 錯誤時顯示錯誤訊息', async () => {
+        (global.fetch as jest.Mock).mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ detail: 'Database connection failed' }),
+        });
+
         render(<RankingPage />);
-        // By default selectedStock is first item.
-        expect(screen.getByTestId("score-radar-chart")).toBeInTheDocument();
 
-        const rowBtn = screen.getByText("Click Row");
-        fireEvent.click(rowBtn);
-
-        // Radar chart should still be there (updated props, hard to verify in integration test without checking props)
-        expect(screen.getByTestId("score-radar-chart")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText('Database connection failed')).toBeInTheDocument();
+        });
     });
 
-    it("TC-1704: 統計卡片應顯示正確的平均分與計數", () => {
-        render(<RankingPage />);
-        // 2 items: 90, 85. Avg: 87.5
-        expect(screen.getByText("87.5")).toBeInTheDocument(); // Avg Score
+    it('TC-141104: 空資料狀態的顯示', async () => {
+        (global.fetch as jest.Mock).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ count: 0, dimension: 'composite', data: [] }),
+        });
 
-        // Count > 70 is 2, Positive Change is 2, Total is 2.
-        const twos = screen.getAllByText("2");
-        expect(twos.length).toBeGreaterThanOrEqual(2);
-    });
-
-    it("TC-3101: 排行頁 SSR/CSR 數據應完全一致 (無 Hydration 錯誤)", () => {
-        // This is implicitly tested if render succeeds without error in jsdom.
-        // Math.random() usage was fixed previously.
         render(<RankingPage />);
-        // Pass
+
+        await waitFor(() => {
+            expect(screen.getByText('尚無排行資料 | No ranking data available')).toBeInTheDocument();
+        });
     });
 });

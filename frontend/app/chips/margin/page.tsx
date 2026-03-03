@@ -16,7 +16,8 @@ import {
     Line,
 } from "recharts";
 import { Wallet, TrendingUp, TrendingDown, Percent } from "lucide-react";
-import { MOCK_MARGIN_DATA } from "@/data/mockMargin";
+import { useChipsData } from "@/hooks/useChipsData";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 /**
  * 融資融券詳細頁
@@ -33,7 +34,7 @@ const StatCard = ({
     icon: Icon,
     color,
 }: {
-    label: string;
+    label: React.ReactNode;
     value: string | number;
     change?: number;
     icon: React.ElementType;
@@ -79,36 +80,53 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function MarginPage() {
-    // 取得最新與前一日數據
-    const latestData = MOCK_MARGIN_DATA[MOCK_MARGIN_DATA.length - 1];
-    const prevData = MOCK_MARGIN_DATA[MOCK_MARGIN_DATA.length - 2];
+    const { chipsData, isLoading, isError } = useChipsData("2330", 30); // 預設台積電
+
+    if (isLoading) {
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500"></div>
+            </div>
+        );
+    }
+
+    if (isError || chipsData.length === 0) {
+        return (
+            <div className="flex h-64 items-center justify-center text-red-400">
+                <Bilingual zh="無法載入資料" en="Failed to load data" />
+            </div>
+        );
+    }
+
+    // 取得最新數據
+    const latestData = chipsData[chipsData.length - 1];
 
     return (
         <div className="space-y-8">
             {/* 統計卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    label="融資餘額"
-                    value={`${(latestData.marginBalance / 1000).toFixed(1)} 億`}
-                    change={latestData.marginChange}
+                    label={<Bilingual zh="融資餘額" en="Margin Balance" mode="inline" />}
+                    value={`${(latestData.margin_balance / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })} 億`}
+                    change={latestData.margin_change}
                     icon={Wallet}
                     color="text-cyan-400"
                 />
                 <StatCard
-                    label="融券餘額"
-                    value={`${latestData.shortBalance.toLocaleString()} 張`}
-                    change={latestData.shortChange}
+                    label={<Bilingual zh="融券餘額" en="Short Balance" mode="inline" />}
+                    value={`${latestData.short_balance.toLocaleString()} 張`}
+                    change={latestData.short_change}
                     icon={TrendingDown}
                     color="text-pink-400"
                 />
                 <StatCard
-                    label="券資比"
-                    value={`${latestData.shortRatio}%`}
+                    label={<Bilingual zh="券資比" en="Short Ratio" mode="inline" />}
+                    value={`${latestData.short_ratio.toFixed(2)}%`}
                     icon={Percent}
                     color="text-amber-400"
                 />
                 <StatCard
-                    label="收盤價"
+                    label={<Bilingual zh="收盤價" en="Close Price" mode="inline" />}
                     value={`${latestData.price}`}
                     icon={TrendingUp}
                     color="text-emerald-400"
@@ -119,11 +137,11 @@ export default function MarginPage() {
             <div className="glass p-6 rounded-xl border border-white/10">
                 <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
                     <Wallet size={20} className="text-cyan-400" />
-                    融資餘額走勢 (30 日)
+                    <Bilingual zh="融資餘額走勢 (30 日)" en="Margin Balance Trend (30 Days)" mode="inline" />
                 </h3>
                 <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={MOCK_MARGIN_DATA}>
+                        <ComposedChart data={chipsData}>
                             <defs>
                                 <linearGradient id="marginGradient" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#06B6D4" stopOpacity={0.3} />
@@ -132,15 +150,15 @@ export default function MarginPage() {
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                             <XAxis dataKey="date" tick={{ fill: "#6B7280", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
-                            <YAxis yAxisId="left" tick={{ fill: "#6B7280", fontSize: 11 }} domain={["auto", "auto"]} />
-                            <YAxis yAxisId="right" orientation="right" tick={{ fill: "#6B7280", fontSize: 11 }} />
+                            <YAxis yAxisId="left" tick={{ fill: "#6B7280", fontSize: 11 }} domain={["auto", "auto"]} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                            <YAxis yAxisId="right" orientation="right" tick={{ fill: "#6B7280", fontSize: 11 }} domain={['auto', 'auto']} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend />
                             <Area
                                 yAxisId="left"
                                 type="monotone"
-                                dataKey="marginBalance"
-                                name="融資餘額"
+                                dataKey="margin_balance"
+                                name="融資餘額 (Margin)"
                                 stroke="#06B6D4"
                                 strokeWidth={2}
                                 fill="url(#marginGradient)"
@@ -149,7 +167,7 @@ export default function MarginPage() {
                                 yAxisId="right"
                                 type="monotone"
                                 dataKey="price"
-                                name="股價"
+                                name="股價 (Price)"
                                 stroke="#F59E0B"
                                 strokeWidth={2}
                                 dot={false}
@@ -165,11 +183,11 @@ export default function MarginPage() {
                 <div className="glass p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
                         <TrendingDown size={20} className="text-pink-400" />
-                        融券餘額走勢
+                        <Bilingual zh="融券餘額走勢" en="Short Balance Trend" mode="inline" />
                     </h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={MOCK_MARGIN_DATA}>
+                            <AreaChart data={chipsData}>
                                 <defs>
                                     <linearGradient id="shortGradient" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#EC4899" stopOpacity={0.3} />
@@ -178,12 +196,12 @@ export default function MarginPage() {
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                 <XAxis dataKey="date" tick={{ fill: "#6B7280", fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
-                                <YAxis tick={{ fill: "#6B7280", fontSize: 10 }} />
+                                <YAxis tick={{ fill: "#6B7280", fontSize: 10 }} domain={['auto', 'auto']} />
                                 <Tooltip content={<CustomTooltip />} />
                                 <Area
                                     type="monotone"
-                                    dataKey="shortBalance"
-                                    name="融券餘額"
+                                    dataKey="short_balance"
+                                    name="融券餘額 (Short)"
                                     stroke="#EC4899"
                                     strokeWidth={2}
                                     fill="url(#shortGradient)"
@@ -197,11 +215,11 @@ export default function MarginPage() {
                 <div className="glass p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
                         <Percent size={20} className="text-amber-400" />
-                        券資比趨勢
+                        <Bilingual zh="券資比趨勢" en="Short Ratio Trend" mode="inline" />
                     </h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={MOCK_MARGIN_DATA}>
+                            <AreaChart data={chipsData}>
                                 <defs>
                                     <linearGradient id="ratioGradient" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
@@ -214,7 +232,7 @@ export default function MarginPage() {
                                 <Tooltip content={<CustomTooltip />} />
                                 <Area
                                     type="monotone"
-                                    dataKey="shortRatio"
+                                    dataKey="short_ratio"
                                     name="券資比 (%)"
                                     stroke="#F59E0B"
                                     strokeWidth={2}
@@ -224,13 +242,6 @@ export default function MarginPage() {
                         </ResponsiveContainer>
                     </div>
                 </div>
-            </div>
-
-            {/* 數據說明 */}
-            <div className="glass p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                <p className="text-amber-400/80 text-sm text-center">
-                    ⚠️ 此頁面使用模擬數據展示，待 Crawler 擴充後接入真實融資融券資料。
-                </p>
             </div>
         </div>
     );

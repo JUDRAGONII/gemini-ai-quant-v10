@@ -31,3 +31,26 @@ services:
         paths:
           - /storage/v1
         strip_path: false
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - http://localhost:3000
+      methods:
+        - GET
+        - POST
+        - OPTIONS
+        - PUT
+        - PATCH
+        - DELETE
+      headers:
+        - Content-Type
+        - Authorization
+        - apikey
+        - X-Client-Info
+      exposed_headers:
+        - Content-Range
+        - X-Total-Count
+      max_age: 3600
+      credentials: true

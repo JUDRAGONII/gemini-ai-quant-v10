@@ -4,9 +4,10 @@ import React from 'react';
 import Link from 'next/link';
 import GlassCard from '@/components/ui/GlassCard';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface MacroIndicatorProps {
-    name: string;
+    name: React.ReactNode;
     code: string;
     value: number;
     unit: string;
@@ -30,7 +31,7 @@ export const MacroIndicatorCard = ({ name, code, value, unit, change, icon: Icon
                 </div>
 
                 <div className="space-y-1">
-                    <h3 className="text-slate-400 text-xs font-medium">{name}</h3>
+                    <div className="text-slate-400 text-xs font-medium">{name}</div>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-white tracking-tight">
                             {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -48,7 +49,9 @@ export const MacroIndicatorCard = ({ name, code, value, unit, change, icon: Icon
                             {!isUp && !isDown && <Minus className="w-3 h-3" />}
                             {Math.abs(change).toFixed(2)}%
                         </div>
-                        <div className="text-[9px] text-slate-600 font-mono uppercase tracking-tighter">Last 24H</div>
+                        <div className="text-[9px] text-slate-600 font-mono uppercase tracking-tighter">
+                            <Bilingual zh="近 24 小時" en="Last 24H" />
+                        </div>
                     </div>
                 )}
             </GlassCard>

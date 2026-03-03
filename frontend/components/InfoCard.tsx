@@ -6,7 +6,7 @@ import React from 'react';
  */
 interface InfoCardProps {
     icon: React.ElementType;
-    label: string;
+    label: React.ReactNode;
     value: string;
 }
 

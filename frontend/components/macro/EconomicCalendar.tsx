@@ -5,6 +5,8 @@ import useSWR from 'swr';
 import GlassCard from '@/components/ui/GlassCard';
 import { Calendar, AlertTriangle, Info, Clock } from 'lucide-react';
 
+import { Bilingual } from '@/components/ui/Bilingual';
+
 interface EconomicEvent {
     id: string;
     event_name: string;
@@ -42,7 +44,7 @@ export const EconomicCalendar = () => {
     if (error || !data) {
         return (
             <div className="p-10 text-center text-slate-500 border border-dashed border-white/10 rounded-xl">
-                暫時無法獲取日曆數據
+                <Bilingual zh="暫時無法獲取日曆數據" en="Temporarily unable to fetch calendar data" />
             </div>
         );
     }
@@ -51,7 +53,7 @@ export const EconomicCalendar = () => {
         <div className="space-y-3">
             {data.length === 0 ? (
                 <div className="p-10 text-center text-slate-500 italic">
-                    未來一週無重大經濟事件
+                    <Bilingual zh="未來一週無重大經濟事件" en="No major economic events in the coming week" />
                 </div>
             ) : (
                 data.map((event) => (
@@ -89,7 +91,7 @@ export const EconomicCalendar = () => {
                                 </div>
                                 {event.actual_value && (
                                     <div className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                                        實際: {event.actual_value}
+                                        <Bilingual zh="實際:" en="Act:" /> {event.actual_value}
                                     </div>
                                 )}
                             </div>

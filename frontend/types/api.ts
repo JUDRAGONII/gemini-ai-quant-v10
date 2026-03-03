@@ -284,3 +284,46 @@ export interface StockDetailResponse {
         record_count: number;
     } | null;
 }
+
+export interface SystemHealth {
+    cpu_usage: number;
+    ram_usage: number;
+    ram_total_gb: number;
+    uptime_seconds: number;
+}
+
+export interface QuotaStatus {
+    fugle: number;
+    tiingo: number;
+    gemini: number;
+    status: string;
+    error?: string;
+}
+
+export interface MarketAlert {
+    id: number;
+    created_at: string;
+    alert_type: string;
+    stock_code: string;
+    message: string;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    is_active: boolean;
+}
+
+export interface RiskSummary {
+    high_risk_count: number;
+    tickers: string[];
+}
+
+export interface MonitorDashboardResponse {
+    timestamp: string;
+    system: SystemHealth;
+    quota: QuotaStatus;
+    alerts: MarketAlert[];
+    risk: RiskSummary;
+    evolution: Array<{
+        generation: number;
+        avg_fitness: number;
+        max_fitness: number;
+    }>;
+}

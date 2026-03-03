@@ -21,19 +21,38 @@ jest.mock('@/components/Dashboard/CorrelationChart', () => {
     };
 });
 
+// Mock DecisionAssistant 以避免其內部依賴導致 render 崩潰
+jest.mock('@/components/AI/DecisionAssistant', () => {
+    return function MockDecisionAssistant({ ticker }: { ticker: string }) {
+        return <div data-testid="decision-assistant">DecisionAssistant: {ticker}</div>;
+    };
+});
+
 jest.mock('framer-motion', () => ({
     motion: {
         div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+        li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
+        span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
     },
 }));
 
-jest.mock('lucide-react', () => ({
-    Search: () => <span data-testid="icon-search" />,
-    BrainCircuit: () => <span data-testid="icon-brain" />,
-    LayoutGrid: () => <span data-testid="icon-grid" />,
-    Zap: () => <span data-testid="icon-zap" />,
-    Filter: () => <span data-testid="icon-filter" />,
-}));
+jest.mock('lucide-react', () => {
+    const React = require('react');
+    const iconCache: Record<string, any> = {};
+    return new Proxy({}, {
+        get: (target, prop) => {
+            if (typeof prop === 'string' && /^[A-Z]/.test(prop)) {
+                if (!iconCache[prop]) {
+                    const IconComponent = (props: any) => React.createElement('svg', { ...props, 'data-testid': `icon-${prop.toLowerCase()}` });
+                    IconComponent.displayName = prop;
+                    iconCache[prop] = IconComponent;
+                }
+                return iconCache[prop];
+            }
+            return undefined;
+        }
+    });
+});
 
 describe('InsightsPage — /ai/insights 整頁', () => {
 
@@ -46,15 +65,15 @@ describe('InsightsPage — /ai/insights 整頁', () => {
         it('TC-1501: 頁面應渲染三個核心區塊', () => {
             render(<InsightsPage />);
 
-            // 驗證 DialecticPanel 存在
-            expect(screen.getByTestId('dialectic-panel')).toBeInTheDocument();
+            // 驗證 DecisionAssistant 存在（已取代舊 DialecticPanel）
+            expect(screen.getByTestId('decision-assistant')).toBeInTheDocument();
             // 驗證 TacticalPlanner 存在
             expect(screen.getByTestId('tactical-planner')).toBeInTheDocument();
             // 驗證 2 個 CorrelationChart 存在
             const correlationCharts = screen.getAllByTestId('correlation-chart');
             expect(correlationCharts).toHaveLength(2);
 
-            // 驗證頁面標題
+            // 驗證頁面標題（Bilingual 渲染）
             expect(screen.getByText('AI 智力決策中心')).toBeInTheDocument();
         });
 
@@ -70,8 +89,8 @@ describe('InsightsPage — /ai/insights 整頁', () => {
             // 提交表單
             fireEvent.submit(searchInput.closest('form')!);
 
-            // DialecticPanel 應接收到更新後的 ticker (大寫 NVDA)
-            expect(screen.getByText('DialecticPanel: NVDA')).toBeInTheDocument();
+            // DecisionAssistant 應接收到更新後的 ticker (大寫 NVDA)
+            expect(screen.getByText('DecisionAssistant: NVDA')).toBeInTheDocument();
 
             // CorrelationChart 也應包含新 ticker
             expect(screen.getByText('STOCK:NVDA ↔ FX:USD/TWD (Lag: 1)')).toBeInTheDocument();

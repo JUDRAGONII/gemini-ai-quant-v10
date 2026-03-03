@@ -12,6 +12,7 @@ import {
     Activity
 } from "lucide-react";
 import { MobileNav } from "@/components/layout";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 /**
  * 籌碼分析 Layout
@@ -26,12 +27,14 @@ import Sidebar from "@/components/layout/Sidebar";
 // Tab 導航項目組件
 const TabItem = ({
     icon: Icon,
-    label,
+    labelZh,
+    labelEn,
     href,
     isActive,
 }: {
     icon: React.ElementType;
-    label: string;
+    labelZh: string;
+    labelEn: string;
     href: string;
     isActive: boolean;
 }) => (
@@ -43,7 +46,7 @@ const TabItem = ({
                 }`}
         >
             <Icon size={18} />
-            <span>{label}</span>
+            <Bilingual zh={labelZh} en={labelEn} mode="inline" enClassName="ml-1 opacity-70 text-sm" />
         </div>
     </Link>
 );
@@ -57,9 +60,9 @@ export default function ChipsLayout({
 
     // 定義 Tab 項目
     const tabs = [
-        { icon: Layers, label: "總覽", href: "/chips" },
-        { icon: Wallet, label: "融資融券", href: "/chips/margin" },
-        { icon: Building2, label: "三大法人", href: "/chips/institutional" },
+        { icon: Layers, labelZh: "總覽", labelEn: "Overview", href: "/chips" },
+        { icon: Wallet, labelZh: "融資融券", labelEn: "Margin & Short", href: "/chips/margin" },
+        { icon: Building2, labelZh: "三大法人", labelEn: "Institutional", href: "/chips/institutional" },
     ];
 
     return (
@@ -80,10 +83,13 @@ export default function ChipsLayout({
                         <div>
                             <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-400 via-rose-400 to-orange-400 bg-clip-text text-transparent flex items-center gap-3">
                                 <PieChart size={32} className="text-pink-400" />
-                                主力籌碼透視
+                                <Bilingual zh="主力籌碼透視" en="Institutional Chips Insight" mode="inline" />
                             </h1>
                             <p className="text-gray-400 mt-2">
-                                追蹤外資、投信與主力大戶的資金流向，掌握市場多空力道。
+                                <Bilingual
+                                    zh="追蹤外資、投信與主力大戶的資金流向，掌握市場多空力道。"
+                                    en="Track the capital flow of foreign investors, investment trusts, and major players."
+                                />
                             </p>
                         </div>
                         <div className="flex space-x-4">
@@ -98,7 +104,8 @@ export default function ChipsLayout({
                             <TabItem
                                 key={tab.href}
                                 icon={tab.icon}
-                                label={tab.label}
+                                labelZh={tab.labelZh}
+                                labelEn={tab.labelEn}
                                 href={tab.href}
                                 isActive={pathname === tab.href}
                             />

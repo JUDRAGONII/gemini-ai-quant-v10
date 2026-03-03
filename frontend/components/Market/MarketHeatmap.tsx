@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
 import { HeatmapNode } from '@/hooks/useHeatmap';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface MarketHeatmapProps {
     data: HeatmapNode | null;
@@ -100,18 +101,18 @@ const CustomTooltip = ({ active, payload }: any) => {
                     <p className="text-gray-400 text-xs">{data.stock_code}</p>
                 )}
                 {data.price !== undefined && (
-                    <p className="text-gray-300 text-sm mt-1">
-                        價格: ${data.price.toFixed(2)}
+                    <p className="text-gray-300 text-sm mt-1 flex gap-1">
+                        <Bilingual zh="價格:" en="Price:" mode="inline" /> ${data.price.toFixed(2)}
                     </p>
                 )}
                 {data.change_percent !== undefined && (
-                    <p className={`text-sm font-medium ${data.change_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        漲跌: {data.change_percent > 0 ? '+' : ''}{data.change_percent.toFixed(2)}%
+                    <p className={`text-sm font-medium flex gap-1 ${data.change_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <Bilingual zh="漲跌:" en="Change:" mode="inline" /> {data.change_percent > 0 ? '+' : ''}{data.change_percent.toFixed(2)}%
                     </p>
                 )}
                 {data.value !== undefined && (
-                    <p className="text-gray-400 text-xs mt-1">
-                        成交量: {(data.value / 1000).toFixed(0)}K
+                    <p className="text-gray-400 text-xs mt-1 flex gap-1">
+                        <Bilingual zh="成交量:" en="Volume:" mode="inline" /> {(data.value / 1000).toFixed(0)}K
                     </p>
                 )}
             </div>
@@ -147,7 +148,7 @@ export function MarketHeatmap({ data, height = 500 }: MarketHeatmapProps) {
     if (!data || flattenedData.length === 0) {
         return (
             <div className="flex items-center justify-center h-64 text-gray-500">
-                <p>暫無熱力圖資料</p>
+                <p><Bilingual zh="暫無熱力圖資料" en="No heatmap data available" /></p>
             </div>
         );
     }
