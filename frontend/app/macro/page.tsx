@@ -129,7 +129,7 @@ export default function MacroPage() {
                                         : "text-slate-500 hover:text-slate-300"
                                         }`}
                                 >
-                                    {tab === "TW" ? "TAIWAN" : tab === "US" ? "USA" : "WORLD"}
+                                    {tab === "TW" ? <Bilingual zh="台灣" en="TAIWAN" /> : tab === "US" ? <Bilingual zh="美國" en="USA" /> : <Bilingual zh="全球" en="WORLD" />}
                                 </button>
                             ))}
                         </div>
@@ -140,25 +140,47 @@ export default function MacroPage() {
 
                         {/* 1. Quick Stats Header Widgets (Top Row) */}
                         <div className="xl:col-span-3">
-                            <SmallStatCard title="US GDP" value="2.9%" trend="up" icon={Flame} color="emerald" />
+                            <SmallStatCard
+                                titleZh="實質 GDP"
+                                titleEn="REAL GDP"
+                                value={indicators?.find(i => i.indicator_code === 'GDP')?.value ? `${indicators.find(i => i.indicator_code === 'GDP')?.value.toFixed(1)}%` : "---%"}
+                                trend={indicators?.find(i => i.indicator_code === 'GDP')?.value > 2.0 ? "up" : "down"}
+                                icon={Flame} color="emerald"
+                            />
                         </div>
                         <div className="xl:col-span-3">
-                            <SmallStatCard title="CORE CPI" value="3.1%" trend="down" icon={Zap} color="rose" />
+                            <SmallStatCard
+                                titleZh="核心 CPI"
+                                titleEn="CORE CPI"
+                                value={indicators?.find(i => i.indicator_code === 'CPI')?.value ? `${indicators.find(i => i.indicator_code === 'CPI')?.value.toFixed(1)}%` : "---%"}
+                                trend={indicators?.find(i => i.indicator_code === 'CPI')?.value < 3.0 ? "down" : "up"}
+                                icon={Zap} color="rose"
+                            />
                         </div>
                         <div className="xl:col-span-3">
-                            <SmallStatCard title="FED RATE" value="5.25%" trend="stable" icon={Cpu} color="blue" />
+                            <SmallStatCard
+                                titleZh="基準利率"
+                                titleEn="FED RATE"
+                                value={indicators?.find(i => i.indicator_code === 'FEDFUNDS')?.value ? `${indicators.find(i => i.indicator_code === 'FEDFUNDS')?.value.toFixed(2)}%` : "---%"}
+                                trend="stable"
+                                icon={Cpu} color="blue"
+                            />
                         </div>
                         <div className="xl:col-span-3 relative group">
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                                 <SearchIcon className="w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                             </div>
-                            <input
-                                type="text"
-                                placeholder="FAST SEARCH..."
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full h-full min-h-[72px] bg-slate-900/40 border border-white/5 rounded-2xl pl-12 pr-4 text-xs font-mono focus:outline-none focus:border-blue-500/40 transition-all placeholder:text-slate-700"
-                            />
+                            <Bilingual zh="快速搜尋指標或代碼..." en="FAST SEARCH..." mode="inline">
+                                {(placeholder) => (
+                                    <input
+                                        type="text"
+                                        placeholder={placeholder as string}
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        className="w-full h-full min-h-[72px] bg-slate-900/40 border border-white/5 rounded-2xl pl-12 pr-4 text-xs font-mono focus:outline-none focus:border-blue-500/40 transition-all placeholder:text-slate-700"
+                                    />
+                                )}
+                            </Bilingual>
                         </div>
 
                         {/* 2. Main Analysis Section (Middle Row) */}
@@ -171,7 +193,7 @@ export default function MacroPage() {
                                 <section className="h-full">
                                     <div className="flex items-center justify-between mb-4">
                                         <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                            <Calendar className="w-4 h-4" /> 經濟日曆
+                                            <Calendar className="w-4 h-4" /> <Bilingual zh="經濟日曆" en="Economic Calendar" />
                                         </h2>
                                         <div className="h-px flex-1 bg-white/5 mx-4" />
                                     </div>
@@ -185,7 +207,7 @@ export default function MacroPage() {
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/5" />
                                 <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-500">
-                                    Deep Indicators Grid
+                                    <Bilingual zh="總體經濟指標陣列" en="Deep Indicators Grid" />
                                 </h2>
                                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/5" />
                             </div>
@@ -230,9 +252,9 @@ export default function MacroPage() {
 
                     {/* Footer Badges */}
                     <div className="grid md:grid-cols-3 gap-4 pt-10 border-t border-white/5">
-                        <BadgeTile icon={Globe} label="DATA ENGINE" value="FRED LIVE" color="blue" />
-                        <BadgeTile icon={Cpu} label="AI STATUS" value="V10.0 ACTIVE" color="emerald" />
-                        <BadgeTile icon={Zap} label="LATENCY" value="23ms" color="amber" />
+                        <BadgeTile icon={Globe} labelZh="資料引擎" labelEn="DATA ENGINE" valueZh="FRED 即時連線" valueEn="FRED LIVE" color="blue" />
+                        <BadgeTile icon={Cpu} labelZh="AI 狀態" labelEn="AI STATUS" valueZh="V10.0 上線" valueEn="V10.0 ACTIVE" color="emerald" />
+                        <BadgeTile icon={Zap} labelZh="網路延遲" labelEn="LATENCY" valueZh="23ms" valueEn="23ms" color="amber" />
                     </div>
                 </main>
             </div>
@@ -240,12 +262,18 @@ export default function MacroPage() {
     );
 }
 
-function SmallStatCard({ title, value, trend, icon: Icon, color }: any) {
+function SmallStatCard({ titleZh, titleEn, value, trend, icon: Icon, color }: any) {
     const colorClass = color === 'rose' ? 'text-rose-400' : color === 'emerald' ? 'text-emerald-400' : 'text-blue-400';
     return (
         <GlassCard className="p-5 flex items-center justify-between border-white/5 h-full group">
             <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">{title}</p>
+                <Bilingual
+                    zh={titleZh}
+                    en={titleEn}
+                    mode="stacked"
+                    zhClassName="text-sm font-black uppercase tracking-wide text-slate-300 mb-1"
+                    enClassName="text-[9px] font-black uppercase tracking-widest text-slate-600"
+                />
                 <div className="flex items-baseline gap-2">
                     <span className="text-xl font-black font-mono tracking-tighter text-slate-200">{value}</span>
                     <span className={`text-[10px] font-bold ${colorClass}`}>
@@ -260,14 +288,28 @@ function SmallStatCard({ title, value, trend, icon: Icon, color }: any) {
     );
 }
 
-function BadgeTile({ icon: Icon, label, value, color }: any) {
+function BadgeTile({ icon: Icon, labelZh, labelEn, valueZh, valueEn, color }: any) {
     const textColor = color === 'blue' ? 'text-blue-400' : color === 'emerald' ? 'text-emerald-400' : 'text-amber-400';
     return (
-        <div className="flex items-center gap-3 px-4 py-3 bg-white/[0.02] border border-white/5 rounded-2xl">
-            <Icon size={14} className={textColor} />
-            <div className="flex flex-col">
-                <span className="text-[9px] text-slate-600 font-black uppercase tracking-tighter">{label}</span>
-                <span className="text-[11px] text-slate-400 font-bold">{value}</span>
+        <div className="flex items-center gap-4 px-5 py-4 bg-white/[0.02] border border-white/5 rounded-2xl h-full">
+            <div className={`p-2.5 rounded-xl bg-slate-900 shadow-inner border border-white/5 ${textColor}`}>
+                <Icon size={18} />
+            </div>
+            <div className="flex flex-col flex-1">
+                <Bilingual
+                    zh={labelZh}
+                    en={labelEn}
+                    mode="stacked"
+                    zhClassName="text-[13px] text-slate-300 font-black tracking-wider"
+                    enClassName="text-[9px] text-slate-600 font-bold uppercase tracking-widest"
+                />
+                <Bilingual
+                    zh={valueZh}
+                    en={valueEn}
+                    mode="stacked"
+                    zhClassName="text-base text-white font-black mt-1"
+                    enClassName="text-[10px] text-slate-400 font-bold uppercase tracking-widest"
+                />
             </div>
         </div>
     );

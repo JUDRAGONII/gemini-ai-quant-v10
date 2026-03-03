@@ -2,6 +2,12 @@ import { render, screen, fireEvent, within } from "@testing-library/react";
 import RankingTable from "@/components/RankingTable";
 import "@testing-library/jest-dom";
 
+// Mock Bilingual
+jest.mock('@/components/ui/Bilingual', () => ({
+    __esModule: true,
+    Bilingual: ({ zh, en }: any) => <span data-testid="mock-bilingual">{zh} | {en}</span>,
+}));
+
 // Mock Next.js Link
 jest.mock("next/link", () => {
     return ({ children, href }: { children: React.ReactNode; href: string }) => {
@@ -30,7 +36,7 @@ describe("RankingTable 組件", () => {
 
     it("TC-1402: RankingTable 點擊表頭應進行排序", () => {
         render(<RankingTable data={mockData} pageSize={10} />);
-        const header = screen.getByText("綜合");
+        const header = screen.getByText("綜合 | Score");
         fireEvent.click(header);
 
         const rows = screen.getAllByRole("row").slice(1); // Skip header
@@ -50,7 +56,7 @@ describe("RankingTable 組件", () => {
         expect(screen.getByText("2330")).toBeInTheDocument();
         expect(screen.queryByText("TEST10")).not.toBeInTheDocument(); // 14th item roughly
 
-        const nextBtn = screen.getByText("下一頁");
+        const nextBtn = screen.getByText("下一頁 | Next");
         fireEvent.click(nextBtn);
 
         expect(screen.queryByText("2330")).not.toBeInTheDocument();
@@ -76,7 +82,8 @@ describe("RankingTable 組件", () => {
 
     it("TC-4002: 排行表格表頭應有 hover 效果", () => {
         render(<RankingTable data={mockData} />);
-        const header = screen.getByText("排名");
-        expect(header).toHaveClass("cursor-pointer");
+        const header = screen.getByText("排名 | Rank");
+        // Bilingual mock 輸出 <span>，其父元素 <th> 才有 cursor-pointer
+        expect(header.closest('th')).toHaveClass("cursor-pointer");
     });
 });

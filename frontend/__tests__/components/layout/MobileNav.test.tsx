@@ -33,22 +33,24 @@ jest.mock("next/link", () => {
     );
 });
 
-// Mock lucide-react
-jest.mock("lucide-react", () => ({
-    Menu: (props: any) => <span {...props} data-testid="menu-icon">Menu</span>,
-    X: (props: any) => <span {...props} data-testid="close-icon">X</span>,
-    Home: (props: any) => <span {...props}>Home</span>,
-    Activity: (props: any) => <span {...props}>Activity</span>,
-    TrendingUp: (props: any) => <span {...props}>TrendingUp</span>,
-    BarChart3: (props: any) => <span {...props}>BarChart3</span>,
-    FileText: (props: any) => <span {...props}>FileText</span>,
-    Settings: (props: any) => <span {...props}>Settings</span>,
-    Cpu: (props: any) => <span {...props}>Cpu</span>,
-    Layers: (props: any) => <span {...props}>Layers</span>,
-    Briefcase: (props: any) => <span {...props}>Briefcase</span>,
-    Sparkles: (props: any) => <span {...props}>Sparkles</span>,
-    Search: (props: any) => <span {...props}>Search</span>,
-}));
+// Mock lucide-react — 使用 Proxy 模式與 jest.setup.js 一致，避免跨測試汙染
+jest.mock("lucide-react", () => {
+    const React = require("react");
+    const iconCache: Record<string, any> = {};
+    return new Proxy({}, {
+        get: (target, prop) => {
+            if (typeof prop === "string" && /^[A-Z]/.test(prop)) {
+                if (!iconCache[prop as string]) {
+                    const IconComponent = (props: any) => React.createElement("svg", { ...props, "data-testid": `icon-${prop.toLowerCase()}` });
+                    IconComponent.displayName = prop;
+                    iconCache[prop as string] = IconComponent;
+                }
+                return iconCache[prop as string];
+            }
+            return undefined;
+        }
+    });
+});
 
 import { MobileNav } from "@/components/layout/MobileNav";
 

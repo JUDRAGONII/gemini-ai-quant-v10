@@ -85,7 +85,7 @@ export default function StrategyHubPage() {
                             zhClassName="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase"
                             enClassName="text-sm font-medium text-emerald-500/60 uppercase tracking-widest mt-1"
                         />
-                        <p className="text-gray-400 mt-4 flex items-center text-sm font-medium">
+                        <div className="text-gray-400 mt-4 flex items-center text-sm font-medium">
                             <ShieldCheck className="w-4 h-4 mr-2 text-emerald-400" />
                             <Bilingual
                                 zh="基於 AI 預測核心與全向量化回測引擎的策略驗證中心"
@@ -94,7 +94,7 @@ export default function StrategyHubPage() {
                                 zhClassName="text-gray-300"
                                 enClassName="text-[10px] text-gray-500 italic mt-0.5"
                             />
-                        </p>
+                        </div>
                     </div>
 
                     <form onSubmit={handleSearch} className="relative w-full md:w-64 group">

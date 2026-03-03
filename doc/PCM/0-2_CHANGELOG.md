@@ -7,6 +7,115 @@
 
 ---
 
+## [V10.6.4] - 2026-03-03
+### Added
+- **智慧排名全繁體中文化與真實數據對接 (Phase 14.11 完工)**:
+  - **後端 API 擴充**: `analysis_service.py` 的 `get_top_scores()` 新增 `stocks` 與 `market_quotes` 批次查詢，回傳含名稱與漲跌幅的完整排行資料。
+  - **前端雙語化改造**: `ranking/page.tsx` 全面改寫，移除 `mockRankingData` 假資料，使用 `fetch` 對接 `/api/v1/analysis/top-scores` 真實 API。所有中文標題、按鈕、描述皆套用 `<Bilingual>` 元件。
+  - **子組件雙語化**: `RankingTable.tsx` 表頭 10 欄全部雙語化，分頁控件雙語化；`ScoreRadarChart.tsx` 雷達圖標題、Tooltip、圖例字串雙語化。
+  - **TDD 測試保險**: 新增 `ranking/page.test.tsx` (4 Tests)，修復 4 個既有回歸 Suite。全量測試 **48/49 Suites, 209/218 Tests, Exit 0**。
+
+## [V10.6.3] - 2026-03-03
+### Added
+- **AI 語義搜尋中心全繁體中文化與真實連線驗證 (Phase 14.10 完工)**:
+  - **介面深度雙語支援**: 將 `app/ai/search/page.tsx` 內硬編碼的靜態中文全面升級為 `<Bilingual>`。涵蓋總部標題、搜尋佔位符、無結果之 Empty State，以及「最近搜尋」的 LocalStorage 控制面板。
+  - **解決 Hydration Bug 隱患**: 徹底將包覆 `<Bilingual mode="stacked">` 之 `<p>` 標籤修改為 `<div className="text-gray-400 mt-4...">`，阻絕 React 標籤實體嵌套衝突。
+  - **TDD 單元測試保險防禦 (100% PASS)**: 針對原本為 0 的測試區域，新建 `__tests__/app/ai/search/page.test.tsx`。完成自觸發 Mock Fetch 到 LocalStorage `rag_recent_searches` 寫入再讀出的全生命週期情境驗證。總計 5 大項測驗全部綠燈。
+
+## [V10.6.2] - 2026-03-03
+### Added
+- **智慧策略全繁體中文化與真實連線驗證 (Phase 14.9 完工)**:
+  - **靜態中文全面汰換**: 將 `StrategyMetricsGrid` 中六大 KPI (總報酬率、年化回報等) 與 `AIPredictionIndicator` 中的盤勢判讀 (Bullish/Bearish) 更換為 `<Bilingual>` 熱切換。
+  - **TDD 單元測試補齊 (100% PASS)**: 針對原本 0 覆蓋率的 API 端點 `useBacktest` 與 `useAIPrediction`，完成 `page.test.tsx` 骨架測試與其附屬元件渲染邏輯測試。共計 8 條測試無斷點完美通過。
+
+## [V10.6.1] - 2026-03-03
+### Added
+- **演化分析全繁體中文化與測試補齊 (Phase 14.8 完工)**:
+  - **介面深度雙語化**:
+    - `EvolutionVisualizer.tsx`: Footer Insight 內的動態敘述（包含最佳代數與適應度）改由 `<Bilingual>` 即時熱加載中英漸層渲染，同時消除 `<p>` 標籤包覆 `<Bilingual>` 之 React Hydration Error 隱患。
+    - `FitnessHeatmap.tsx`: Area Legend 從 `BEST FITNESS` 替換為能無縫支援閱讀的 `最佳適應度 (BEST FITNESS)` 雙語合一標籤。
+  - **TDD 單元測試保險防護網建置 (100% PASS)**:
+    - 新增 `app/evolution/page.test.tsx`: 提供 Sidebar、MobileNav 等 Mock，測試 EvolutionPage 元件本身的標題與裝飾狀態。
+    - 新增 `components/EvolutionVisualizer.test.tsx`: 針對 `useEvolution` 發起 Mock，驗證包含 Loading Spinner、Error 態、空歷史數據以及成功渲染 Heatmap 和 GenomeMap 等完整生命週期介面。全系列共 5 項測試皆一致過關。
+
+## [V10.6.0] - 2026-03-03
+- **宏觀指數全繁體中文化與真實數據導入 (Phase 14.7 完工)**:
+  - **Mock 資料全面淘汰**: `app/macro/[indicator]/page.tsx` 完全移除 `@/data/mockMacro` 依賴，改用 `useSWR` + `supabase.from('macro_indicators')` 撈取真實歷史走勢與最新數據。
+  - **Quick Stats 真實化**: 首頁上方 GDP / CPI / FED RATE 三張迷你卡片從硬編碼 (`2.9%`, `3.1%`, `5.25%`) 改為連動 Supabase 最新一筆真實回傳。
+  - **全域雙語化 (Bilingualism)**:
+    - `app/macro/page.tsx`: 搜尋欄、經濟日曆標題、指標陣列標題、Footer 徽章全面 `<Bilingual>` 雙語化。
+    - `app/macro/[indicator]/page.tsx`: 「找不到指標」、「最新數值」、「歷史走勢」、「歷史數據」、「更新頻率」、「數據來源」等全部文字雙語化；「模擬數據警告」替換為「已連線至 SUPABASE 實體庫」即時連線狀態標籤。
+    - `MacroIndicatorCard.tsx`: `Last 24H` 雙語化。
+    - `EconomicCalendar.tsx`: 錯誤態、空態、「實際」標籤雙語化。
+    - `InsightsPanel.tsx`: 跨資產關聯分析標題、分析狀態、引擎狀態全面 `<Bilingual>`。
+  - **測試修正與驗證**: Jest 測試 Mock 架構從 Supabase 直接 Mock 改為 `jest.mock("swr")`，10/10 PASS。
+
+## [V10.5.9] - 2026-03-02
+### Added
+- **投資組合 (Portfolio) 全繁體中文化與深度審查 (Phase 14.6 完工)**:
+  - **模組架構審查**: 經審計確認 `GET /api/portfolios/*` 等端點已建置為 Next.js Server Side Auth 架構，串接 Supabase 真實資料庫，符合安全與擴充性規範，無需更動。
+  - **介面 UI 原則修復 (UX Enhancement)**: 
+    - 解決「建立組合」表單 `標籤`（名稱/描述）尺寸失衡過小的問題，統一放大至 `text-xl font-bold flex` 以對齊持股列表表頭比例，強化介面可讀性。
+  - **全域雙語化 (Bilingualism)**:
+    - **首頁 (`app/portfolios/page.tsx`)**: 全面套用 `<Bilingual>`。涵蓋了總覽、表單、持有清單與佔位空狀態字串。
+    - **明細檢視頁 (`app/portfolios/[id]/page.tsx`)**: 包括總資產、成本計算、報酬金額/率等 4 個重點指標、投資組合數據表格（表頭與列表項），皆已實現熱切換。
+    - **效能圖表 (`PortfolioPerformanceChart.tsx`)**: AreaChart `Hover CustomTooltip` 與 `Legend` 區間文字 (1W, 1M, 3M, 6M, 1Y) 雙語化對接。
+  - **測試修正與驗證**:
+    - **Jest 測試**: 確保 `npm run test` 在本機取得全面通過，總計 43 測試套件、195 測項滿分，驗證 UI 改動沒有帶給元件狀態任何破壞。
+    - **型別安全**: 排除了 `<Bilingual>` 在屬性 `zh` 需承接 `string` 與 TS 解析 JSX Element 的報錯 (TS2322)。
+
+## [V10.5.8] - 2026-03-02
+### Added
+- **市場動態全繁體中文化與深度審查 (Phase 14.5 完工)**:
+  - **模組架構審查**: 經審計確認 `GET /api/v1/market/heatmap` 等介接架構完好，已整合即時歷史報價並具備層級聚合 (`industry`, `sector`) 能力，無需更動。
+  - **介面全面雙語化**:
+    - `MarketPage`: 全面套用 `<Bilingual>`，包含：「市場熱力圖」、「視覺化全市場漲跌強弱分佈」、「全部」、「產業」、「細分」以及過濾器標籤。
+    - `MarketHeatmap`: Recharts Treemap 中之 Hover `CustomTooltip` 雙語化價格、漲跌及成交量資訊。空狀態提醒亦全面雙語化。
+  - **隱藏與防禦性警示元件雙語化**:
+    - 提前將 `AlertPanel` (如「市場監控中心」、「全部已讀」、「無異動」) 導入 `<Bilingual mode="inline" />` 以確保全站一致性，預防未來組件復用時發生語系錯誤。
+  - **測試修正與驗證**:
+    - TypeScript `tsc --noEmit` 型別驗證無報錯通過。
+    - Jest 測試於 43 支測試檔中順利斬獲 193 項 Full Pass。
+
+## [V10.5.7] - 2026-03-02
+### Added
+- **籌碼分析模組全繁體中文化與真實數據接入 (Phase 14.4 完工)**:
+  - **後端 API 實作 (BFF)**: 新增 `GET /api/v1/chips/{stock_code}?days=30` 聚合端點。於 `ChipsRepository` 實作以 `daily_price` 為左表，`OUTER JOIN` `stock_institutional` (三大法人) 與 `stock_margin` (融資融券) 的動態組裝邏輯，徹底解決前端多次請求與資料不齊齊問題。
+  - **前台資料流重構**: 開發 SWR `useChipsData.ts` HooK。將總覽、三大法人、融資融券頁面全面移除對 `MOCK_CHIPS_DATA` 等靜態測試檔之依賴。
+  - **元件雙語化 (Bilingual)**:
+    - `ChipsOverviewPage` 統計卡片與 `ChipChart` 屬性重構與雙語化。
+    - `InstitutionalPage` 實裝 7 日累計買賣超運算與三大法人 Stacked Bar 雙語化圖例。
+    - `MarginPage` 實裝融資券歷史軌跡 Area Chart 雙語化圖例與券資比走勢。
+  - **架構優化與測試**: 修復 Jest + React Testing Library 中因 Proxy 索引 `any` 造成的暗藏 Type 報錯。全量回歸測試 193 項滿分通過。
+
+## [V10.5.6] - 2026-03-02
+### Added
+- **風險監控佈局修復與雙語化完備 (Phase 14.3 完工)**:
+  - **佈局除蟲 (UI/UX)**: 徹底解決 `/ai/risk` (法人級風險風控系統) 畫面左側紅框大片空白問題。透過移除頁面層級錯誤引入的雙重 `<Sidebar />` 與 `<MobileNav />` 及包裝容器，回歸 `/ai/layout.tsx` 統一配置。
+  - **雙語化微缺漏補齊**:
+    - `/ai/risk/page.tsx`: 補齊「法人級 INSTITUTIONAL GRADE」、「預估恢復 Est. Recovery」、「搜尋標的」等遺漏標籤。
+    - `CommandCenterPage`: 補齊初始 Loading 畫面的 `INITIALIZING AI COMMAND CENTER...` 雙語。
+    - `SystemHealthWidget`: 雙語化記憶體 `Total:` 與 API 機率 `Healthy/Warning` 狀態。
+    - `RiskAlertWidget`: 雙語化 `嚴重 (CRITICAL)` 與 `+N more`。
+    - `LiveAlertFeed`: 雙語化 `實時 (REALTIME)`。
+  - **回歸測試**: 全量 193/202 通過，0 失敗。
+
+## [V10.5.5] - 2026-03-02
+### Added
+- **智力洞察頁面全繁體中文化 (Phase 14.2 完工)**:
+  - **`DecisionAssistant`** (7 處): 標題「AI 決策助手」雙語化、重新分析按鈕、Loading/Empty 狀態全面 Bilingual 標示。
+  - **`TacticalPlanner`** (12 處): 「戰術作戰中心」標題、表單 Label（代碼/名稱/進場/停損/停利/理由）、Loading 狀態、`Active Plan` → `進行中 Active`、空狀態全面雙語化。
+  - **`CorrelationChart`** (5 處): 「跨資產滯後分析」標題、Error/Loading 狀態、說明文字雙語化。
+  - **元件清理**: 移除 InsightsPage 中已棄用的 `DialecticPanel` import。
+  - **回歸測試**: 全量 193/202 通過，0 失敗，Exit code: 0。
+
+## [V10.5.4] - 2026-03-02
+### Added
+- **首頁面板雙語化與動態健康狀態 (Phase 14.1 完工)**:
+  - **全景視覺升級**: 導入 `<Bilingual>` 組件覆蓋首頁大標題「市場導航儀」與 Macro Trends 之獨立圖表名稱，加入高級感的英文副標綴飾。
+  - **資料驅動重構**: 開發 `HomeSystemHealth` Client Component 以取代原先寫死的首頁右側面板。新增 SWR 掛載 `/api/v1/monitor/dashboard` 接口，動態且真實顯示 CPU 負載百分比、RAM 使用率與 Gemini Token 配額狀態。
+  - **測試修正**: 修復 `page.test.tsx` 中過時的字串比對，對齊雙語及動態載入的架構（共計 53 組全通過綠燈）。
+
 ## [V10.5.3] - 2026-02-13
 ### Added
 - **AI 監控中心全景雙語化 (Phase 13.7 完工)**:

@@ -9,6 +9,11 @@ jest.mock('swr', () => ({
     default: jest.fn(),
 }));
 
+jest.mock('@/components/ui/Bilingual', () => ({
+    __esModule: true,
+    Bilingual: ({ zh, en }: any) => <span data-testid="mock-bilingual">{zh} | {en}</span>,
+}));
+
 jest.mock('@/components/ui/GlassCard', () => {
     return function MockGlassCard({ children, className }: any) {
         return <div data-testid="glass-card" className={className}>{children}</div>;
@@ -69,7 +74,7 @@ describe('EconomicCalendar — 經濟日曆', () => {
             expect(screen.getByText('CPI Year-over-Year')).toBeInTheDocument();
 
             // 驗證實際值 (only evt-002 has actual_value)
-            expect(screen.getByText('實際: 2.1%')).toBeInTheDocument();
+            expect(screen.getByText('2.1%')).toBeInTheDocument();
         });
 
         it('TC-1402: 防禦性 fetcher 能正確解包嵌套結構', () => {
@@ -86,7 +91,7 @@ describe('EconomicCalendar — 經濟日曆', () => {
             mockUseSWR.mockReturnValue({ data: [], error: null, isLoading: false });
             render(<EconomicCalendar />);
 
-            expect(screen.getByText('未來一週無重大經濟事件')).toBeInTheDocument();
+            expect(screen.getByText('未來一週無重大經濟事件 | No major economic events in the coming week')).toBeInTheDocument();
         });
     });
 
@@ -105,7 +110,7 @@ describe('EconomicCalendar — 經濟日曆', () => {
             mockUseSWR.mockReturnValue({ data: null, error: new Error('fetch error'), isLoading: false });
             render(<EconomicCalendar />);
 
-            expect(screen.getByText('暫時無法獲取日曆數據')).toBeInTheDocument();
+            expect(screen.getByText('暫時無法獲取日曆數據 | Temporarily unable to fetch calendar data')).toBeInTheDocument();
         });
 
         it('TC-2401c: 加載中應顯示 Skeleton 動畫', () => {

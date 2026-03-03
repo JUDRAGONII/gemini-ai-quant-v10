@@ -10,6 +10,7 @@ import {
     ResponsiveContainer,
     Tooltip,
 } from "recharts";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 interface ScoreData {
     dimension: string;
@@ -93,14 +94,14 @@ export default function ScoreRadarChart({
                     </div>
                     <div className="space-y-1">
                         <div className="flex justify-between">
-                            <span className="text-gray-500">得分</span>
+                            <span className="text-gray-500"><Bilingual zh="得分" en="Score" /></span>
                             <span className="font-bold" style={{ color }}>
                                 {dataPoint.score}
                             </span>
                         </div>
                         {dataPoint.comparison !== undefined && (
                             <div className="flex justify-between">
-                                <span className="text-gray-500">比較</span>
+                                <span className="text-gray-500"><Bilingual zh="比較" en="Compare" /></span>
                                 <span className="font-bold text-gray-400">
                                     {dataPoint.comparison}
                                 </span>
@@ -118,7 +119,7 @@ export default function ScoreRadarChart({
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h4 className="text-sm font-semibold text-gray-400">
-                        AI 多維評分
+                        <Bilingual zh="AI 多維評分" en="AI Multi-Dim Score" />
                     </h4>
                     <p className="text-xs text-gray-500 mt-1">{symbol}</p>
                 </div>
@@ -126,7 +127,7 @@ export default function ScoreRadarChart({
                     <span className="text-2xl font-bold" style={{ color: grade.color }}>
                         {grade.label}
                     </span>
-                    <p className="text-xs text-gray-500">{displayScore} 分</p>
+                    <p className="text-xs text-gray-500">{displayScore} <Bilingual zh="分" en="pts" /></p>
                 </div>
             </div>
 
@@ -212,11 +213,11 @@ export default function ScoreRadarChart({
                 <div className="mt-4 flex items-center justify-center gap-6 text-xs text-gray-500">
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                        <span>當前標的</span>
+                        <span><Bilingual zh="當前標的" en="Current" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-gray-500" />
-                        <span>產業平均</span>
+                        <span><Bilingual zh="產業平均" en="Industry Avg" /></span>
                     </div>
                 </div>
             )}

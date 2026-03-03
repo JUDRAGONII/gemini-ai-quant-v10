@@ -133,6 +133,7 @@ class AnalysisService:
         """
         取得綜合評分 Top N 排行榜。
         dimension: composite, value, growth, quality, momentum
+        回傳含 name (股票名稱) 與 change_percent (今日漲跌幅) 的完整排行資料。
         """
         order_col = "composite_score"
         if dimension in DIMENSIONS:
@@ -144,7 +145,44 @@ class AnalysisService:
             .limit(limit) \
             .execute()
 
-        return res.data if res.data else []
+        if not res.data:
+            return []
+
+        # 取出所有 symbol，批次查詢名稱與漲跌幅
+        symbols = [row["symbol"] for row in res.data]
+
+        # 查詢 stocks 表取得名稱
+        stocks_res = self.supabase.table("stocks") \
+            .select("stock_code, stock_name") \
+            .in_("stock_code", symbols) \
+            .execute()
+        name_map = {s["stock_code"]: s["stock_name"] for s in (stocks_res.data or [])}
+
+        # 查詢 market_quotes 表取得今日漲跌幅
+        quotes_res = self.supabase.table("market_quotes") \
+            .select("stock_code, change_percent") \
+            .in_("stock_code", symbols) \
+            .execute()
+        change_map = {q["stock_code"]: q.get("change_percent", 0) for q in (quotes_res.data or [])}
+
+        # 組裝完整排行資料
+        result = []
+        for i, row in enumerate(res.data):
+            sym = row["symbol"]
+            result.append({
+                "rank": i + 1,
+                "symbol": sym,
+                "name": name_map.get(sym, sym),
+                "composite_score": float(row.get("composite_score", 0) or 0),
+                "value_score": float(row.get("v_avg", 0) or 0),
+                "growth_score": float(row.get("g_avg", 0) or 0),
+                "quality_score": float(row.get("q_avg", 0) or 0),
+                "momentum_score": float(row.get("m_avg", 0) or 0),
+                "change_percent": float(change_map.get(sym, 0) or 0),
+                "trade_date": row.get("trade_date"),
+            })
+
+        return result
 
     def _format_response(self, row: Dict) -> Dict[str, Any]:
         """將 DB Row 格式化為結構化前端響應"""

@@ -21,7 +21,7 @@ export const RiskAlertWidget: React.FC<RiskAlertWidgetProps> = ({ risk }) => {
                     </Bilingual>
                     {risk.high_risk_count > 0 && (
                         <span className="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-mono animate-pulse">
-                            嚴重 (CRITICAL)
+                            <Bilingual zh="嚴重" en="CRITICAL" mode="inline" enClassName="ml-1" />
                         </span>
                     )}
                 </CardTitle>
@@ -55,7 +55,7 @@ export const RiskAlertWidget: React.FC<RiskAlertWidgetProps> = ({ risk }) => {
                             ))}
                             {risk.high_risk_count > risk.tickers.length && (
                                 <div className="text-xs text-slate-500 py-1">
-                                    +{risk.high_risk_count - risk.tickers.length} more
+                                    <Bilingual zh={`其他 +${risk.high_risk_count - risk.tickers.length}`} en={`+${risk.high_risk_count - risk.tickers.length} more`} mode="inline" />
                                 </div>
                             )}
                         </div>

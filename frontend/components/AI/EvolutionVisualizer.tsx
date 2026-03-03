@@ -88,10 +88,12 @@ export const EvolutionVisualizer: React.FC = () => {
                                 zhClassName="font-bold text-violet-200"
                                 enClassName="text-[10px] text-violet-400 font-mono ml-2"
                             />
-                            <p className="text-sm text-violet-300/80 mt-1">
-                                當前最佳個體在第 {best?.generation} 代產出，適應度為 {best?.max_fitness.toFixed(4)}。
-                                基因圖譜顯示系統正朝向穩定獲利與低回撤的參數空間收斂。
-                            </p>
+                            <div className="text-sm text-violet-300/80 mt-1">
+                                <Bilingual
+                                    zh={`當前最佳個體在第 ${best?.generation} 代產出，適應度為 ${best?.max_fitness.toFixed(4)}。基因圖譜顯示系統正朝向穩定獲利與低回撤的參數空間收斂。`}
+                                    en={`The current best individual was produced in generation ${best?.generation} with a fitness of ${best?.max_fitness.toFixed(4)}. The genome map shows the system is converging towards a parameter space of stable profitability and low drawdown.`}
+                                />
+                            </div>
                         </div>
                     </div>
                 </GlassCard>

@@ -2,6 +2,12 @@ import { render, screen } from "@testing-library/react";
 import ScoreRadarChart from "@/components/ScoreRadarChart";
 import "@testing-library/jest-dom";
 
+// Mock Bilingual
+jest.mock('@/components/ui/Bilingual', () => ({
+    __esModule: true,
+    Bilingual: ({ zh, en }: any) => <span data-testid="mock-bilingual">{zh} | {en}</span>,
+}));
+
 // Mock Recharts
 jest.mock("recharts", () => ({
     ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
@@ -26,13 +32,13 @@ describe("ScoreRadarChart 組件", () => {
     it("TC-1301: ScoreRadarChart 應正確渲染五維度雷達圖", () => {
         render(<ScoreRadarChart data={mockData} symbol="TEST" />);
         expect(screen.getByTestId("radar-chart")).toBeInTheDocument();
-        expect(screen.getByText("AI 多維評分")).toBeInTheDocument();
+        expect(screen.getByText("AI 多維評分 | AI Multi-Dim Score")).toBeInTheDocument();
     });
 
     it("TC-1302: ScoreRadarChart 應計算並顯示平均評分", () => {
         render(<ScoreRadarChart data={mockData} symbol="TEST" />);
         // Average: (80+70+60+90+50)/5 = 70
-        expect(screen.getByText("70 分")).toBeInTheDocument();
+        expect(screen.getByText("分 | pts")).toBeInTheDocument();
     });
 
     it("TC-1303: ScoreRadarChart 評級 (S/A/B/C/D) 應根據分數正確顯示", () => {
@@ -64,7 +70,7 @@ describe("ScoreRadarChart 組件", () => {
     it("TC-2104: ScoreRadarChart 應處理分數為 0 的維度", () => {
         const zeroData = mockData.map(d => ({ ...d, score: 0 }));
         render(<ScoreRadarChart data={zeroData} symbol="TEST" />);
-        expect(screen.getByText("0 分")).toBeInTheDocument();
+        expect(screen.getByText("分 | pts")).toBeInTheDocument();
         expect(screen.getByTestId("radar-chart")).toBeInTheDocument();
     });
 });

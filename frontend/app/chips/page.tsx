@@ -5,6 +5,7 @@ import { DollarSign, TrendingUp, Layers, BarChart } from "lucide-react";
 import ChipChart from "@/components/ChipChart";
 import { MOCK_CHIPS_DATA } from "@/data/mockChips";
 import { Bilingual } from "@/components/ui/Bilingual";
+import { useChipsData } from "@/hooks/useChipsData";
 
 /**
  * 籌碼分析 - 總覽頁
@@ -70,10 +71,25 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 }
 
 export default function ChipsOverviewPage() {
-    // 計算簡單統計
-    const lastDay = MOCK_CHIPS_DATA[MOCK_CHIPS_DATA.length - 1];
-    const foreignChange = lastDay.foreign_investors;
-    const trustChange = lastDay.investment_trust;
+    const { chipsData, isLoading, isError } = useChipsData("2330", 30); // 預設台積電
+
+    if (isLoading) {
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div>
+            </div>
+        );
+    }
+
+    if (isError || chipsData.length === 0) {
+        return (
+            <div className="flex h-64 items-center justify-center text-red-400">
+                <Bilingual zh="無法載入籌碼數據" en="Failed to load chips data" />
+            </div>
+        );
+    }
+
+    const lastDay = chipsData[chipsData.length - 1];
 
     return (
         <div className="space-y-8">
@@ -82,14 +98,14 @@ export default function ChipsOverviewPage() {
                 <StatCard
                     labelZh="外資買賣超"
                     labelEn="FOREIGN"
-                    value={foreignChange}
+                    value={lastDay.foreign}
                     icon={<DollarSign />}
                     color="text-cyan-400"
                 />
                 <StatCard
                     labelZh="投信買賣超"
                     labelEn="TRUST"
-                    value={trustChange}
+                    value={lastDay.trust}
                     icon={<TrendingUp />}
                     color="text-pink-400"
                 />
@@ -126,20 +142,13 @@ export default function ChipsOverviewPage() {
                     />
                 </h2>
 
-                <ChipChart data={MOCK_CHIPS_DATA} />
+                <ChipChart data={chipsData} />
 
                 <div className="mt-6 flex justify-center space-x-8 text-sm">
-                    <LegendItem color="bg-cyan-500" label="外資買盤" />
-                    <LegendItem color="bg-pink-500" label="投信佈局" />
-                    <LegendItem color="bg-yellow-500" label="股價走勢" />
+                    <LegendItem color="bg-cyan-500" label="外資買盤 (Foreign)" />
+                    <LegendItem color="bg-pink-500" label="投信佈局 (Trust)" />
+                    <LegendItem color="bg-yellow-500" label="股價走勢 (Price)" />
                 </div>
-            </div>
-
-            {/* 數據警告 */}
-            <div className="glass p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                <p className="text-amber-400/80 text-sm text-center">
-                    ⚠️ 此頁面使用模擬數據展示，待 Crawler 擴充後接入真實資料。
-                </p>
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import React from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
 import { Activity, Info } from 'lucide-react';
 import useSWR from 'swr';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -35,8 +36,22 @@ export default function CorrelationChart({
         fetcher
     );
 
-    if (error) return <div className="p-4 text-red-500 bg-red-900/20 rounded-xl border border-red-500/20">載入相關性圖表失敗</div>;
-    if (isLoading || !data) return <div className="h-[300px] flex items-center justify-center animate-pulse text-slate-500 font-mono">CALCULATING CORRELATION MATRIX...</div>;
+    if (error) return (
+        <div className="p-4 text-red-500 bg-red-900/20 rounded-xl border border-red-500/20">
+            <Bilingual zh="載入相關性圖表失敗" en="Failed to load correlation chart" mode="inline" enClassName="ml-2 text-[9px] opacity-50" />
+        </div>
+    );
+    if (isLoading || !data) return (
+        <div className="h-[300px] flex items-center justify-center animate-pulse">
+            <Bilingual
+                zh="正在計算相關性矩陣..."
+                en="CALCULATING CORRELATION MATRIX..."
+                mode="stacked"
+                zhClassName="text-slate-500 text-sm"
+                enClassName="text-[9px] text-slate-600 font-mono tracking-wider uppercase mt-1"
+            />
+        </div>
+    );
 
     // 防禦性解析：確保 summary 及其子屬性存在
     const summary = data.summary ?? { current: 0, mean: 0, status: 'N/A' };
@@ -49,7 +64,13 @@ export default function CorrelationChart({
                         <Activity className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-white tracking-widest uppercase">跨資產滯後分析</h3>
+                        <Bilingual
+                            zh="跨資產滯後分析"
+                            en="Cross-Asset Lag Analysis"
+                            mode="stacked"
+                            zhClassName="text-lg font-bold text-white tracking-widest uppercase"
+                            enClassName="text-[9px] text-slate-500 font-mono tracking-wider uppercase"
+                        />
                         <p className="text-[10px] text-slate-500 font-mono">{base} ↔ {target} (Lag: {lag})</p>
                     </div>
                 </div>
@@ -103,7 +124,12 @@ export default function CorrelationChart({
 
             <div className="mt-4 flex items-center gap-2 text-[10px] text-slate-500 bg-white/5 p-2 rounded-lg border border-white/5">
                 <Info className="w-3 h-3 text-emerald-500/50" />
-                <span>滯後天數越大代表領先性越強。當前視窗: {data.window ?? window} 天。</span>
+                <Bilingual
+                    zh={`滯後天數越大代表領先性越強。當前視窗: ${data.window ?? window} 天。`}
+                    en={`Higher lag = stronger lead signal. Window: ${data.window ?? window} days.`}
+                    mode="inline"
+                    enClassName="ml-2 opacity-40 text-[8px]"
+                />
             </div>
         </div>
     );

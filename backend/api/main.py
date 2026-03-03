@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routers import (
     ai, backtest, market, screener, admin, 
     alerts, insights, tactical, macro, 
-    analysis, evolution, professional, monitor
+    analysis, evolution, professional, monitor, chips
 )
 
 app = FastAPI(
@@ -35,6 +35,7 @@ app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"]
 app.include_router(evolution.router, prefix="/api/v1/evolution", tags=["Evolution"])
 app.include_router(professional.router, prefix="/api/v1", tags=["Professional"])
 app.include_router(monitor.router, prefix="/api/v1/monitor", tags=["Monitor"])
+app.include_router(chips.router, prefix="/api/v1", tags=["Chips"])
 
 @app.get("/")
 def health_check():

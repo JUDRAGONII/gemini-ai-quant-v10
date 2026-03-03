@@ -3,10 +3,12 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AgentDebatePanel from '../../components/AI/AgentDebatePanel';
 
-// Mock Framer Motion
+// Mock Framer Motion — 擴充 motion.li / motion.span 避免 undefined
 jest.mock('framer-motion', () => ({
     motion: {
         div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+        li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
+        span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
     },
     AnimatePresence: ({ children }: any) => <>{children}</>,
 }));

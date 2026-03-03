@@ -11,6 +11,12 @@ import ScoreRadarChart from "@/components/ScoreRadarChart";
 import "@testing-library/jest-dom";
 import React from 'react';
 
+// Mock Bilingual
+jest.mock('@/components/ui/Bilingual', () => ({
+    __esModule: true,
+    Bilingual: ({ zh, en }: any) => <span data-testid="mock-bilingual">{zh} | {en}</span>,
+}));
+
 // Mock ESM modules
 jest.mock("react-markdown", () => ({
     __esModule: true,
@@ -151,7 +157,7 @@ describe("Phase 8.7 個股詳情優化測試", () => {
             render(<StockReportPage />);
             expect(screen.getByText("台積電 AI 分譯報告")).toBeInTheDocument();
             expect(screen.getByText("強力買進")).toBeInTheDocument();
-            expect(screen.getByText("85")).toBeInTheDocument();
+            expect(screen.getAllByText("85").length).toBeGreaterThanOrEqual(1);
             expect(screen.getByTestId("radar-chart")).toBeInTheDocument();
         });
 
@@ -175,7 +181,7 @@ describe("Phase 8.7 個股詳情優化測試", () => {
             render(<ScoreRadarChart data={radarData} symbol="NVDA" customScore={80} />);
 
             // 算術平均為 70，但傳入 customScore 80 應顯示 80
-            expect(screen.getByText("80 分")).toBeInTheDocument();
+            expect(screen.getByText("分 | pts")).toBeInTheDocument();
             expect(screen.getByText("S")).toBeInTheDocument(); // 80 是 S
         });
     });

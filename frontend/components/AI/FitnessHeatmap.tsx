@@ -64,7 +64,7 @@ export const FitnessHeatmap: React.FC<FitnessHeatmapProps> = ({ history }) => {
                     <Area
                         type="monotone"
                         dataKey="max_fitness"
-                        name="BEST FITNESS"
+                        name="最佳適應度 (BEST FITNESS)"
                         stroke="#8B5CF6"
                         fillOpacity={1}
                         fill="url(#colorMax)"
@@ -72,7 +72,7 @@ export const FitnessHeatmap: React.FC<FitnessHeatmapProps> = ({ history }) => {
                     <Area
                         type="monotone"
                         dataKey="avg_fitness"
-                        name="AVG FITNESS"
+                        name="平均適應度 (AVG FITNESS)"
                         stroke="#0EA5E9"
                         fillOpacity={1}
                         fill="url(#colorAvg)"

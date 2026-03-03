@@ -51,8 +51,9 @@ export default function CommandCenterPage() {
         return (
             <div className="flex h-screen items-center justify-center bg-slate-950 text-slate-400">
                 <div className="flex flex-col items-center gap-4 animate-pulse">
-                    <Activity className="w-12 h-12 text-blue-500" />
-                    <div className="text-sm font-mono tracking-widest">INITIALIZING AI COMMAND CENTER...</div>
+                    <div className="text-sm font-mono tracking-widest">
+                        <Bilingual zh="正在初始化 AI 監控中心..." en="INITIALIZING AI COMMAND CENTER..." mode="stacked" />
+                    </div>
                 </div>
             </div>
         );

@@ -4,6 +4,7 @@ import { Activity, TrendingUp, BarChart3, FileText, Settings, Cpu, Layers, Zap, 
 import MacroChart from '@/components/MacroChart';
 import { MobileNav } from '@/components/layout';
 import Sidebar from '@/components/layout/Sidebar';
+import HomeSystemHealth from '@/components/home/HomeSystemHealth';
 import Link from 'next/link';
 import { Bilingual } from '@/components/ui/Bilingual';
 
@@ -57,13 +58,16 @@ export default async function Home() {
                         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-600/10 pointer-events-none"></div>
                         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                             <div>
-                                <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2">
-                                    <span className="gradient-text">市場導航儀</span>
-                                </h1>
-                                <p className="text-[11px] text-cyan-500/50 font-mono uppercase tracking-[0.3em] mb-2">Market Navigator</p>
-                                <p className="text-gray-400 text-lg font-light tracking-wide max-w-md">
-                                    即時監控全局宏觀指標，驅動精準 AI 決策路徑
-                                </p>
+                                <Bilingual
+                                    zh="市場導航儀"
+                                    en="Market Navigator"
+                                    mode="stacked"
+                                    zhClassName="text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2 gradient-text"
+                                    enClassName="text-[11px] text-cyan-500/50 font-mono uppercase tracking-[0.3em] mb-2"
+                                />
+                                <div className="text-gray-400 text-lg font-light tracking-wide max-w-md mt-2">
+                                    <Bilingual zh="即時監控全局宏觀指標，驅動精準 AI 決策路徑" en="Real-time global macro monitoring driving precise AI decisions" mode="stacked" />
+                                </div>
                             </div>
                             <div className="flex items-center space-x-4">
                                 <StatusBadge label="AI Core" status="online" />
@@ -87,13 +91,15 @@ export default async function Home() {
                                     enClassName="text-[10px] uppercase tracking-widest font-mono text-cyan-500/50"
                                 />
                             </h2>
-                            <Link href="/macro" className="text-cyan-400 text-sm hover:underline">查看全部數據 →</Link>
+                            <Link href="/macro" className="text-cyan-400 text-sm hover:underline">
+                                <Bilingual zh="查看全部數據 →" en="View All Data →" mode="inline" />
+                            </Link>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <ChartWrapper title="GDP Growth (QoQ)" data={gdpData} color="#06B6D4" lucide={Activity} />
-                            <ChartWrapper title="CPI Inflation (YoY)" data={cpiData} color="#3B82F6" lucide={Zap} />
-                            <ChartWrapper title="VIX Volatility" data={vixData} color="#EC4899" lucide={BarChart3} />
+                            <ChartWrapper titleZh="經濟成長" titleEn="GDP Growth QoQ" data={gdpData} color="#06B6D4" lucide={Activity} />
+                            <ChartWrapper titleZh="消費者物價指數" titleEn="CPI Inflation YoY" data={cpiData} color="#3B82F6" lucide={Zap} />
+                            <ChartWrapper titleZh="恐慌指數" titleEn="VIX Volatility" data={vixData} color="#EC4899" lucide={BarChart3} />
                         </div>
                     </section>
 
@@ -127,30 +133,7 @@ export default async function Home() {
                         </div>
 
                         {/* System Health */}
-                        <div className="space-y-6">
-                            <Bilingual
-                                zh="系統效能中心"
-                                en="System Health"
-                                mode="stacked"
-                                zhClassName="text-2xl font-bold text-white/90"
-                                enClassName="text-[10px] uppercase tracking-widest font-mono text-emerald-500/50"
-                            />
-                            <div className="glass p-8 rounded-2xl space-y-6 border-white/10 bg-white/[0.02]">
-                                <HealthRow label="Gemini 2.0" value="Active" icon={<Cpu size={16} />} />
-                                <HealthRow label="Sync Hub" value="Stable" icon={<Layers size={16} />} />
-                                <HealthRow label="Latency" value="120ms" icon={<Clock size={16} />} />
-
-                                <div className="pt-6 border-t border-white/5 space-y-4">
-                                    <p className="text-xs text-gray-500 font-mono uppercase tracking-widest">Version Alpha V10.2.5</p>
-                                    <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-[85%] rounded-full shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
-                                    </div>
-                                    <p className="text-[10px] text-gray-400 font-light">
-                                        系統運作良好。目前追蹤 538 萬筆數據節點。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <HomeSystemHealth />
                     </div>
                 </main>
             </div>
@@ -169,11 +152,17 @@ function StatusBadge({ label, status }: { label: string, status: 'online' | 'off
     );
 }
 
-function ChartWrapper({ title, data, color, lucide: Icon }: { title: string, data: any[], color: string, lucide: any }) {
+function ChartWrapper({ titleZh, titleEn, data, color, lucide: Icon }: { titleZh: string, titleEn: string, data: any[], color: string, lucide: any }) {
     return (
         <div className="glass p-6 rounded-2xl glass-hover overflow-hidden h-64 flex flex-col">
             <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-400 text-xs font-bold uppercase tracking-tighter">{title}</span>
+                <Bilingual
+                    zh={titleZh}
+                    en={titleEn}
+                    mode="suffix"
+                    zhClassName="text-gray-300 text-sm font-bold tracking-wide"
+                    enClassName="text-gray-500 text-[10px] font-mono uppercase tracking-tighter ml-2"
+                />
                 <Icon size={16} style={{ color }} />
             </div>
             <div className="flex-1 -mx-4 -mb-4">
@@ -195,10 +184,16 @@ function EnhancedReportCard({ report }: { report: any }) {
                         <Clock size={12} />
                         <span>{report.report_date}</span>
                         <span className="mx-2 text-white/10">|</span>
-                        <span className="text-cyan-400/80">AI Analysis Report</span>
+                        <Bilingual zh="AI 分析報告" en="AI Analysis Report" mode="inline" zhClassName="text-cyan-400/80" enClassName="text-cyan-500/40 text-[10px] ml-1" />
                     </div>
-                    <h3 className="text-xl font-bold text-white/90 group-hover:text-cyan-400 transition-colors">市場趨勢深度辯論</h3>
-                    <p className="text-gray-400 text-sm line-clamp-1 font-light leading-relaxed">{report.summary}</p>
+                    <Bilingual
+                        zh={report.report_type === 'dialectic' ? "市場趨勢深度辯論" : "AI 智能籌碼解析"}
+                        en={report.report_type === 'dialectic' ? "Dialectic Analysis" : "Smart Money Insights"}
+                        mode="stacked"
+                        zhClassName="text-xl font-bold text-white/90 group-hover:text-cyan-400 transition-colors"
+                        enClassName="text-[10px] text-gray-500 font-mono uppercase tracking-widest"
+                    />
+                    <p className="text-gray-400 text-sm line-clamp-1 font-light leading-relaxed mt-2">{report.summary}</p>
                 </div>
                 <div className="md:border-l md:border-white/5 md:pl-8 flex items-center">
                     <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-all">

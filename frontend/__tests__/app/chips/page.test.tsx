@@ -4,6 +4,32 @@ import MarginPage from "@/app/chips/margin/page";
 import InstitutionalPage from "@/app/chips/institutional/page";
 import ChipsPage from "@/app/chips/page";
 
+jest.mock("@/hooks/useChipsData", () => ({
+    useChipsData: () => ({
+        chipsData: [
+            {
+                date: "2024-03-01",
+                price: 700,
+                foreign: 100000000,
+                trust: 50000000,
+                dealer: 20000000,
+                total_institutional: 170000000,
+                margin_balance: 50000,
+                margin_change: 1000,
+                short_balance: 1000,
+                short_change: -100,
+                short_ratio: 5.5
+            }
+        ],
+        isLoading: false,
+        isError: false
+    })
+}));
+
+jest.mock("@/components/ui/Bilingual", () => ({
+    Bilingual: ({ zh }: { zh: string }) => <span>{zh}</span>
+}));
+
 // Mock Recharts
 jest.mock("recharts", () => ({
     ResponsiveContainer: ({ children }: any) => <div>{children}</div>,

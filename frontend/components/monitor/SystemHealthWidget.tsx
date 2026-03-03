@@ -54,7 +54,7 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                         </div>
                         <Progress value={system.ram_usage} className="h-1.5" />
                         <div className="text-[10px] text-right text-slate-500">
-                            Total: {system.ram_total_gb} GB
+                            <Bilingual zh="總計" en="Total" mode="inline" />: {system.ram_total_gb} GB
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({ system, 
                         </div>
                         <div className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${quota.status === 'Healthy' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                             }`}>
-                            {quota.status}
+                            {quota.status === 'Healthy' ? <Bilingual zh="正常" en="Healthy" mode="inline" /> : <Bilingual zh="異常" en="Warning" mode="inline" />}
                         </div>
                     </div>
 

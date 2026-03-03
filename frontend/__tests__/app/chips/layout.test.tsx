@@ -3,7 +3,18 @@ import { render, screen } from "@testing-library/react";
 import ChipsLayout from "@/app/chips/layout";
 import { usePathname } from "next/navigation";
 
-// 導航與圖標 Mock 已由 jest.setup.js 全域處理
+// Mock Sidebar 與 MobileNav 以隔離 Layout 測試，避免 Bilingual 組件在 JSDOM 中的編碼干擾
+jest.mock('@/components/layout/Sidebar', () => {
+    return function MockSidebar() {
+        return <nav data-testid="sidebar">Sidebar</nav>;
+    };
+});
+
+jest.mock('@/components/layout', () => ({
+    MobileNav: function MockMobileNav() {
+        return <div data-testid="mobile-nav">MobileNav</div>;
+    },
+}));
 
 describe("籌碼分析模組 (Chips)", () => {
     describe("基礎路徑測試 (Happy Path)", () => {

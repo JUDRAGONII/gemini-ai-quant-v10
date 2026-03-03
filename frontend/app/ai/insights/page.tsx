@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, BrainCircuit, LayoutGrid, Zap, Globe } from 'lucide-react';
 import DecisionAssistant from '@/components/AI/DecisionAssistant';
-import DialecticPanel from '@/components/Dashboard/DialecticPanel';
 import TacticalPlanner from '@/components/Dashboard/TacticalPlanner';
 import CorrelationChart from '@/components/Dashboard/CorrelationChart';
 import { Bilingual } from '@/components/ui/Bilingual';

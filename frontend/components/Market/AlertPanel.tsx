@@ -3,6 +3,7 @@ import { X, BellOff, Trash2, CheckCircle2 } from 'lucide-react';
 import { useAlerts } from '@/hooks/useAlerts';
 import { AlertItem } from './AlertItem';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface AlertPanelProps {
     isOpen: boolean;
@@ -36,7 +37,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ isOpen, onClose }) => {
                         {/* Header */}
                         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
                             <div className="flex items-center gap-2">
-                                <h2 className="text-xl font-bold text-white">市場監控中心</h2>
+                                <h2 className="text-xl font-bold text-white"><Bilingual zh="市場監控中心" en="Market Monitor" mode="inline" /></h2>
                                 {unreadCount > 0 && (
                                     <span className="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full">
                                         {unreadCount}
@@ -57,10 +58,10 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ isOpen, onClose }) => {
                                 title="全部標記已讀"
                             >
                                 <CheckCircle2 size={14} />
-                                <span>全部已讀</span>
+                                <span><Bilingual zh="全部已讀" en="Mark All Read" mode="inline" /></span>
                             </button>
                             <span className="text-[10px] text-gray-500">
-                                僅顯示最近 50 筆異動
+                                <Bilingual zh="僅顯示最近 50 筆異動" en="Showing last 50 alerts only" mode="inline" />
                             </span>
                         </div>
 
@@ -69,7 +70,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ isOpen, onClose }) => {
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center h-40 gap-3">
                                     <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                    <span className="text-sm text-gray-400">正在同步行情...</span>
+                                    <span className="text-sm text-gray-400"><Bilingual zh="正在同步行情..." en="Syncing market data..." mode="inline" /></span>
                                 </div>
                             ) : alerts && alerts.length > 0 ? (
                                 alerts.map((alert) => (
@@ -78,7 +79,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ isOpen, onClose }) => {
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-64 opacity-30">
                                     <BellOff size={48} className="text-gray-500 mb-4" />
-                                    <p className="text-sm text-gray-500">目前尚無市場異動</p>
+                                    <p className="text-sm text-gray-500"><Bilingual zh="目前尚無市場異動" en="No market alerts at the moment" mode="inline" /></p>
                                 </div>
                             )}
                         </div>
@@ -86,7 +87,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ isOpen, onClose }) => {
                         {/* Footer */}
                         <div className="p-4 border-t border-white/10 text-center">
                             <button className="text-xs text-gray-500 hover:text-white transition-colors">
-                                設定警示規則
+                                <Bilingual zh="設定警示規則" en="Alert Settings" mode="inline" />
                             </button>
                         </div>
                     </motion.div>

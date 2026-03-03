@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { ChevronUp, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 /**
  * 排行表格組件
@@ -112,21 +113,21 @@ export default function RankingTable({
 
     // 表頭定義
     const columns = [
-        { key: "rank", label: "排名", width: "w-16", sortable: true },
-        { key: "symbol", label: "代碼", width: "w-24", sortable: true },
-        { key: "name", label: "名稱", width: "w-32", sortable: false },
+        { key: "rank", label: <Bilingual zh="排名" en="Rank" />, width: "w-16", sortable: true },
+        { key: "symbol", label: <Bilingual zh="代碼" en="Code" />, width: "w-24", sortable: true },
+        { key: "name", label: <Bilingual zh="名稱" en="Name" />, width: "w-32", sortable: false },
         {
             key: "compositeScore",
-            label: "綜合",
+            label: <Bilingual zh="綜合" en="Score" />,
             width: "w-20",
             sortable: true,
         },
-        { key: "valueScore", label: "價值", width: "w-16", sortable: true },
-        { key: "growthScore", label: "成長", width: "w-16", sortable: true },
-        { key: "momentumScore", label: "動能", width: "w-16", sortable: true },
-        { key: "qualityScore", label: "品質", width: "w-16", sortable: true },
-        { key: "chipScore", label: "籌碼", width: "w-16", sortable: true },
-        { key: "changePercent", label: "漲跌", width: "w-20", sortable: true },
+        { key: "valueScore", label: <Bilingual zh="價值" en="Value" />, width: "w-16", sortable: true },
+        { key: "growthScore", label: <Bilingual zh="成長" en="Growth" />, width: "w-16", sortable: true },
+        { key: "momentumScore", label: <Bilingual zh="動能" en="Mom." />, width: "w-16", sortable: true },
+        { key: "qualityScore", label: <Bilingual zh="品質" en="Quality" />, width: "w-16", sortable: true },
+        { key: "chipScore", label: <Bilingual zh="籌碼" en="Chip" />, width: "w-16", sortable: true },
+        { key: "changePercent", label: <Bilingual zh="漲跌" en="Chg%" />, width: "w-20", sortable: true },
     ];
 
     return (
@@ -255,9 +256,9 @@ export default function RankingTable({
             {totalPages > 1 && (
                 <div className="flex justify-between items-center px-4 py-3 border-t border-white/10">
                     <span className="text-sm text-gray-500">
-                        顯示 {(currentPage - 1) * pageSize + 1} -{" "}
-                        {Math.min(currentPage * pageSize, data.length)} 筆，共{" "}
-                        {data.length} 筆
+                        <Bilingual zh="顯示" en="Showing" /> {(currentPage - 1) * pageSize + 1} -{" "}
+                        {Math.min(currentPage * pageSize, data.length)} <Bilingual zh="筆，共" en="of" />{" "}
+                        {data.length} <Bilingual zh="筆" en="items" />
                     </span>
                     <div className="flex gap-2">
                         <button
@@ -267,7 +268,7 @@ export default function RankingTable({
                             }
                             disabled={currentPage === 1}
                         >
-                            上一頁
+                            <Bilingual zh="上一頁" en="Prev" />
                         </button>
                         <span className="px-3 py-1 text-sm text-gray-400">
                             {currentPage} / {totalPages}
@@ -281,7 +282,7 @@ export default function RankingTable({
                             }
                             disabled={currentPage === totalPages}
                         >
-                            下一頁
+                            <Bilingual zh="下一頁" en="Next" />
                         </button>
                     </div>
                 </div>

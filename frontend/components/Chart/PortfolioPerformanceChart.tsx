@@ -10,6 +10,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
+import { Bilingual } from "@/components/ui/Bilingual";
 
 interface PerformanceDataPoint {
     date: string;
@@ -28,11 +29,11 @@ interface PortfolioPerformanceChartProps {
 }
 
 const PERIODS = [
-    { value: '1W', label: '1週' },
-    { value: '1M', label: '1月' },
-    { value: '3M', label: '3月' },
-    { value: '6M', label: '6月' },
-    { value: '1Y', label: '1年' },
+    { value: '1W', label: <Bilingual zh="1週" en="1W" /> },
+    { value: '1M', label: <Bilingual zh="1月" en="1M" /> },
+    { value: '3M', label: <Bilingual zh="3月" en="3M" /> },
+    { value: '6M', label: <Bilingual zh="6月" en="6M" /> },
+    { value: '1Y', label: <Bilingual zh="1年" en="1Y" /> },
 ];
 
 export default function PortfolioPerformanceChart({
@@ -66,25 +67,25 @@ export default function PortfolioPerformanceChart({
                     <p className="text-gray-400 mb-2">{label}</p>
                     <div className="space-y-1">
                         <div className="flex justify-between gap-4">
-                            <span className="text-gray-500">總價值</span>
+                            <span className="text-gray-500"><Bilingual zh="總價值" en="Total Value" /></span>
                             <span className="text-white font-mono">
                                 {formatTooltipValue(dataPoint.total_value)}
                             </span>
                         </div>
                         <div className="flex justify-between gap-4">
-                            <span className="text-gray-500">總成本</span>
+                            <span className="text-gray-500"><Bilingual zh="總成本" en="Total Cost" /></span>
                             <span className="text-gray-300 font-mono">
                                 {formatTooltipValue(dataPoint.total_cost)}
                             </span>
                         </div>
                         <div className="flex justify-between gap-4 pt-1 border-t border-white/10">
-                            <span className="text-gray-500">報酬金額</span>
+                            <span className="text-gray-500"><Bilingual zh="報酬金額" en="Return" /></span>
                             <span className={`font-mono ${dataPoint.return_amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {dataPoint.return_amount >= 0 ? '+' : ''}{formatTooltipValue(dataPoint.return_amount)}
                             </span>
                         </div>
                         <div className="flex justify-between gap-4">
-                            <span className="text-gray-500">報酬率</span>
+                            <span className="text-gray-500"><Bilingual zh="報酬率" en="Return Rate" /></span>
                             <span className={`font-mono ${dataPoint.return_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {dataPoint.return_rate >= 0 ? '+' : ''}{dataPoint.return_rate.toFixed(2)}%
                             </span>
@@ -102,17 +103,16 @@ export default function PortfolioPerformanceChart({
             style={{ height: height + 80 }}
         >
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-200">績效走勢</h3>
+                <h3 className="text-lg font-bold text-gray-200"><Bilingual zh="績效走勢" en="Performance Trend" /></h3>
                 <div className="flex gap-1 bg-white/5 rounded-lg p-1">
                     {PERIODS.map((p) => (
                         <button
                             key={p.value}
                             onClick={() => onPeriodChange(p.value)}
-                            className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                                period === p.value
+                            className={`px-3 py-1 text-sm rounded-md transition-colors ${period === p.value
                                     ? 'bg-indigo-600 text-white'
                                     : 'text-gray-400 hover:text-white hover:bg-white/10'
-                            }`}
+                                }`}
                         >
                             {p.label}
                         </button>
@@ -123,19 +123,19 @@ export default function PortfolioPerformanceChart({
             {latestData && (
                 <div className="flex gap-6 mb-4">
                     <div>
-                        <p className="text-sm text-gray-500">總價值</p>
+                        <p className="text-sm text-gray-500"><Bilingual zh="總價值" en="Total Value" /></p>
                         <p className="text-xl font-bold text-white font-mono">
                             {latestData.total_value.toLocaleString("zh-TW")}
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">報酬金額</p>
+                        <p className="text-sm text-gray-500"><Bilingual zh="報酬金額" en="Return" /></p>
                         <p className={`text-xl font-bold font-mono ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                             {isPositive ? '+' : ''}{latestData.return_amount.toLocaleString("zh-TW")}
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">報酬率</p>
+                        <p className="text-sm text-gray-500"><Bilingual zh="報酬率" en="Return Rate" /></p>
                         <p className={`text-xl font-bold font-mono ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                             {isPositive ? '+' : ''}{latestData.return_rate.toFixed(2)}%
                         </p>

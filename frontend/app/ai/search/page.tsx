@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Loader2, Sparkles, Clock, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface SearchResult {
     id: string;
@@ -121,14 +122,22 @@ export default function AISearchPage() {
             <section className="flex flex-col gap-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase">
-                            AI 語義搜尋中心 <span className="text-sm font-medium text-amber-500/60 uppercase tracking-widest ml-2">Semantic Knowledge Hub</span>
-                        </h1>
-                        <p className="text-gray-400 mt-2 flex items-center text-sm font-medium">
+                        <Bilingual
+                            zh="AI 語義搜尋中心"
+                            en="Semantic Knowledge Hub"
+                            mode="stacked"
+                            zhClassName="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 tracking-tighter uppercase"
+                            enClassName="text-sm font-medium text-amber-500/60 uppercase tracking-widest mt-1"
+                        />
+                        <div className="text-gray-400 mt-4 flex items-center text-sm font-medium">
                             <Sparkles className="w-4 h-4 mr-2 text-amber-400" />
-                            使用自然語言搜尋 AI 投資報告與市場大數據知識庫
+                            <Bilingual
+                                zh="使用自然語言搜尋 AI 投資報告與市場大數據知識庫"
+                                en="Search AI investment reports and market data using natural language"
+                                mode="inline"
+                            />
                             <span className="text-[10px] opacity-30 ml-2 uppercase font-mono italic">Knowledge RAG Pro v2.1</span>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -141,9 +150,13 @@ export default function AISearchPage() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] -mr-48 -mt-48 transition-all duration-1000 group-focus-within:bg-indigo-500/10" />
 
                 <div className="relative z-10 space-y-4">
-                    <label className="text-[10px] font-bold uppercase text-gray-400 ml-1 tracking-widest">
-                        全域檢索 <span className="text-[8px] opacity-40 ml-1">Universal Search</span>
-                    </label>
+                    <Bilingual
+                        zh="全域檢索"
+                        en="Universal Search"
+                        mode="inline"
+                        zhClassName="text-sm font-bold uppercase text-gray-400 ml-1 tracking-widest"
+                        enClassName="text-xs opacity-50 ml-1 font-bold uppercase tracking-widest text-gray-400"
+                    />
                     <div className="relative">
                         <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400/50" />
                         <input
@@ -175,7 +188,7 @@ export default function AISearchPage() {
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                     <>
                                         <Search className="w-4 h-4" />
-                                        搜尋 <span className="text-[10px] font-normal opacity-70">SEARCH</span>
+                                        <Bilingual zh="搜尋" en="SEARCH" mode="inline" enClassName="text-[10px] font-normal opacity-70 ml-1" />
                                     </>
                                 )}
                             </button>
@@ -191,13 +204,13 @@ export default function AISearchPage() {
                             <div className="p-3 border-b border-white/10 flex justify-between items-center">
                                 <span className="text-sm text-gray-400 flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
-                                    最近搜尋
+                                    <Bilingual zh="最近搜尋" en="Recent Searches" />
                                 </span>
                                 <button
                                     onClick={clearRecentSearches}
                                     className="text-xs text-gray-500 hover:text-white transition-colors"
                                 >
-                                    清除
+                                    <Bilingual zh="清除" en="Clear" />
                                 </button>
                             </div>
                             <div className="max-h-64 overflow-y-auto">
@@ -230,7 +243,9 @@ export default function AISearchPage() {
             {loading && (
                 <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                    <span className="ml-3 text-gray-400">正在搜尋知識庫...</span>
+                    <span className="ml-3 text-gray-400">
+                        <Bilingual zh="正在搜尋知識庫..." en="Searching knowledge base..." />
+                    </span>
                 </div>
             )}
 
@@ -241,16 +256,20 @@ export default function AISearchPage() {
                     className="bg-white/5 border border-white/10 rounded-3xl p-12 text-center backdrop-blur-sm"
                 >
                     <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400 text-lg">沒有找到相關結果</p>
-                    <p className="text-sm text-gray-500 mt-2">嘗試使用不同的關鍵字或更廣泛的描述</p>
+                    <div className="text-gray-400 text-lg">
+                        <Bilingual zh="沒有找到相關結果" en="No related results found" />
+                    </div>
+                    <div className="text-sm text-gray-500 mt-2">
+                        <Bilingual zh="嘗試使用不同的關鍵字或更廣泛的描述" en="Try using different keywords or broader descriptions" />
+                    </div>
                 </motion.div>
             )}
 
             {!loading && results.length > 0 && (
                 <div className="space-y-4">
-                    <p className="text-gray-400 text-sm">
-                        找到 <span className="text-white font-medium">{results.length}</span> 個相關結果
-                    </p>
+                    <div className="text-gray-400 text-sm">
+                        <Bilingual zh="找到" en="Found" mode="inline" /> <span className="text-white font-medium">{results.length}</span> <Bilingual zh="個相關結果" en="related results" mode="inline" />
+                    </div>
                     {results.map((result, index) => (
                         <motion.div
                             key={result.id}
@@ -297,12 +316,12 @@ export default function AISearchPage() {
                                     {expandedId === result.id ? (
                                         <>
                                             <ChevronUp className="w-4 h-4" />
-                                            收合
+                                            <Bilingual zh="收合" en="Collapse" />
                                         </>
                                     ) : (
                                         <>
                                             <ChevronDown className="w-4 h-4" />
-                                            展開全文
+                                            <Bilingual zh="展開全文" en="Expand" />
                                         </>
                                     )}
                                 </button>

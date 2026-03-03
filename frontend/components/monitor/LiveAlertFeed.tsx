@@ -54,7 +54,7 @@ export const LiveAlertFeed: React.FC<LiveAlertFeedProps> = ({ initialAlerts }) =
                         <Bell className="w-4 h-4 text-blue-400" />
                     </Bilingual>
                     <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded font-mono animate-pulse">
-                        實時 (REALTIME)
+                        <Bilingual zh="實時" en="REALTIME" mode="inline" enClassName="ml-1" />
                     </span>
                 </CardTitle>
             </CardHeader>

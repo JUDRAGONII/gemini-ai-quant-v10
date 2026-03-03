@@ -3,10 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FactorRadarChart from '../../components/AI/FactorRadarChart';
 
-// Mock Framer Motion
+// Mock Framer Motion — 擴充 motion.li / motion.span
 jest.mock('framer-motion', () => ({
     motion: {
         div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+        li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
+        span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
     },
     AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
@@ -37,7 +39,7 @@ describe('FactorRadarChart', () => {
         );
 
         expect(screen.getByText('VQGM 全維度評分')).toBeInTheDocument();
-        expect(screen.getByText('18-Factor Radar / 2330')).toBeInTheDocument();
+        expect(screen.getByText('VQGM Multi-Factor Radar')).toBeInTheDocument();
         expect(screen.getByText('75.0')).toBeInTheDocument();
         expect(screen.getByText('A')).toBeInTheDocument();
     });
@@ -50,16 +52,17 @@ describe('FactorRadarChart', () => {
             />
         );
 
-        // 初始狀態：四維度總覽 (View Mode: dimension)
-        const dimBtn = screen.getByText('四維度總覽');
-        expect(dimBtn).toHaveClass('text-cyan-400');
+        // 取得所有維度切換按鈕（第 1 個是「四維度總覽」，後面是各維度）
+        const buttons = screen.getAllByRole('button');
+        expect(buttons.length).toBeGreaterThanOrEqual(2);
 
-        // 點擊 "價值" 維度
-        const valueBtn = screen.getByText('價值');
-        fireEvent.click(valueBtn);
+        // 初始狀態：第一個按鈕（四維度總覽）應為活動狀態
+        expect(buttons[0]).toHaveClass('text-cyan-400');
 
-        // 預期 "價值" 按鈕變亮 (class change logic in component)
-        // 這裡我們簡單檢查是否沒有報錯，且元件仍存在
+        // 點擊第二個按鈕（第一個維度）
+        fireEvent.click(buttons[1]);
+
+        // 預期元件仍存在且無報錯
         expect(screen.getByText('VQGM 全維度評分')).toBeInTheDocument();
     });
 });
