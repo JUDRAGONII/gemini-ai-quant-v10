@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import GlassCard from '@/components/ui/GlassCard';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Bilingual } from '@/components/ui/Bilingual';
 
 interface MacroIndicatorProps {
     name: React.ReactNode;

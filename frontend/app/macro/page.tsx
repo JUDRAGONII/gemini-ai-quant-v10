@@ -170,17 +170,13 @@ export default function MacroPage() {
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                                 <SearchIcon className="w-4 h-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                             </div>
-                            <Bilingual zh="快速搜尋指標或代碼..." en="FAST SEARCH..." mode="inline">
-                                {(placeholder) => (
-                                    <input
-                                        type="text"
-                                        placeholder={placeholder as string}
-                                        value={searchQuery}
-                                        onChange={e => setSearchQuery(e.target.value)}
-                                        className="w-full h-full min-h-[72px] bg-slate-900/40 border border-white/5 rounded-2xl pl-12 pr-4 text-xs font-mono focus:outline-none focus:border-blue-500/40 transition-all placeholder:text-slate-700"
-                                    />
-                                )}
-                            </Bilingual>
+                            <input
+                                type="text"
+                                placeholder="快速搜尋指標或代碼... | FAST SEARCH..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="w-full h-full min-h-[72px] bg-slate-900/40 border border-white/5 rounded-2xl pl-12 pr-4 text-xs font-mono focus:outline-none focus:border-blue-500/40 transition-all placeholder:text-slate-700"
+                            />
                         </div>
 
                         {/* 2. Main Analysis Section (Middle Row) */}
