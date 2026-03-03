@@ -11,3 +11,15 @@ volumes/storage/
 dist/
 coverage/
 nul
+
+# IDE
+.vscode/
+
+# Test logs & outputs
+*.log
+test_output.txt
+frontend/test-output.txt
+frontend/lint_results.txt
+
+# Redis local data
+volumes/redis/
