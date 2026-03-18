@@ -57,6 +57,44 @@ async def get_symbol_snapshot(stock_code: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+import datetime
+
+@router.get("/sparklines")
+async def get_sparklines(
+    symbols: str = Query(..., description="Comma separated symbols, e.g. 2330,NVDA")
+):
+    """
+    獲取指定標的列表最近 7 個交易日的收盤價，供前端渲染 Sparkline 走勢圖使用。
+    """
+    try:
+        symbol_list = [s.strip() for s in symbols.split(",") if s.strip()]
+        if not symbol_list:
+            return {}
+            
+        # 為避免休市，拉取過去 30 天的日 K，並擷取每檔最新的 7 筆
+        thirty_days_ago = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
+        
+        response = supabase.table("daily_price") \
+            .select("stock_code, close_price, trade_date") \
+            .in_("stock_code", symbol_list) \
+            .gte("trade_date", thirty_days_ago) \
+            .order("trade_date", desc=True) \
+            .execute()
+            
+        sparklines = defaultdict(list)
+        for row in response.data:
+            code = row["stock_code"]
+            if len(sparklines[code]) < 7:
+                sparklines[code].append({"value": row["close_price"], "date": row["trade_date"]})
+                
+        # 反轉陣列使時間從舊到新 (左到右)
+        for code in sparklines:
+            sparklines[code].reverse()
+            
+        return sparklines
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/exchange_rates")
 async def get_exchange_rates(
     base: Optional[str] = "USD",

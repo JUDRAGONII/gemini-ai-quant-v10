@@ -7,6 +7,36 @@
 
 ---
 
+## [V10.6.8] - 2026-03-18
+### Added
+- **市場動態頁面真實行情與歷史走勢重現 (Phase 14.12)**:
+  - **Screener API 分頁串接**: 全面汰除 `frontend/app/stocks/page.tsx` 中寫死的假資料陣列。引進 React SWR 與後端高效的 `POST /api/v1/screener/screen` 分頁點對接。
+  - **Sparklines 輕量 API**: 於 `backend/api/routers/market.py` 追加 `/sparklines` GET 接口，利用 30 天日 K 表 (`daily_price`) 快速聚合指定標的陣列之七天走勢，成功驅動前端的迷你走勢線渲染。
+  - **U/X 無縫強化**: 加入 `Loader2` 元件增強非同步拉取資料時的使用者體驗，維持現有卡片介面完好無損。
+
+### Fixed
+- **RPC `fn_screen_stocks` 缺失與排序 Bug 排解**: 
+  - 修改底層 DB 邏輯，重新實作函數。修復遺漏回傳 `market_type` 以及不支援以 `volume` 成交量過濾降冪的雙重錯誤。
+  - 為防備 Supabase PostgREST 快取阻礙 (`PGRST202`)，於部署時手自動加入了 `public.` 命名區與 `NOTIFY pgrst, 'reload schema'` 機制，完美防範 502 Bad Gateway 發生。
+- **美股報價為 0 顯示異常修復**: 
+  - 診斷出因 `market_relay_worker.py` 在源頭僅專用以抓取 Fugle 台股即時盤，美股在主表 `market_quotes` 中長期留白。
+  - 開發並執行 `sync_us_quotes.py` 輔助轉換腳本，將 `daily_price` 中歷史最新紀錄填平進 `market_quotes` 擔任展示用墊檔，順利恢復美國標的的顯示金額。
+
+## [V10.6.7] - 2026-03-18
+### Added
+- **全市場資料齊步回補 (0-0 工作流)**:
+  - **資料覆蓋對齊**: 將整個 AI 分析儀的資料庫從上次的開發斷點，透過 ETL 推進對齊至 2026-03-18 最新日。
+  - **全市場股票增量 (TW/US)**: 使用 `backfill_manager.py` 輔以 `--years 2026`，成功於背景將 1600+ 檔台美股的所有最新日K與數據入庫。
+  - **多維度巨觀同步**: 分軌同步執行 `run_currency_backfill.py` (匯率、黃金)、`run_economic_backfill.py` (總經日曆)、與 `backfill_macro.py` (各國宏觀特徵指標)，確保所有子模組擁有最新的決策數據。
+
+## [V10.6.6] - 2026-03-03
+### Added
+- **歷史數據全回補與架構修正 (Phase 14 完工)**:
+  - **經濟日曆同步**: 執行 `run_economic_backfill.py` 成功將未來 14 天的 419 筆經濟日曆事件同步至 `economic_calendar` 資料表。
+  - **匯率與貴金屬同步完備**: 成功將 31,065 筆歷史匯率資料（含 USD/TWD, XAU/USD 黃金, XAG/USD 白銀等）回補入庫。
+  - **Schema 對齊修正**: 修復 `exchange_rates` 資料表的 Unique Constraint 問題。建立 `emergency_fx_fix.sql` 並調整 Python 端 `currency_fetcher.py` 腳本的 `on_conflict` 指標與資料字典 (包含 `currency_pair`)，徹底解決 42P10 與 23505 衝突報錯。
+  - **容錯日誌強化**: 替 ETL `upsert` 過程加入第一時間報錯擷取與傳入樣本印出 (Try-Except Logging)。
+
 ## [V10.6.5] - 2026-03-03
 ### Fixed
 - **CI Build Check 修復 (7 檔)**:

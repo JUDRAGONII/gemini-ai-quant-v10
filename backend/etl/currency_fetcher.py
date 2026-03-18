@@ -3,6 +3,7 @@ import yfinance as yf
 from typing import List, Dict, Any, Optional
 from .base_fetcher import BaseFetcher
 from datetime import datetime
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +60,28 @@ class CurrencyFetcher(BaseFetcher):
         total_count = 0
         for pair in pairs:
             records = self.fetch(pair, start_date)
-            if records:
-                count = self.upsert(records, on_conflict="base_currency,target_currency,trade_date")
-                total_count += count
-                logger.info(f"[Currency] {pair} backfilled: {count} records")
+            # 必須把傳給 self.upsert 的資料轉換為吻合資料庫欄位 (currency_pair, reference_date)
+            transformed_records = []
+            for r in records:
+                transformed_records.append({
+                    "currency_pair": f"{r['base_currency']}/{r['target_currency']}",
+                    "base_currency": r['base_currency'],
+                    "target_currency": r['target_currency'],
+                    "trade_date": r['trade_date'],
+                    "rate": r['rate'],
+                    "change": r['change'],
+                    "change_percent": r['change_percent'],
+                    "source": r['source']
+                })
+                
+            if transformed_records:
+                try:
+                    count = self.upsert(transformed_records, on_conflict="currency_pair,trade_date")
+                    total_count += count
+                    logger.info(f"[Currency] {pair} backfilled: {count} records")
+                except Exception as e:
+                    logger.error(f"[{pair}] Upsert 失敗！請檢查欄位與資料表限制。")
+                    logger.error(f"👉 錯誤明細: {str(e)}")
+                    logger.error(f"👉 傳入的第一筆資料樣本: {transformed_records[0] if transformed_records else '空'}")
+                    raise
         return total_count

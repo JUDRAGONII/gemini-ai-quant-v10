@@ -863,3 +863,22 @@ ai-worker 數據精度錯誤 (Out of range float values)
 - [ ] 撰寫新組件前，優先檢查 `lib/` 下的標準 API 封裝實例。
 - [ ] 在 Dashboard 級別的整合測試中，對於高頻出現的數據（如股票代號），應預設其不唯一並使用 `getAllBy...`。
 - [ ] 定期執行 `npm run lint` 檢查是否存在已棄用的導入。
+
+---
+
+### 2026-03-03 Phase 14 匯率歷史回補與 Schema 修復
+
+### 問題現象
+1. `null value in column "currency_pair" violates not-null constraint` (錯誤碼 23502)
+2. `there is no unique or exclusion constraint matching the ON CONFLICT specification` (錯誤碼 42P10)
+3. `duplicate key value violates unique constraint "unique_pair_date"` (錯誤碼 23505)
+
+### 底層根本原因
+專案在歷經 Phase 11.3 與 Phase 11.6 的 Schema Alignment 時，多次調整了 `exchange_rates` 的欄位（將 `reference_date` 更名為 `trade_date`，並拆分出 `base_currency` 與 `target_currency`）。
+但是，原本資料庫層面建立的 Unique 索引是針對 `(currency_pair, trade_date)`。當 Python Fetcher 呼叫 Supabase `upsert` 並試圖將 `on_conflict` 指定為新的欄位 `base_currency,target_currency,trade_date` 時，PostgREST 無法找到對應的 Unique Constraint，進而引發衝突報錯。
+
+### 預防重複犯錯的 Checkbox
+- [x] 修改資料表結構 (Migrations) 時，務必同步盤點並更新與之相關的 Unique Constraints (`ON CONFLICT`)。
+- [x] 在執行批量 Upsert (ETL) 腳本前，優先檢核傳入的資料字典 (Dict) 鍵值是否 100% 涵蓋目標資料表標記為 `NOT NULL` 的所有必填欄位。
+- [x] 在 ETL 腳本內實作 `try-except` 與詳細錯誤日誌（打印出傳入的第一筆資料樣本），以利快速除錯。
+
